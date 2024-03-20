@@ -1,0 +1,48 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# cales-thermal-calendars
+
+<!-- badges: start -->
+[![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
+<!-- badges: end -->
+
+The goal of cales-thermal-calendars is to ...
+
+## Reproducibility
+
+### `renv`
+
+This project uses [`renv`](https://rstudio.github.io/renv/articles/renv.html) for package management.
+When opening this repo as an RStudio Project for the first time, `renv` should automatically install itself and prompt you to run `renv::restore()` to install all package dependencies.
+
+
+### `targets`
+
+This project uses the [`targets` package](https://docs.ropensci.org/targets/) for workflow management.
+Run `targets::tar_make()` from the console to run the workflow and reproduce all results.
+The graph below shows the workflow:
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| results: asis
+cat(
+  "```mermaid",
+  targets::tar_mermaid(targets_only = FALSE, reporter = "silent"),
+  "```",
+  sep = "\n"
+)
+#this should display correctly on GitHub, or code can be pasted into https://mermaid.live
+```
