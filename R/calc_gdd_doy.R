@@ -7,7 +7,8 @@
 #'
 #' @return SpatRaster
 calc_gdd_doy <- function(rast_dir, ne_vect_file, gdd_threshold, gdd_base = 0) {
-  files <- dir_ls(rast_dir, glob = "*.bil", recurse = TRUE)
+  files <- dir_ls(rast_dir, glob = "*.zip")
+
   #convert filenames to DOY to name layers later
   doys <- files |>
     fs::path_file() |>
@@ -15,8 +16,15 @@ calc_gdd_doy <- function(rast_dir, ne_vect_file, gdd_threshold, gdd_base = 0) {
     lubridate::ymd() |> 
     lubridate::yday()
   
+  #construct paths with /vsizip/ to read inside .zip files
+  bils <- 
+    files |> 
+    fs::path_file() |>
+    fs::path_ext_set(".bil")
+  rast_paths <- fs::path("/vsizip", files, bils)
+
   #read in as raster stacks
-  prism <- terra::rast(files)
+  prism <- terra::rast(rast_paths)
   names(prism) <- doys
   units(prism) <- "ºC"
   
