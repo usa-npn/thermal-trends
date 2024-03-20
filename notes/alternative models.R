@@ -4,9 +4,9 @@ tar_load_globals()
 library(mgcv)
 library(gratia)
 library(bbmle)
-tar_load(gdd_doy_stack_200)
+tar_load(gdd_doy_stack_50)
 
-doy_df <- gdd_doy_stack_200[[1:5]] |> #just use 5 years for testing
+doy_df <- gdd_doy_stack_50[[1:5]] |> #just use 5 years for testing
   as_tibble(xy = TRUE, na.rm = TRUE) |>
   pivot_longer(
     c(-x,-y),
@@ -17,42 +17,57 @@ doy_df <- gdd_doy_stack_200[[1:5]] |> #just use 5 years for testing
 
 doy_df
 
-
+#basic model with trend over year and smoother for lat/lon
 m <- gam(doy ~ year + s(x,y), data = doy_df, method = "REML")
 summary(m)
-gratia::draw(m, rug = FALSE)
-m2 <- gam(doy ~ year + s(x, y, by = year), data = doy_df, method = "REML")
-summary(m2)
-gratia::draw(m2, rug = FALSE)
+gratia::draw(m,parametric = TRUE, rug = FALSE)
 
-AIC(m, m2)
-# interaction improves
+#uhh, partial effect should be in units of DOY, right?  Not good that it's 3850-ish
+# do I need to rescale year?
+doy_df <- doy_df |> mutate(year_scaled = year - min(year))
+m1 <-
+  gam(
+    doy ~ year_scaled + s(x, y),
+    data = doy_df |> mutate(year = year - min(year)),
+    method = "REML"
+  )
+summary(m1)
+draw(m1, parametric = TRUE, rug = FALSE)
+#ok, yeah, that makes more sense I think?
 
-# try gaussian process basis
-m3 <- gam(doy ~ year + s(x, y, by = year, bs = "gp"), data = doy_df, method = "REML")
+#use SOS basis for lat/lon data
+m2 <- 
+  gam(
+    doy ~ year_scaled + s(x, y, bs = "sos"),
+    data = doy_df |> mutate(year = year - min(year)),
+    method = "REML"
+  )
+AICtab(m1, m2)
+#big improvement!
 
-#try spline on sphere (for lat long coords)
-m4 <- gam(doy ~ year + s(x, y, by = year, bs = "sos"), data = doy_df, method = "REML")
+#is it worth including an interaction term?
+m3 <- 
+  gam(
+    doy ~ year_scaled + s(x,y, bs = "sos") + s(x, y, by = year_scaled, bs = "sos"),
+    data = doy_df |> mutate(year = year - min(year)),
+    method = "REML"
+  )
+summary(m3)
+AICtab(m1, m2, m3)
 
-AICctab(m, m2, m3, m4)
-#SOS wins!
+#yes!
+summary(m3)
+#parameteric term of year goes away (no overall trend over time?)
+#or maybe I did the interaction wrong?
 
-# are you supposed to include both s(x,y) and s(x,y, by = year) to get both main effect of geography and interaction with year?
-# I think mostly the interaction term is of interest—is DOY advancing faster in some locations than others? But to get this, might need to pull out the main effect of geography?
+m4 <- 
+  gam(
+    doy ~ year_scaled + s(x,y) + ti(x, y, year_scaled),
+    data = doy_df |> mutate(year = year - min(year)),
+    method = "REML"
+  )
 
-m5 <- gam(doy ~ year + s(x,y, bs = "sos") + s(x, y, by = year, bs = "sos"), data = doy_df, method = "REML")
+AICtab(m1,m2,m3,m4)
 
-AICctab(m4, m5)
-
-#m4 is better, regardless
-gratia::draw(m4, rug = FALSE, crs = crs(doy_trend_200))
-#blagh, not working
-plot(m4)
-#hmm, not right because it's the whole sphere??
-
-#probably need to predict over custom grid of values within the borders
-#also, SOS smoother probably not necessary because its such a small region
-
-AICtab(m3, m4)
-
-#although ∆AIC is quite large!
+summary(m4)
+draw(m4, parametric = TRUE, rug = FALSE)
