@@ -14,7 +14,9 @@ knitr::opts_chunk$set(
 # cales-thermal-calendars
 
 <!-- badges: start -->
+
 [![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
+
 <!-- badges: end -->
 
 The goal of cales-thermal-calendars is to ...
@@ -25,7 +27,6 @@ The goal of cales-thermal-calendars is to ...
 
 This project uses [`renv`](https://rstudio.github.io/renv/articles/renv.html) for package management.
 When opening this repo as an RStudio Project for the first time, `renv` should automatically install itself and prompt you to run `renv::restore()` to install all package dependencies.
-
 
 ### `targets`
 
@@ -46,3 +47,7 @@ cat(
 )
 #this should display correctly on GitHub, or code can be pasted into https://mermaid.live
 ```
+
+------------------------------------------------------------------------
+
+Developed in collaboration with [CCT Data Science](https://datascience.cct.arizona.edu/).
