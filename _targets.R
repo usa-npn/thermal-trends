@@ -61,7 +61,7 @@ tar_plan(
   ),
   tar_file(ne_vect_file, "data/ne_states.geojson"),
   tar_map(
-    values = list(threshold = c(200, 300)),
+    values = list(threshold = c(50, 1000, 2500)),
     tar_terra_rast(
       gdd_doy,
       calc_gdd_doy(rast_dir = prism_tmean, ne_vect_file = ne_vect_file, gdd_threshold = threshold),
