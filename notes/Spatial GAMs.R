@@ -38,16 +38,6 @@ summary(m1)
 draw(m1, parametric = TRUE, rug = FALSE)
 #ok, yeah, that makes more sense I think?
 
-#use SOS basis for lat/lon data??
-# m2 <- 
-#   gam(
-#     doy ~ year_scaled + s(x, y, bs = "sos"),
-#     data = doy_df |> mutate(year = year - min(year)),
-#     method = "REML"
-#   )
-# AICtab(m1, m2)
-# #big improvement!
-
 #include interaction as tensor product with simple construction
 m2 <- gam(
   doy ~ te(x, y, year_scaled),
@@ -79,3 +69,17 @@ summary(m4)
 draw(m4, rug = FALSE)
 
 #would need to figure out appropriate smoothers, number of knots, etc. and interpretation is difficult, but very informative
+
+#If the effects of lat and lon are on different scales, might be better to use `te()`
+m5 <- gam(
+  doy ~ te(x, y) + #geography main effect
+    s(year_scaled, bs = "cs", k = 4) + #year main effect
+    ti(x, y, year_scaled, d = c(2, 1), bs = c("tp", "cs"), k = c(NULL, 4)), #geography-year interaction
+  data = doy_df,
+  method = "REML"
+)
+AICtab(m1, m2, m3, m4, m5)
+summary(m5)
+draw(m5, rug = FALSE)
+
+#m3 is best by AIC
