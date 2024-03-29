@@ -145,12 +145,12 @@ draw(m6, parametric = TRUE)
 
 # Slope esitmates ---------------------------------------------------------
 # Perhaps it's just best to use the best fit model (m3a) and extract estimated slopes with ±95% CI
-# Here I'm getting slope estimates for each pixel, I think?
+# Here I'm getting average slope estimates for each pixel (over time).
 
 library(marginaleffects)
 
 m3a_slopes <- 
-  marginaleffects::slopes(m3a, variables = "year_scaled", by = c("y", "x"), p_adjust = "fdr") |>
+  avg_slopes(m3a, variables = "year_scaled", by = c("y", "x"), p_adjust = "fdr") |>
   as_tibble() 
 
 m3a_slopes |> 
@@ -159,15 +159,13 @@ m3a_slopes |>
   scale_fill_continuous_diverging(rev = TRUE) +
   coord_sf(crs = crs(gdd_doy_stack_50))
 
-#looks somewhat legit—similar to pixel-wise regression.  Some regions are reaching threshold about a day earlier per year, some about a day later per year.  Not really sure how this works though when year isn't linear. 
+#looks somewhat legit—similar to pixel-wise regression.  Some regions are reaching threshold about a day earlier per year, some about a day later per year. 
 
-#TODO read more about slopes() and avg_slopes() with GAMs—what does it do?  over what range does it estimate dx/dy?
-#TODO mask points where CI of slope overlaps 0.
-
-#might be best to turn back into SpatRaster?
+# Figure out which slopes are significant and mask them on the map
 
 m3a_slopes_rast <- m3a_slopes |> 
-  select(x, y, estimate, p.value) |> rast()
+  select(x, y, estimate, p.value) |> 
+  rast()
 
 crs(m3a_slopes_rast) <- crs(gdd_doy_stack_50)
 
@@ -175,7 +173,6 @@ non_sig <- m3a_slopes_rast |>
   mutate(non_sig = ifelse(p.value > 0.05, TRUE, NA)) |> 
   select(non_sig) |> 
   as.polygons() |> 
-  # as.data.frame(xy = TRUE)
   st_as_sf()
 
 library(ggpattern)
@@ -199,3 +196,6 @@ ggplot() +
        fill = "∆DOY/yr", pattern_fill = "p > 0.05") +
   coord_sf() +
   theme_minimal()
+
+
+#TODO: consider including all the thresholds in the same model and fitting threshold as a random effect.  The different thresholds are NOT independent, so probably shouldn't be separate models.  Might make the model explode though! `bam()` might help?
