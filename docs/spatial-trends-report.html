@@ -107,19 +107,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="pixel-wise-regression" class="level2">
 <h2 class="anchored" data-anchor-id="pixel-wise-regression">Pixel-wise regression</h2>
 <p>A simple option is to run a regression for every pixel in the map, with one data point per year per GDD threshold. We can then map the slopes easily (<a href="#fig-trend-map" class="quarto-xref">Figure&nbsp;1</a>).</p>
-<div class="cell">
-<div class="cell-output-display">
 <div id="fig-trend-map" class="quarto-figure quarto-figure-center quarto-float anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-trend-map-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="../output/slopes_50.png" class="img-fluid figure-img" width="1050">
+<img src="slopes_50.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-trend-map-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;1: Map of slopes from pixel-wise linear regressions of DOY to reach 50 GDD over time from 1981 to 2023
 </figcaption>
 </figure>
-</div>
-</div>
 </div>
 <p>However, we if we mask out areas that have slopes that are not statistically significantly different from zero, almost nothing is left (<a href="#fig-trend-map-hatched" class="quarto-xref">Figure&nbsp;2</a>). This is because the large number of p-values calculated must be corrected for false discovery rate, as they are not independent, leaving little statistical power to detect trends.</p>
 <div class="cell">

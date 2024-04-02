@@ -34,11 +34,7 @@ The goal is to understand spatial trends in phenology over time using data on th
 A simple option is to run a regression for every pixel in the map, with one data point per year per GDD threshold.
 We can then map the slopes easily (@fig-trend-map).
 
-```{r}
-#| label: fig-trend-map
-#| fig-cap: "Map of slopes from pixel-wise linear regressions of DOY to reach 50 GDD over time from 1981 to 2023"
-knitr::include_graphics(path = fs::path("..", tar_read(trend_plot_50, store = here("_targets"))))
-```
+![Map of slopes from pixel-wise linear regressions of DOY to reach 50 GDD over time from 1981 to 2023](slopes_50.png){#fig-trend-map}
 
 However, we if we mask out areas that have slopes that are not statistically significantly different from zero, almost nothing is left (@fig-trend-map-hatched).
 This is because the large number of p-values calculated must be corrected for false discovery rate, as they are not independent, leaving little statistical power to detect trends.
