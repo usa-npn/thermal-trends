@@ -78,8 +78,7 @@ p_adj <- app(slope_rast[[2]], p.adjust, method = "fdr")
 
 #no values are significant after FDR correction
 plot(p_adj <= 0.05)
-#just for testing, let's use alpha = 0.5
-plot(p_adj <= 0.5)
+
 non_sig <- as.polygons(p_adj < 0.05) |> filter(lyr.1 == 0)  |> mutate(lyr.1 = as.factor(lyr.1))
 
 ggplot() +
