@@ -12,7 +12,7 @@ library(geotargets)
 tar_option_set(
   # Packages that your targets need for their tasks.
   packages = c("prism", "fs", "terra", "stringr", "lubridate", "colorspace", "purrr",
-               "ggplot2", "tidyterra", "glue") 
+               "ggplot2", "tidyterra", "glue", "car"),
   #
   # Pipelines that take a long time to run may benefit from
   # optional distributed computing. To use this capability
@@ -23,7 +23,7 @@ tar_option_set(
   # which run as local R processes. Each worker launches when there is work
   # to do and exits if 60 seconds pass with no tasks to run.
   #
-  #   controller = crew::crew_controller_local(workers = 2, seconds_idle = 60)
+    controller = crew::crew_controller_local(workers = 2, seconds_idle = 60)
   #
   # Alternatively, if you want workers to run on a high-performance computing
   # cluster, select a controller from the {crew.cluster} package.
@@ -58,6 +58,7 @@ tar_plan(
     name = prism_tmean,
     command = get_prism_tmean(years),
     pattern = map(years),
+    deployment = "main", #prevent downloads from running in parallel
     format = "file"
   ),
   tar_file(ne_vect_file, "data/ne_states.geojson"),
@@ -87,5 +88,8 @@ tar_plan(
       trend_plot,
       plot_slopes(doy_trend, gdd_threshold = threshold)
     )
-  )
+  ),
+  
+  # Reports
+  tar_quarto(spatial_report, path = "docs/spatial-trends-report.qmd", working_directory = "docs")
 )
