@@ -154,36 +154,20 @@ Note
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>m1 <span class="ot">&lt;-</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gam</span>(</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    doy <span class="sc">~</span> year_scaled <span class="sc">+</span> <span class="fu">s</span>(y, x),</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    doy <span class="sc">~</span> year_scaled <span class="sc">+</span> <span class="fu">s</span>(x, y),</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> doy_df,</span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">method =</span> <span class="st">"REML"</span></span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="cell-output cell-output-stderr">
-<pre><code>Coordinate system already present. Adding new coordinate system, which will
-replace the existing one.</code></pre>
-</div>
 <div class="cell-output-display">
-<div id="fig-gam-simple-1" class="quarto-figure quarto-figure-center quarto-float anchored">
+<div id="fig-gam-simple" class="quarto-figure quarto-figure-center quarto-float anchored">
 <figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-gam-simple-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div aria-describedby="fig-gam-simple-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="spatial-trends-report_files/figure-html/fig-gam-simple-1.png" class="img-fluid figure-img" width="672">
 </div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-gam-simple-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-gam-simple-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;3: Partial effects from a simple GAM with lat/lon fit as a bivariate smoother (A) and time as a parametric effect (B).
-</figcaption>
-</figure>
-</div>
-</div>
-<div class="cell-output-display">
-<div id="fig-gam-simple-2" class="quarto-figure quarto-figure-center quarto-float anchored">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-gam-simple-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="spatial-trends-report_files/figure-html/fig-gam-simple-2.png" class="img-fluid figure-img" width="672">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-gam-simple-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;4: Partial effects from a simple GAM with lat/lon fit as a bivariate smoother (A) and time as a parametric effect (B).
 </figcaption>
 </figure>
 </div>
@@ -191,12 +175,12 @@ Figure&nbsp;4: Partial effects from a simple GAM with lat/lon fit as a bivariate
 </div>
 <p>In my exploration, the GAM that had the best fit to data (by dAIC) was parameterized as follows:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>m3a <span class="ot">&lt;-</span> <span class="fu">gam</span>(</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  doy <span class="sc">~</span> <span class="fu">te</span>(y, x, year_scaled, <span class="at">d =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">1</span>), <span class="at">bs =</span> <span class="fu">c</span>(<span class="st">"sos"</span>, <span class="st">"cs"</span>)),</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> doy_df,</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">method =</span> <span class="st">"REML"</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(m3a)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>m3a <span class="ot">&lt;-</span> <span class="fu">gam</span>(</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  doy <span class="sc">~</span> <span class="fu">te</span>(y, x, year_scaled, <span class="at">d =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">1</span>), <span class="at">bs =</span> <span class="fu">c</span>(<span class="st">"sos"</span>, <span class="st">"cs"</span>)),</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> doy_df,</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">method =</span> <span class="st">"REML"</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(m3a)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Family: gaussian 
@@ -221,7 +205,7 @@ R-sq.(adj) =  0.625   Deviance explained = 62.9%
 -REML =  46603  Scale est. = 214.6     n = 11309</code></pre>
 </div>
 </div>
-<p>This fits a relationship between DOY to reach 50 GDD and a tensor-product interaction of lat, lon, and time where lat/lon are a represented by a two dimensional “splines on the sphere” smoother (which is built to work well with lat/lon data) and time is fit with a cubic regression spline with ‘shrinkage’. The smooth term is significant, although that doesn’t tell us if there are temporal trends, spatial trends, or both. A partial effects plot, such as in <a href="#fig-gam-best" class="quarto-xref">Figure&nbsp;5</a>, helps a little, but is still difficult to interpret.</p>
+<p>This fits a relationship between DOY to reach 50 GDD and a tensor-product interaction of lat, lon, and time where lat/lon are a represented by a two dimensional “splines on the sphere” smoother (which is built to work well with lat/lon data) and time is fit with a cubic regression spline with ‘shrinkage’. The smooth term is significant, although that doesn’t tell us if there are temporal trends, spatial trends, or both. A partial effects plot, such as in <a href="#fig-gam-best" class="quarto-xref">Figure&nbsp;4</a>, helps a little, but is still difficult to interpret.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-gam-best" class="quarto-figure quarto-figure-center quarto-float anchored">
@@ -230,13 +214,13 @@ R-sq.(adj) =  0.625   Deviance explained = 62.9%
 <img src="spatial-trends-report_files/figure-html/fig-gam-best-1.png" class="img-fluid figure-img" width="672">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-gam-best-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;5: Partial effects from best-fit GAM. Facets represent change in spatial relationship over time from year 0 to year 42.
+Figure&nbsp;4: Partial effects from best-fit GAM. Facets represent change in spatial relationship over time from year 0 to year 42.
 </figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p>Instead, we can exract the average slopes for each pixel and get 95% CI for those average slopes with the <code>marginaleffects</code> package and plot those on a map. Areas where the 95% CIs of the slopes overlap 0 can be shaded out like we did above with the non-significant p-values.</p>
+<p>Instead, we can extract the average slopes for each pixel and get 95% CI for those average slopes with the <code>marginaleffects</code> package and plot those on a map. Areas where the 95% CIs of the slopes overlap 0 can be shaded out like we did above with the non-significant p-values.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-gam-slopes-map" class="quarto-figure quarto-figure-center quarto-float anchored">
@@ -245,13 +229,13 @@ Figure&nbsp;5: Partial effects from best-fit GAM. Facets represent change in spa
 <img src="spatial-trends-report_files/figure-html/fig-gam-slopes-map-1.png" class="img-fluid figure-img" width="672">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-gam-slopes-map-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;6: Map of average slopes of DOY over time from a spatial GAM fit to downsampled data. P-values for slopes are false-discovery-rate adjusted using the sample size for the full data (n = 21414)
+Figure&nbsp;5: Map of average slopes of DOY over time from a spatial GAM fit to downsampled data. P-values for slopes are false-discovery-rate adjusted using the sample size for the full data (n = 21414)
 </figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p>With the approach in <a href="#fig-gam-slopes-map" class="quarto-xref">Figure&nbsp;6</a>, we have the power to detect significant decrease in the DOY to reach 50 GDD over time. The caveat here is that the relationship fit to time is not linear (see <a href="#fig-slice" class="quarto-xref">Figure&nbsp;7</a> for an example), and <a href="#fig-gam-slopes-map" class="quarto-xref">Figure&nbsp;6</a> just shows the <em>average</em> slope over time.</p>
+<p>With the approach in <a href="#fig-gam-slopes-map" class="quarto-xref">Figure&nbsp;5</a>, we have the power to detect significant decrease in the DOY to reach 50 GDD over time. The caveat here is that the relationship fit to time is not linear (see <a href="#fig-slice" class="quarto-xref">Figure&nbsp;6</a> for an example), and <a href="#fig-gam-slopes-map" class="quarto-xref">Figure&nbsp;5</a> just shows the <em>average</em> slope over time.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-slice" class="quarto-figure quarto-figure-center quarto-float anchored">
@@ -260,7 +244,7 @@ Figure&nbsp;6: Map of average slopes of DOY over time from a spatial GAM fit to 
 <img src="spatial-trends-report_files/figure-html/fig-slice-1.png" class="img-fluid figure-img" width="672">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-slice-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;7: Fitted relationship (black line) between year and DOY to reach 50 GDD for a single pixel of the downsampled data. Actual values of DOY are displayed as points. Grey lines are 30 samples from the model posterior distribution and give an idea of model uncertainty.
+Figure&nbsp;6: Fitted relationship (black line) between year and DOY to reach 50 GDD for a single pixel of the downsampled data. Actual values of DOY are displayed as points. Grey lines are 30 samples from the model posterior distribution and give an idea of model uncertainty.
 </figcaption>
 </figure>
 </div>

@@ -22,6 +22,7 @@ library(mgcv)
 library(gratia)
 library(sf)
 library(colorspace)
+library(patchwork)
 
 tar_load(doy_trend_50, store = here("_targets/"))
 tar_load(gdd_doy_stack_50, store = here("_targets/"))
@@ -99,7 +100,7 @@ An simple example spatial GAM:
 #| echo: true
 m1 <-
   gam(
-    doy ~ year_scaled + s(y, x),
+    doy ~ year_scaled + s(x, y),
     data = doy_df,
     method = "REML"
   )
@@ -107,10 +108,11 @@ m1 <-
 
 ```{r}
 #| label: fig-gam-simple
+#| message: false
 #| fig-cap: "Partial effects from a simple GAM with lat/lon fit as a bivariate smoother (A) and time as a parametric effect (B)."
 m1_draw <- draw(m1, parametric = TRUE, wrap = FALSE)
-m1_draw[[1]] + coord_flip()
-m1_draw[[2]]
+(m1_draw[[1]] + coord_sf(crs = crs(doy_trend_50))) |
+(m1_draw[[2]]) + plot_annotation(tag_levels = "A")
 ```
 
 In my exploration, the GAM that had the best fit to data (by dAIC) was parameterized as follows:
@@ -131,11 +133,12 @@ A partial effects plot, such as in @fig-gam-best, helps a little, but is still d
 
 ```{r}
 #| label: fig-gam-best
+#| message: false
 #| fig-cap: "Partial effects from best-fit GAM.  Facets represent change in spatial relationship over time from year 0 to year 42."
 draw(m3a) & coord_flip()
 ```
 
-Instead, we can exract the average slopes for each pixel and get 95% CI for those average slopes with the `marginaleffects` package and plot those on a map.
+Instead, we can extract the average slopes for each pixel and get 95% CI for those average slopes with the `marginaleffects` package and plot those on a map.
 Areas where the 95% CIs of the slopes overlap 0 can be shaded out like we did above with the non-significant p-values.
 
 ```{r}
@@ -196,7 +199,8 @@ The caveat here is that the relationship fit to time is not linear (see @fig-sli
 
 data_slice <-
   doy_df |>
-  filter(y == min(y, na.rm =TRUE)) |> filter(x == min(x, na.rm =TRUE))
+  filter(y == min(y, na.rm =TRUE)) |>
+  filter(x == min(x, na.rm =TRUE))
 
 pred_samp <- data_slice |> gratia::add_predicted_samples(m3a, n = 30)
 

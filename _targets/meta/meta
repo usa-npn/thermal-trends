@@ -1,5 +1,5 @@
 name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
-.Random.seed|object|8872962aa4708bf7|||||||||||||||
+.Random.seed|object|a411992deb28de6f|||||||||||||||
 calc_gdd_doy|function|e82f37b977eb0e26|||||||||||||||
 doy_plot_1000|stem|62259f35c25e93c5|94d612c583f2a7b8|bc06e09d1aadbf84|-1413202492|output/doy_1000.png|t19812.1478744021s|dd8a2217c6ac4695|825637|file|local|vector|||14.492||
 doy_plot_200|stem|bcd332c7f5729670|4c3d7969eff54577|a1e4b61d87a653c7|426721261|output/doy_200.png|t19802.871488626s|e6c4a0f614ca5b65|357124|file|local|vector|||2.77||
@@ -259,7 +259,7 @@ prism_tmean_edc8e6ad|branch|3759654bc99832f4|d85a38a490b96371|221ff5db32d86403|7
 prism_tmean_f5b34c08|branch|b65e2cd53939c1c8|d85a38a490b96371|221ff5db32d86403|1097025384|data/prism/1991|t19814.7017066651s|f5d7cfaeaf879451|11776|file|local|vector|prism_tmean||618.841||
 prism_tmean_f888eb7b|branch|f30b3d106a4a6231|d85a38a490b96371|221ff5db32d86403|1435839722|data/prism/1985|t19811.9199151981s|f5d7cfaeaf879451|11776|file|local|vector|prism_tmean||528.712||
 prism_tmean_fb38cf22|branch|cbbf17a834752634|d85a38a490b96371|221ff5db32d86403|372135165|data/prism/2019|t19802.748693177s|278ecc85af1c32e9|11744|file|local|vector|prism_tmean||692.618||
-spatial_report|stem|94be3c8f16fc213f|c2d92fe59b08e1eb|b224f3efbe4a1114|1102522345|docs/spatial-trends-report.html*docs/spatial-trends-report.qmd|t19815.9335817005s|d9f08bf7e756d4a9|37693|file|local|vector|||207.691||
+spatial_report|stem|499607226e5219e4|c2d92fe59b08e1eb|b224f3efbe4a1114|1102522345|docs/spatial-trends-report.html*docs/spatial-trends-report.qmd|t19815.959083373s|d49239bf96b77614|36919|file|local|vector|||208.101||
 thresholds|stem|d8eb7f8273ee2ea3|ecfa7e0b2bf90e65|ef46db3751d8e999|1391322145||t19801.8471948637s|9064907978062c20|56|rds|local|vector|||1.612||
 trend_plot_1000|stem|9e4240ab7ce6e318|a90e275c069a9794|6fe10123aa46e8e9|1101298718||t19814.9069603842s|e42ed4625f93f45f|114|rds|local|vector|||3.765||
 trend_plot_200|stem|39c35874bfd705f0|27af252aebc3312c|d032422332a35ad5|-1911911203||t19802.8715045956s|303de8fdb625d7f0|113|rds|local|vector|||0.652||
