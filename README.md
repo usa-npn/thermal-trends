@@ -30,8 +30,9 @@ package](https://docs.ropensci.org/targets/) for workflow management.
 Run `targets::tar_make()` from the console to run the workflow and
 reproduce all results. The graph below shows the workflow:
 
-Loading required namespace: terra Warning message: package ‘geotargets’
-was built under R version 4.3.3
+- The project is out-of-sync – use `renv::status()` for details. Loading
+  required namespace: terra Warning message: package ‘geotargets’ was
+  built under R version 4.3.3
 
 ``` mermaid
 graph LR
@@ -45,36 +46,46 @@ graph LR
   end
   subgraph Graph
     direction LR
-    x09e654e88f35baa2(["gdd_doy_stack_300<br>300"]):::uptodate --> xc5a47be3eb6c999f(["doy_trend_300<br>300"]):::uptodate
-    xbfe90ebeeb7a071e>"get_lm_slope"]:::uptodate --> xc5a47be3eb6c999f(["doy_trend_300<br>300"]):::uptodate
-    xe29acbe10e4acf5e["gdd_doy_200<br>200"]:::uptodate --> x99fb079e151e8aaa(["gdd_doy_stack_200<br>200"]):::uptodate
-    xc5a47be3eb6c999f(["doy_trend_300<br>300"]):::uptodate --> x04dfda02c5bc958a(["trend_plot_300<br>300"]):::uptodate
-    x298e720a0d38fbab>"plot_slopes"]:::uptodate --> x04dfda02c5bc958a(["trend_plot_300<br>300"]):::uptodate
-    x251a9bbe1f58f2ec(["doy_trend_200<br>200"]):::uptodate --> x371459079f39f627(["trend_plot_200<br>200"]):::uptodate
-    x298e720a0d38fbab>"plot_slopes"]:::uptodate --> x371459079f39f627(["trend_plot_200<br>200"]):::uptodate
-    x99fb079e151e8aaa(["gdd_doy_stack_200<br>200"]):::uptodate --> x251a9bbe1f58f2ec(["doy_trend_200<br>200"]):::uptodate
-    xbfe90ebeeb7a071e>"get_lm_slope"]:::uptodate --> x251a9bbe1f58f2ec(["doy_trend_200<br>200"]):::uptodate
-    x388a2f32d8679472["gdd_doy_300<br>300"]:::uptodate --> x09e654e88f35baa2(["gdd_doy_stack_300<br>300"]):::uptodate
-    x99fb079e151e8aaa(["gdd_doy_stack_200<br>200"]):::uptodate --> xee77e2ccce9f82c4(["doy_plot_200<br>200"]):::uptodate
-    x13c8ccaa5d631ad7>"plot_doy"]:::uptodate --> xee77e2ccce9f82c4(["doy_plot_200<br>200"]):::uptodate
-    x09e654e88f35baa2(["gdd_doy_stack_300<br>300"]):::uptodate --> x029e34683ca15036(["doy_plot_300<br>300"]):::uptodate
-    x13c8ccaa5d631ad7>"plot_doy"]:::uptodate --> x029e34683ca15036(["doy_plot_300<br>300"]):::uptodate
-    xb88b325298077171>"calc_gdd_doy"]:::uptodate --> xe29acbe10e4acf5e["gdd_doy_200<br>200"]:::uptodate
-    xd097f7e15f521741(["ne_vect_file"]):::uptodate --> xe29acbe10e4acf5e["gdd_doy_200<br>200"]:::uptodate
-    xe4ea051685a102ce["prism_tmean"]:::uptodate --> xe29acbe10e4acf5e["gdd_doy_200<br>200"]:::uptodate
-    xb88b325298077171>"calc_gdd_doy"]:::uptodate --> x388a2f32d8679472["gdd_doy_300<br>300"]:::uptodate
-    xd097f7e15f521741(["ne_vect_file"]):::uptodate --> x388a2f32d8679472["gdd_doy_300<br>300"]:::uptodate
-    xe4ea051685a102ce["prism_tmean"]:::uptodate --> x388a2f32d8679472["gdd_doy_300<br>300"]:::uptodate
+    x143c225a85b6f8ef["gdd_doy_1000<br>1000"]:::uptodate --> x40c2e72d4bfe48c6(["gdd_doy_stack_1000<br>1000"]):::uptodate
+    x03a837447b8e1f85(["gdd_doy_stack_2500<br>2500"]):::uptodate --> xf560c6147541e200(["doy_trend_2500<br>2500"]):::uptodate
+    xbfe90ebeeb7a071e>"get_lm_slope"]:::uptodate --> xf560c6147541e200(["doy_trend_2500<br>2500"]):::uptodate
+    x03a837447b8e1f85(["gdd_doy_stack_2500<br>2500"]):::uptodate --> x4571a9b7d2c4f70f(["doy_plot_2500<br>2500"]):::uptodate
+    x13c8ccaa5d631ad7>"plot_doy"]:::uptodate --> x4571a9b7d2c4f70f(["doy_plot_2500<br>2500"]):::uptodate
+    xb88b325298077171>"calc_gdd_doy"]:::uptodate --> x5d124cd085114def["gdd_doy_2500<br>2500"]:::uptodate
+    xd097f7e15f521741(["ne_vect_file"]):::uptodate --> x5d124cd085114def["gdd_doy_2500<br>2500"]:::uptodate
+    xe4ea051685a102ce["prism_tmean"]:::uptodate --> x5d124cd085114def["gdd_doy_2500<br>2500"]:::uptodate
+    x5a7177ac72d59179(["doy_trend_1000<br>1000"]):::uptodate --> x56ad0a64704ce37e(["trend_plot_1000<br>1000"]):::uptodate
+    x298e720a0d38fbab>"plot_slopes"]:::uptodate --> x56ad0a64704ce37e(["trend_plot_1000<br>1000"]):::uptodate
+    x067ed113746ada91(["doy_trend_50<br>50"]):::uptodate --> xb10cda98be740603(["trend_plot_50<br>50"]):::uptodate
+    x298e720a0d38fbab>"plot_slopes"]:::uptodate --> xb10cda98be740603(["trend_plot_50<br>50"]):::uptodate
+    xef0f3bd95aeea8a1(["gdd_doy_stack_50<br>50"]):::uptodate --> xa4e7d2ec2b26ed98(["doy_plot_50<br>50"]):::uptodate
+    x13c8ccaa5d631ad7>"plot_doy"]:::uptodate --> xa4e7d2ec2b26ed98(["doy_plot_50<br>50"]):::uptodate
+    x40c2e72d4bfe48c6(["gdd_doy_stack_1000<br>1000"]):::uptodate --> x5a7177ac72d59179(["doy_trend_1000<br>1000"]):::uptodate
+    xbfe90ebeeb7a071e>"get_lm_slope"]:::uptodate --> x5a7177ac72d59179(["doy_trend_1000<br>1000"]):::uptodate
+    x40c2e72d4bfe48c6(["gdd_doy_stack_1000<br>1000"]):::uptodate --> x1198f75c36e06a6d(["doy_plot_1000<br>1000"]):::uptodate
+    x13c8ccaa5d631ad7>"plot_doy"]:::uptodate --> x1198f75c36e06a6d(["doy_plot_1000<br>1000"]):::uptodate
+    x5d124cd085114def["gdd_doy_2500<br>2500"]:::uptodate --> x03a837447b8e1f85(["gdd_doy_stack_2500<br>2500"]):::uptodate
+    x4e641563f83bc893["gdd_doy_50<br>50"]:::uptodate --> xef0f3bd95aeea8a1(["gdd_doy_stack_50<br>50"]):::uptodate
+    x067ed113746ada91(["doy_trend_50<br>50"]):::uptodate --> x9dd6eb88f0f020eb(["spatial_report"]):::uptodate
+    xef0f3bd95aeea8a1(["gdd_doy_stack_50<br>50"]):::uptodate --> x9dd6eb88f0f020eb(["spatial_report"]):::uptodate
     x4796032f25dfd47a>"get_prism_tmean"]:::uptodate --> xe4ea051685a102ce["prism_tmean"]:::uptodate
     x25dbf37c6e783c25(["years"]):::uptodate --> xe4ea051685a102ce["prism_tmean"]:::uptodate
-    x548139ace4ace77c(["thresholds"]):::uptodate --> x548139ace4ace77c(["thresholds"]):::uptodate
+    xb88b325298077171>"calc_gdd_doy"]:::uptodate --> x143c225a85b6f8ef["gdd_doy_1000<br>1000"]:::uptodate
+    xd097f7e15f521741(["ne_vect_file"]):::uptodate --> x143c225a85b6f8ef["gdd_doy_1000<br>1000"]:::uptodate
+    xe4ea051685a102ce["prism_tmean"]:::uptodate --> x143c225a85b6f8ef["gdd_doy_1000<br>1000"]:::uptodate
+    xef0f3bd95aeea8a1(["gdd_doy_stack_50<br>50"]):::uptodate --> x067ed113746ada91(["doy_trend_50<br>50"]):::uptodate
+    xbfe90ebeeb7a071e>"get_lm_slope"]:::uptodate --> x067ed113746ada91(["doy_trend_50<br>50"]):::uptodate
+    xf560c6147541e200(["doy_trend_2500<br>2500"]):::uptodate --> xb9525cb3d2f5752d(["trend_plot_2500<br>2500"]):::uptodate
+    x298e720a0d38fbab>"plot_slopes"]:::uptodate --> xb9525cb3d2f5752d(["trend_plot_2500<br>2500"]):::uptodate
+    xb88b325298077171>"calc_gdd_doy"]:::uptodate --> x4e641563f83bc893["gdd_doy_50<br>50"]:::uptodate
+    xd097f7e15f521741(["ne_vect_file"]):::uptodate --> x4e641563f83bc893["gdd_doy_50<br>50"]:::uptodate
+    xe4ea051685a102ce["prism_tmean"]:::uptodate --> x4e641563f83bc893["gdd_doy_50<br>50"]:::uptodate
   end
   classDef uptodate stroke:#000000,color:#ffffff,fill:#354823;
   classDef none stroke:#000000,color:#000000,fill:#94a4ac;
   linkStyle 0 stroke-width:0px;
   linkStyle 1 stroke-width:0px;
   linkStyle 2 stroke-width:0px;
-  linkStyle 25 stroke-width:0px;
 ```
 
 ------------------------------------------------------------------------
