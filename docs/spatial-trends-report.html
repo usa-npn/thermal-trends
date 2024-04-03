@@ -68,6 +68,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="spatial-trends-report_files/libs/bootstrap/bootstrap.min.js"></script>
 <link href="spatial-trends-report_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="spatial-trends-report_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<link href="spatial-trends-report_files/libs/tabwid-1.1.3/tabwid.css" rel="stylesheet">
+<script src="spatial-trends-report_files/libs/tabwid-1.1.3/tabwid.js"></script>
 
 
 </head>
@@ -150,14 +152,23 @@ Note
 <p>For these examples, data has been down-sampled for prototyping to speed up the model fitting process.</p>
 </div>
 </div>
-<p>An simple example spatial GAM:</p>
+<p>A simple example spatial GAM (<a href="#lst-gam-simple" class="quarto-xref">Listing&nbsp;1</a>, <a href="#fig-gam-simple" class="quarto-xref">Figure&nbsp;3</a>) shows how you can capture spatial trends with a two-dimensional smoother.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>m1 <span class="ot">&lt;-</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gam</span>(</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    doy <span class="sc">~</span> year_scaled <span class="sc">+</span> <span class="fu">s</span>(x, y),</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> doy_df,</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">method =</span> <span class="st">"REML"</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="lst-gam-simple" class="r cell-code listing quarto-float">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst" id="lst-gam-simple-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Listing&nbsp;1: A simple spatial GAM fit with the <code>mgcv</code> package where year is included as a parametric term with no interaction with lat/lon.
+</figcaption>
+<div aria-describedby="lst-gam-simple-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="sourceCode cell-code" id="lst-gam-simple"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="lst-gam-simple-1"><a href="#lst-gam-simple-1" aria-hidden="true" tabindex="-1"></a>m1 <span class="ot">&lt;-</span></span>
+<span id="lst-gam-simple-2"><a href="#lst-gam-simple-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gam</span>(</span>
+<span id="lst-gam-simple-3"><a href="#lst-gam-simple-3" aria-hidden="true" tabindex="-1"></a>    doy <span class="sc">~</span> year_scaled <span class="sc">+</span> <span class="fu">te</span>(x, y),</span>
+<span id="lst-gam-simple-4"><a href="#lst-gam-simple-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> doy_df,</span>
+<span id="lst-gam-simple-5"><a href="#lst-gam-simple-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">method =</span> <span class="st">"REML"</span></span>
+<span id="lst-gam-simple-6"><a href="#lst-gam-simple-6" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</figure>
+</div>
 </div>
 <div class="cell">
 <div class="cell-output-display">
@@ -167,45 +178,44 @@ Note
 <img src="spatial-trends-report_files/figure-html/fig-gam-simple-1.png" class="img-fluid figure-img" width="672">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-gam-simple-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;3: Partial effects from a simple GAM with lat/lon fit as a bivariate smoother (A) and time as a parametric effect (B).
+Figure&nbsp;3: Partial effects from a simple GAM with lat/lon fit as a bivariate smoother (A) and time as a parametric effect (B) and no interaction.
 </figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p>In my exploration, the GAM that had the best fit to data (by dAIC) was parameterized as follows:</p>
+<p>In <a href="#fig-gam-simple" class="quarto-xref">Figure&nbsp;3</a> A, there is spatial variation in DOY to reach 50 GDD with the north reaching that threshold later than the south. In addition, there is a general negative trend of DOY over time (<a href="#fig-gam-simple" class="quarto-xref">Figure&nbsp;3</a> B).</p>
+<p>In my exploration, the GAM that had the best fit to data (by dAIC) included a single, complex smooth term that accounted for an interaction between space and time, allowing a wiggly trend through time that potentially varies spatially (<a href="#lst-gam-best" class="quarto-xref">Listing&nbsp;2</a>, <a href="#fig-gam-best" class="quarto-xref">Figure&nbsp;4</a>).</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>m3a <span class="ot">&lt;-</span> <span class="fu">gam</span>(</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  doy <span class="sc">~</span> <span class="fu">te</span>(y, x, year_scaled, <span class="at">d =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">1</span>), <span class="at">bs =</span> <span class="fu">c</span>(<span class="st">"sos"</span>, <span class="st">"cs"</span>)),</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> doy_df,</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">method =</span> <span class="st">"REML"</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(m3a)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-Family: gaussian 
-Link function: identity 
-
-Formula:
-doy ~ te(y, x, year_scaled, d = c(2, 1), bs = c("sos", "cs"))
-
-Parametric coefficients:
-            Estimate Std. Error t value Pr(&gt;|t|)    
-(Intercept)  76.7858     0.1378   557.4   &lt;2e-16 ***
----
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-
-Approximate significance of smooth terms:
-                      edf Ref.df     F p-value    
-te(y,x,year_scaled) 109.5    124 152.2  &lt;2e-16 ***
----
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-
-R-sq.(adj) =  0.625   Deviance explained = 62.9%
--REML =  46603  Scale est. = 214.6     n = 11309</code></pre>
+<div id="lst-gam-best" class="r cell-code listing quarto-float">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst" id="lst-gam-best-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Listing&nbsp;2: The best fit GAM model, among several candidates tested. The interaction between space and time is fit as a tensor product spline with one dimension being a two-dimensional smooth of latitude and longitude fit with a ‘spline on the sphere’ basis (<code>'sos'</code>) and the other dimension being year fit with a cubic spline with shrinkage (<code>'cs'</code>).
+</figcaption>
+<div aria-describedby="lst-gam-best-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="sourceCode cell-code" id="lst-gam-best"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="lst-gam-best-1"><a href="#lst-gam-best-1" aria-hidden="true" tabindex="-1"></a>m3a <span class="ot">&lt;-</span> <span class="fu">gam</span>(</span>
+<span id="lst-gam-best-2"><a href="#lst-gam-best-2" aria-hidden="true" tabindex="-1"></a>  doy <span class="sc">~</span> <span class="fu">te</span>(y, x, year_scaled, <span class="at">d =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">1</span>), <span class="at">bs =</span> <span class="fu">c</span>(<span class="st">"sos"</span>, <span class="st">"cs"</span>)),</span>
+<span id="lst-gam-best-3"><a href="#lst-gam-best-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> doy_df,</span>
+<span id="lst-gam-best-4"><a href="#lst-gam-best-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">method =</span> <span class="st">"REML"</span></span>
+<span id="lst-gam-best-5"><a href="#lst-gam-best-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="lst-gam-best-6"><a href="#lst-gam-best-6" aria-hidden="true" tabindex="-1"></a><span class="fu">as_flextable</span>(m3a)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</figure>
+</div>
+<div id="tbl-gam-summary" class="cell quarto-float anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-gam-summary-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1: Output of <code>summary()</code> for a simple spatial GAM
+</figcaption>
+<div aria-describedby="tbl-gam-summary-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<div class="tabwid"><style>.cl-18b2f3fe{}.cl-18a979fa{font-family:'Helvetica';font-size:11pt;font-weight:bold;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-18a97a22{font-family:'Helvetica';font-size:11pt;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-18acefd6{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-18acefe0{margin:0;text-align:right;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-18acefea{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-18ad093a{width:2in;background-color:transparent;vertical-align: middle;border-bottom: 1pt solid rgba(102, 102, 102, 1.00);border-top: 1pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-18ad0944{width:1.576in;background-color:transparent;vertical-align: middle;border-bottom: 1pt solid rgba(102, 102, 102, 1.00);border-top: 1pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-18ad0945{width:0.922in;background-color:transparent;vertical-align: middle;border-bottom: 1pt solid rgba(102, 102, 102, 1.00);border-top: 1pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-18ad094e{width:0.947in;background-color:transparent;vertical-align: middle;border-bottom: 1pt solid rgba(102, 102, 102, 1.00);border-top: 1pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-18ad094f{width:0.837in;background-color:transparent;vertical-align: middle;border-bottom: 1pt solid rgba(102, 102, 102, 1.00);border-top: 1pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-18ad0958{width:0.82in;background-color:transparent;vertical-align: middle;border-bottom: 1pt solid rgba(102, 102, 102, 1.00);border-top: 1pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-18ad0959{width:0.4in;background-color:transparent;vertical-align: middle;border-bottom: 1pt solid rgba(102, 102, 102, 1.00);border-top: 1pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-18ad095a{width:2in;background-color:transparent;vertical-align: top;border-bottom: 1pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-18ad0962{width:1.576in;background-color:transparent;vertical-align: middle;border-bottom: 1pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-18ad0963{width:0.922in;background-color:transparent;vertical-align: middle;border-bottom: 1pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-18ad0964{width:0.947in;background-color:transparent;vertical-align: middle;border-bottom: 1pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-18ad096c{width:0.837in;background-color:transparent;vertical-align: middle;border-bottom: 1pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-18ad096d{width:0.82in;background-color:transparent;vertical-align: middle;border-bottom: 1pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-18ad0976{width:0.4in;background-color:transparent;vertical-align: middle;border-bottom: 1pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-18ad0977{width:2in;background-color:transparent;vertical-align: top;border-bottom: 1pt solid rgba(102, 102, 102, 1.00);border-top: 1pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-18ad0978{width:2in;background-color:transparent;vertical-align: top;border-bottom: 1pt solid rgba(102, 102, 102, 1.00);border-top: 1pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-18ad0980{width:1.576in;background-color:transparent;vertical-align: middle;border-bottom: 1pt solid rgba(102, 102, 102, 1.00);border-top: 1pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-18ad0981{width:0.922in;background-color:transparent;vertical-align: middle;border-bottom: 1pt solid rgba(102, 102, 102, 1.00);border-top: 1pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-18ad0982{width:0.947in;background-color:transparent;vertical-align: middle;border-bottom: 1pt solid rgba(102, 102, 102, 1.00);border-top: 1pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-18ad098a{width:0.837in;background-color:transparent;vertical-align: middle;border-bottom: 1pt solid rgba(102, 102, 102, 1.00);border-top: 1pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-18ad098b{width:0.82in;background-color:transparent;vertical-align: middle;border-bottom: 1pt solid rgba(102, 102, 102, 1.00);border-top: 1pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-18ad0994{width:0.4in;background-color:transparent;vertical-align: middle;border-bottom: 1pt solid rgba(102, 102, 102, 1.00);border-top: 1pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-18ad0995{width:2in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(255, 255, 255, 0.00);border-top: 0 solid rgba(255, 255, 255, 0.00);border-left: 0 solid rgba(255, 255, 255, 0.00);border-right: 0 solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-18ad0996{width:1.576in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(255, 255, 255, 0.00);border-top: 0 solid rgba(255, 255, 255, 0.00);border-left: 0 solid rgba(255, 255, 255, 0.00);border-right: 0 solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-18ad099e{width:0.922in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(255, 255, 255, 0.00);border-top: 0 solid rgba(255, 255, 255, 0.00);border-left: 0 solid rgba(255, 255, 255, 0.00);border-right: 0 solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-18ad099f{width:0.947in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(255, 255, 255, 0.00);border-top: 0 solid rgba(255, 255, 255, 0.00);border-left: 0 solid rgba(255, 255, 255, 0.00);border-right: 0 solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-18ad09a0{width:0.837in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(255, 255, 255, 0.00);border-top: 0 solid rgba(255, 255, 255, 0.00);border-left: 0 solid rgba(255, 255, 255, 0.00);border-right: 0 solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-18ad09a8{width:0.82in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(255, 255, 255, 0.00);border-top: 0 solid rgba(255, 255, 255, 0.00);border-left: 0 solid rgba(255, 255, 255, 0.00);border-right: 0 solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-18ad09a9{width:0.4in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(255, 255, 255, 0.00);border-top: 0 solid rgba(255, 255, 255, 0.00);border-left: 0 solid rgba(255, 255, 255, 0.00);border-right: 0 solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-18ad09aa{width:2in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(255, 255, 255, 0.00);border-top: 0 solid rgba(255, 255, 255, 0.00);border-left: 0 solid rgba(255, 255, 255, 0.00);border-right: 0 solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-18ad09b2{width:1.576in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(255, 255, 255, 0.00);border-top: 0 solid rgba(255, 255, 255, 0.00);border-left: 0 solid rgba(255, 255, 255, 0.00);border-right: 0 solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-18ad09bc{width:0.922in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(255, 255, 255, 0.00);border-top: 0 solid rgba(255, 255, 255, 0.00);border-left: 0 solid rgba(255, 255, 255, 0.00);border-right: 0 solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-18ad09bd{width:0.947in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(255, 255, 255, 0.00);border-top: 0 solid rgba(255, 255, 255, 0.00);border-left: 0 solid rgba(255, 255, 255, 0.00);border-right: 0 solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-18ad09be{width:0.837in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(255, 255, 255, 0.00);border-top: 0 solid rgba(255, 255, 255, 0.00);border-left: 0 solid rgba(255, 255, 255, 0.00);border-right: 0 solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-18ad09c6{width:0.82in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(255, 255, 255, 0.00);border-top: 0 solid rgba(255, 255, 255, 0.00);border-left: 0 solid rgba(255, 255, 255, 0.00);border-right: 0 solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-18ad09c7{width:0.4in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(255, 255, 255, 0.00);border-top: 0 solid rgba(255, 255, 255, 0.00);border-left: 0 solid rgba(255, 255, 255, 0.00);border-right: 0 solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}</style><table data-quarto-disable-processing="true" class="cl-18b2f3fe"><thead><tr style="overflow-wrap:break-word;"><th class="cl-18ad093a"><p class="cl-18acefd6"><span class="cl-18a979fa">Component</span></p></th><th class="cl-18ad0944"><p class="cl-18acefd6"><span class="cl-18a979fa">Term</span></p></th><th class="cl-18ad0945"><p class="cl-18acefe0"><span class="cl-18a979fa">Estimate</span></p></th><th class="cl-18ad094e"><p class="cl-18acefe0"><span class="cl-18a979fa">Std Error</span></p></th><th class="cl-18ad094f"><p class="cl-18acefe0"><span class="cl-18a979fa">t-value</span></p></th><th class="cl-18ad0958"><p class="cl-18acefe0"><span class="cl-18a979fa">p-value</span></p></th><th class="cl-18ad0959"><p class="cl-18acefd6"><span class="cl-18a979fa"></span></p></th></tr></thead><tbody><tr style="overflow-wrap:break-word;"><td class="cl-18ad095a"><p class="cl-18acefea"><span class="cl-18a97a22">A. parametric coefficients</span></p></td><td class="cl-18ad0962"><p class="cl-18acefd6"><span class="cl-18a97a22">(Intercept)</span></p></td><td class="cl-18ad0963"><p class="cl-18acefe0"><span class="cl-18a97a22">76.786</span></p></td><td class="cl-18ad0964"><p class="cl-18acefe0"><span class="cl-18a97a22">0.138</span></p></td><td class="cl-18ad096c"><p class="cl-18acefe0"><span class="cl-18a97a22">557.411</span></p></td><td class="cl-18ad096d"><p class="cl-18acefe0"><span class="cl-18a97a22">0.0000</span></p></td><td class="cl-18ad0976"><p class="cl-18acefd6"><span class="cl-18a97a22">***</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-18ad0977"><p class="cl-18acefea"><span class="cl-18a979fa">Component</span></p></td><td class="cl-18ad0944"><p class="cl-18acefd6"><span class="cl-18a979fa">Term</span></p></td><td class="cl-18ad0945"><p class="cl-18acefe0"><span class="cl-18a979fa">edf</span></p></td><td class="cl-18ad094e"><p class="cl-18acefe0"><span class="cl-18a979fa">Ref. df</span></p></td><td class="cl-18ad094f"><p class="cl-18acefe0"><span class="cl-18a979fa">F-value</span></p></td><td class="cl-18ad0958"><p class="cl-18acefe0"><span class="cl-18a979fa">p-value</span></p></td><td class="cl-18ad0959"><p class="cl-18acefd6"><span class="cl-18a979fa"></span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-18ad0978"><p class="cl-18acefea"><span class="cl-18a97a22">B. smooth terms</span></p></td><td class="cl-18ad0980"><p class="cl-18acefd6"><span class="cl-18a97a22">te(y,x,year_scaled)</span></p></td><td class="cl-18ad0981"><p class="cl-18acefe0"><span class="cl-18a97a22">109.473</span></p></td><td class="cl-18ad0982"><p class="cl-18acefe0"><span class="cl-18a97a22">124.000</span></p></td><td class="cl-18ad098a"><p class="cl-18acefe0"><span class="cl-18a97a22">152.181</span></p></td><td class="cl-18ad098b"><p class="cl-18acefe0"><span class="cl-18a97a22">0.0000</span></p></td><td class="cl-18ad0994"><p class="cl-18acefd6"><span class="cl-18a97a22">***</span></p></td></tr></tbody><tfoot><tr style="overflow-wrap:break-word;"><td colspan="7" class="cl-18ad0995"><p class="cl-18acefe0"><span class="cl-18a97a22">Signif. codes: 0 &lt;= '***' &lt; 0.001 &lt; '**' &lt; 0.01 &lt; '*' &lt; 0.05</span></p></td></tr><tr style="overflow-wrap:break-word;"><td colspan="7" class="cl-18ad09aa"><p class="cl-18acefd6"><span class="cl-18a97a22"></span></p></td></tr><tr style="overflow-wrap:break-word;"><td colspan="7" class="cl-18ad09aa"><p class="cl-18acefd6"><span class="cl-18a97a22">Adjusted R-squared: 0.625, Deviance explained 0.629</span></p></td></tr><tr style="overflow-wrap:break-word;"><td colspan="7" class="cl-18ad09aa"><p class="cl-18acefd6"><span class="cl-18a97a22">-REML : 46602.957, Scale est: 214.603, N: 11309</span></p></td></tr></tfoot></table></div>
 </div>
 </div>
-<p>This fits a relationship between DOY to reach 50 GDD and a tensor-product interaction of lat, lon, and time where lat/lon are a represented by a two dimensional “splines on the sphere” smoother (which is built to work well with lat/lon data) and time is fit with a cubic regression spline with ‘shrinkage’. The smooth term is significant, although that doesn’t tell us if there are temporal trends, spatial trends, or both. A partial effects plot, such as in <a href="#fig-gam-best" class="quarto-xref">Figure&nbsp;4</a>, helps a little, but is still difficult to interpret.</p>
+</figure>
+</div>
+</div>
+<p>In the <a href="#tbl-gam-summary" class="quarto-xref">Table&nbsp;1</a>, the smooth term is significant, although that doesn’t tell us if there are temporal trends, spatial trends, or both. A partial effects plot, such as in <a href="#fig-gam-best" class="quarto-xref">Figure&nbsp;4</a>, helps a little, but is still difficult to interpret.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-gam-best" class="quarto-figure quarto-figure-center quarto-float anchored">
@@ -220,22 +230,7 @@ Figure&nbsp;4: Partial effects from best-fit GAM. Facets represent change in spa
 </div>
 </div>
 </div>
-<p>Instead, we can extract the average slopes for each pixel and get 95% CI for those average slopes with the <code>marginaleffects</code> package and plot those on a map. Areas where the 95% CIs of the slopes overlap 0 can be shaded out like we did above with the non-significant p-values.</p>
-<div class="cell">
-<div class="cell-output-display">
-<div id="fig-gam-slopes-map" class="quarto-figure quarto-figure-center quarto-float anchored">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-gam-slopes-map-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="spatial-trends-report_files/figure-html/fig-gam-slopes-map-1.png" class="img-fluid figure-img" width="672">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-gam-slopes-map-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;5: Map of average slopes of DOY over time from a spatial GAM fit to downsampled data. P-values for slopes are false-discovery-rate adjusted using the sample size for the full data (n = 21414)
-</figcaption>
-</figure>
-</div>
-</div>
-</div>
-<p>With the approach in <a href="#fig-gam-slopes-map" class="quarto-xref">Figure&nbsp;5</a>, we have the power to detect significant decrease in the DOY to reach 50 GDD over time. The caveat here is that the relationship fit to time is not linear (see <a href="#fig-slice" class="quarto-xref">Figure&nbsp;6</a> for an example), and <a href="#fig-gam-slopes-map" class="quarto-xref">Figure&nbsp;5</a> just shows the <em>average</em> slope over time.</p>
+<p>If we just look at a single pixel of the map, we can see that the trend through time is non-linear (<a href="#fig-slice" class="quarto-xref">Figure&nbsp;5</a>). For each pixel, we can calculate the <em>average</em> slope of that wiggly line and test whether it is different from 0 with the <code>marginaleffects</code> package. In <a href="#fig-gam-slopes-map" class="quarto-xref">Figure&nbsp;6</a>, these average slopes are plotted with non-significant slopes hatched out like in <a href="#fig-trend-map-hatched" class="quarto-xref">Figure&nbsp;2</a>. However, with this approach, we maintain more statistical power, even when p-values are corrected for false discovery rate.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-slice" class="quarto-figure quarto-figure-center quarto-float anchored">
@@ -244,16 +239,27 @@ Figure&nbsp;5: Map of average slopes of DOY over time from a spatial GAM fit to 
 <img src="spatial-trends-report_files/figure-html/fig-slice-1.png" class="img-fluid figure-img" width="672">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-slice-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;6: Fitted relationship (black line) between year and DOY to reach 50 GDD for a single pixel of the downsampled data. Actual values of DOY are displayed as points. Grey lines are 30 samples from the model posterior distribution and give an idea of model uncertainty.
+Figure&nbsp;5: Fitted relationship (black line) ± 99% confidence interval (grey ribbon) between year and DOY to reach 50 GDD for a single pixel of the downsampled data. Actual values of DOY are displayed as points.
 </figcaption>
 </figure>
 </div>
 </div>
 </div>
-<section id="extension" class="level3">
-<h3 class="anchored" data-anchor-id="extension">Extension</h3>
-<p>It may be possible, and appropriate, to include all GDD thresholds in the same model, treating each threshold as a random effect allowing different slopes for each threshold. This would make sense since the DOY data for each threshold are not independent. However, I suspect this might create a model that takes days or weeks to fit with the full data.</p>
-</section>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-gam-slopes-map" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-gam-slopes-map-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="spatial-trends-report_files/figure-html/fig-gam-slopes-map-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-gam-slopes-map-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;6: Map of average slopes of DOY over time from a spatial GAM fit to downsampled data. P-values for slopes are false-discovery-rate adjusted using the sample size for the full data (n = 21414)
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>With the approach in <a href="#fig-gam-slopes-map" class="quarto-xref">Figure&nbsp;6</a>, we have the power to detect significant decrease in the DOY to reach 50 GDD over time. The caveat here is that the relationship fit to time is not linear (see <a href="#fig-slice" class="quarto-xref">Figure&nbsp;5</a> for an example), and <a href="#fig-gam-slopes-map" class="quarto-xref">Figure&nbsp;6</a> just shows the <em>average</em> slope over time.</p>
 </section>
 
 </main>

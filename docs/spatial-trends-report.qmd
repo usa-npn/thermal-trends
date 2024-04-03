@@ -23,6 +23,8 @@ library(gratia)
 library(sf)
 library(colorspace)
 library(patchwork)
+library(flextable)
+library(marginaleffects)
 
 tar_load(doy_trend_50, store = here("_targets/"))
 tar_load(gdd_doy_stack_50, store = here("_targets/"))
@@ -94,13 +96,16 @@ doy_df <-
   mutate(year_scaled = year - min(year))
 ```
 
-An simple example spatial GAM:
+A simple example spatial GAM (@lst-gam-simple, @fig-gam-simple) shows how you can capture spatial trends with a two-dimensional smoother.
 
 ```{r}
+#| lst-label: lst-gam-simple
+#| lst-cap: "A simple spatial GAM fit with the `mgcv` package where year is included as a parametric term with no interaction with lat/lon."
 #| echo: true
+#| 
 m1 <-
   gam(
-    doy ~ year_scaled + s(x, y),
+    doy ~ year_scaled + te(x, y),
     data = doy_df,
     method = "REML"
   )
@@ -109,26 +114,32 @@ m1 <-
 ```{r}
 #| label: fig-gam-simple
 #| message: false
-#| fig-cap: "Partial effects from a simple GAM with lat/lon fit as a bivariate smoother (A) and time as a parametric effect (B)."
+#| fig-cap: "Partial effects from a simple GAM with lat/lon fit as a bivariate smoother (A) and time as a parametric effect (B) and no interaction."
 m1_draw <- draw(m1, parametric = TRUE, wrap = FALSE)
-(m1_draw[[1]] + coord_sf(crs = crs(doy_trend_50))) |
-(m1_draw[[2]]) + plot_annotation(tag_levels = "A")
+((m1_draw[[1]] + coord_sf(crs = crs(doy_trend_50))) |
+(m1_draw[[2]])) + plot_annotation(tag_levels = "A")
 ```
 
-In my exploration, the GAM that had the best fit to data (by dAIC) was parameterized as follows:
+In @fig-gam-simple A, there is spatial variation in DOY to reach 50 GDD with the north reaching that threshold later than the south.
+In addition, there is a general negative trend of DOY over time (@fig-gam-simple B).
+
+In my exploration, the GAM that had the best fit to data (by dAIC) included a single, complex smooth term that accounted for an interaction between space and time, allowing a wiggly trend through time that potentially varies spatially (@lst-gam-best, @fig-gam-best).
 
 ```{r}
+#| lst-label: lst-gam-best
+#| lst-cap: "The best fit GAM model, among several candidates tested.  The interaction between space and time is fit as a tensor product spline with one dimension being a two-dimensional smooth of latitude and longitude fit with a 'spline on the sphere' basis (`'sos'`) and the other dimension being year fit with a cubic spline with shrinkage (`'cs'`)."
+#| label: tbl-gam-summary
+#| tbl-cap: "Output of `summary()` for a simple spatial GAM"
 #| echo: true
 m3a <- gam(
   doy ~ te(y, x, year_scaled, d = c(2, 1), bs = c("sos", "cs")),
   data = doy_df,
   method = "REML"
 )
-summary(m3a)
+as_flextable(m3a)
 ```
 
-This fits a relationship between DOY to reach 50 GDD and a tensor-product interaction of lat, lon, and time where lat/lon are a represented by a two dimensional "splines on the sphere" smoother (which is built to work well with lat/lon data) and time is fit with a cubic regression spline with 'shrinkage'.
-The smooth term is significant, although that doesn't tell us if there are temporal trends, spatial trends, or both.
+In the @tbl-gam-summary, the smooth term is significant, although that doesn't tell us if there are temporal trends, spatial trends, or both.
 A partial effects plot, such as in @fig-gam-best, helps a little, but is still difficult to interpret.
 
 ```{r}
@@ -138,13 +149,34 @@ A partial effects plot, such as in @fig-gam-best, helps a little, but is still d
 draw(m3a) & coord_flip()
 ```
 
-Instead, we can extract the average slopes for each pixel and get 95% CI for those average slopes with the `marginaleffects` package and plot those on a map.
-Areas where the 95% CIs of the slopes overlap 0 can be shaded out like we did above with the non-significant p-values.
+If we just look at a single pixel of the map, we can see that the trend through time is non-linear (@fig-slice).
+For each pixel, we can calculate the *average* slope of that wiggly line and test whether it is different from 0 with the `marginaleffects` package.
+In @fig-gam-slopes-map, these average slopes are plotted with non-significant slopes hatched out like in @fig-trend-map-hatched.
+However, with this approach, we maintain more statistical power, even when p-values are corrected for false discovery rate.
+
+```{r}
+#| label: fig-slice
+#| fig-cap: "Fitted relationship (black line) ± 99% confidence interval (grey ribbon) between year and DOY to reach 50 GDD for a single pixel of the downsampled data. Actual values of DOY are displayed as points."
+
+data_slice <-
+  doy_df |>
+  filter(y == min(y, na.rm =TRUE)) |>
+  filter(x == min(x, na.rm =TRUE))
+
+doy_pred <- fitted_values(m3a, data_slice, unconditional = TRUE, ci_level = 0.99)
+
+ggplot(doy_pred, aes(x = year_scaled, y = .fitted)) +
+  geom_line() +
+  geom_point(aes(y = doy)) +
+  geom_ribbon(aes(ymin = .lower_ci, ymax = .upper_ci), alpha = 0.4) +
+  labs(x = "Year", y = "DOY", title = "Effect of year at 75.27ºW, 39.64ºN")
+
+```
 
 ```{r}
 #| label: fig-gam-slopes-map
 #| fig-cap: "Map of average slopes of DOY over time from a spatial GAM fit to downsampled data. P-values for slopes are false-discovery-rate adjusted using the sample size for the full data (n = 21414)"
-library(marginaleffects)
+
 n_true <- 21414 #number of values in original data before down-scaling
 m3a_slopes <- 
   avg_slopes(
@@ -157,7 +189,7 @@ m3a_slopes <-
 m3a_slopes_rast <- 
   m3a_slopes |>
   as_tibble() |> 
-  mutate(p.value = p.adjust(p.value, "fdr", n = n_true)) |> #TODO: not sure if necessary
+  mutate(p.value = p.adjust(p.value, "fdr", n = n_true)) |> 
   select(x, y, estimate, p.value) |> 
   rast()
 
@@ -192,32 +224,3 @@ ggplot() +
 
 With the approach in @fig-gam-slopes-map, we have the power to detect significant decrease in the DOY to reach 50 GDD over time.
 The caveat here is that the relationship fit to time is not linear (see @fig-slice for an example), and @fig-gam-slopes-map just shows the *average* slope over time.
-
-```{r}
-#| label: fig-slice
-#| fig-cap: "Fitted relationship (black line) between year and DOY to reach 50 GDD for a single pixel of the downsampled data.  Actual values of DOY are displayed as points. Grey lines are 30 samples from the model posterior distribution and give an idea of model uncertainty."
-
-data_slice <-
-  doy_df |>
-  filter(y == min(y, na.rm =TRUE)) |>
-  filter(x == min(x, na.rm =TRUE))
-
-pred_samp <- data_slice |> gratia::add_predicted_samples(m3a, n = 30)
-
-doy_pred <- broom::augment(
-  m3a,
-  newdata = data_slice
-)
-ggplot(doy_pred, aes(x = year_scaled, y = .fitted)) +
-  geom_line() +
-  geom_point(aes(y = doy)) +
-  geom_line(data = pred_samp, aes(group = .draw, y = .response), alpha = 0.1) +
-  labs(x = "Year", y = "DOY", title = "Effect of year at 75.27ºW, 39.64ºN")
-
-```
-
-### Extension
-
-It may be possible, and appropriate, to include all GDD thresholds in the same model, treating each threshold as a random effect allowing different slopes for each threshold.
-This would make sense since the DOY data for each threshold are not independent.
-However, I suspect this might create a model that takes days or weeks to fit with the full data.
