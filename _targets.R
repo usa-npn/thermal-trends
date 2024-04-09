@@ -61,12 +61,13 @@ tar_plan(
     deployment = "main", #prevent downloads from running in parallel
     format = "file"
   ),
-  tar_file(ne_vect_file, "data/ne_states.geojson"),
+  tar_file(casc_ne_file, "data/Northeast_CASC.zip"),
+  tar_terra_vect(casc_ne, read_casc_ne(casc_ne_file)),
   tar_map(
     values = list(threshold = c(50, 1000, 2500)),
     tar_terra_rast(
       gdd_doy,
-      calc_gdd_doy(rast_dir = prism_tmean, ne_vect_file = ne_vect_file, gdd_threshold = threshold),
+      calc_gdd_doy(rast_dir = prism_tmean, casc_ne = casc_ne, gdd_threshold = threshold),
       pattern = map(prism_tmean),
       iteration = "list"
     ),
