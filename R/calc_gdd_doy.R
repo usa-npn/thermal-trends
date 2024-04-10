@@ -1,12 +1,12 @@
 #' Calculate DOY to reach a theshold GDD
 #'
 #' @param rast_dir Path to directory containing PRISM mean temp data for a single year. Assumes folder name is just the year.
-#' @param ne_vect_file Path to file defining boundaries of the Northeast US. Will be read by `terra::vect()` and used to crop the data.  
+#' @param casc_ne SpatVector object with boundaries of CASC Northeast region
 #' @param gdd_threshold Threshold GDD
 #' @param gdd_base Temperature base, in ºC, for calculating GDD
 #'
 #' @return SpatRaster
-calc_gdd_doy <- function(rast_dir, ne_vect_file, gdd_threshold, gdd_base = 0) {
+calc_gdd_doy <- function(rast_dir, casc_ne, gdd_threshold, gdd_base = 0) {
   files <- dir_ls(rast_dir, glob = "*.zip")
 
   #convert filenames to DOY to name layers later
@@ -32,7 +32,7 @@ calc_gdd_doy <- function(rast_dir, ne_vect_file, gdd_threshold, gdd_base = 0) {
   prism <- subset(prism, as.character(min(doys):max(doys)))
   
   #crop to northeast
-  ne <- terra::vect(ne_vect_file) |> project(prism)
+  ne <- casc_ne |> project(prism)
   prism_ne <- crop(prism, ne, mask = TRUE)
   
   # convert to degree days

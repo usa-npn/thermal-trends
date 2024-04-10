@@ -67,9 +67,6 @@ ul.task-list li input[type="checkbox"] {
 <section id="targets" class="level3">
 <h3 class="anchored" data-anchor-id="targets"><code>targets</code></h3>
 <p>This project uses the <a href="https://docs.ropensci.org/targets/"><code>targets</code> package</a> for workflow management. Run <code>targets::tar_make()</code> from the console to run the workflow and reproduce all results. The graph below shows the workflow:</p>
-<ul>
-<li>The project is out-of-sync – use <code>renv::status()</code> for details. Loading required namespace: terra Warning message: package ‘geotargets’ was built under R version 4.3.3</li>
-</ul>
 <pre class="mermaid"><code>graph LR
   style Legend fill:#FFFFFF00,stroke:#000000;
   style Graph fill:#FFFFFF00,stroke:#000000;
@@ -89,8 +86,10 @@ ul.task-list li input[type="checkbox"] {
     x03a837447b8e1f85(["gdd_doy_stack_2500&lt;br&gt;2500"]):::uptodate --&gt; x4571a9b7d2c4f70f(["doy_plot_2500&lt;br&gt;2500"]):::uptodate
     x13c8ccaa5d631ad7&gt;"plot_doy"]:::uptodate --&gt; x4571a9b7d2c4f70f(["doy_plot_2500&lt;br&gt;2500"]):::uptodate
     xb88b325298077171&gt;"calc_gdd_doy"]:::uptodate --&gt; x5d124cd085114def["gdd_doy_2500&lt;br&gt;2500"]:::uptodate
-    xd097f7e15f521741(["ne_vect_file"]):::uptodate --&gt; x5d124cd085114def["gdd_doy_2500&lt;br&gt;2500"]:::uptodate
+    xe5ad1b541da28dc0(["casc_ne"]):::uptodate --&gt; x5d124cd085114def["gdd_doy_2500&lt;br&gt;2500"]:::uptodate
     xe4ea051685a102ce["prism_tmean"]:::uptodate --&gt; x5d124cd085114def["gdd_doy_2500&lt;br&gt;2500"]:::uptodate
+    x09ece08de4b3110b(["casc_ne_file"]):::uptodate --&gt; xe5ad1b541da28dc0(["casc_ne"]):::uptodate
+    x2e865c2cb7f7f0bd&gt;"read_casc_ne"]:::uptodate --&gt; xe5ad1b541da28dc0(["casc_ne"]):::uptodate
     x5a7177ac72d59179(["doy_trend_1000&lt;br&gt;1000"]):::uptodate --&gt; x56ad0a64704ce37e(["trend_plot_1000&lt;br&gt;1000"]):::uptodate
     x298e720a0d38fbab&gt;"plot_slopes"]:::uptodate --&gt; x56ad0a64704ce37e(["trend_plot_1000&lt;br&gt;1000"]):::uptodate
     x067ed113746ada91(["doy_trend_50&lt;br&gt;50"]):::uptodate --&gt; xb10cda98be740603(["trend_plot_50&lt;br&gt;50"]):::uptodate
@@ -108,14 +107,14 @@ ul.task-list li input[type="checkbox"] {
     x4796032f25dfd47a&gt;"get_prism_tmean"]:::uptodate --&gt; xe4ea051685a102ce["prism_tmean"]:::uptodate
     x25dbf37c6e783c25(["years"]):::uptodate --&gt; xe4ea051685a102ce["prism_tmean"]:::uptodate
     xb88b325298077171&gt;"calc_gdd_doy"]:::uptodate --&gt; x143c225a85b6f8ef["gdd_doy_1000&lt;br&gt;1000"]:::uptodate
-    xd097f7e15f521741(["ne_vect_file"]):::uptodate --&gt; x143c225a85b6f8ef["gdd_doy_1000&lt;br&gt;1000"]:::uptodate
+    xe5ad1b541da28dc0(["casc_ne"]):::uptodate --&gt; x143c225a85b6f8ef["gdd_doy_1000&lt;br&gt;1000"]:::uptodate
     xe4ea051685a102ce["prism_tmean"]:::uptodate --&gt; x143c225a85b6f8ef["gdd_doy_1000&lt;br&gt;1000"]:::uptodate
     xef0f3bd95aeea8a1(["gdd_doy_stack_50&lt;br&gt;50"]):::uptodate --&gt; x067ed113746ada91(["doy_trend_50&lt;br&gt;50"]):::uptodate
     xbfe90ebeeb7a071e&gt;"get_lm_slope"]:::uptodate --&gt; x067ed113746ada91(["doy_trend_50&lt;br&gt;50"]):::uptodate
     xf560c6147541e200(["doy_trend_2500&lt;br&gt;2500"]):::uptodate --&gt; xb9525cb3d2f5752d(["trend_plot_2500&lt;br&gt;2500"]):::uptodate
     x298e720a0d38fbab&gt;"plot_slopes"]:::uptodate --&gt; xb9525cb3d2f5752d(["trend_plot_2500&lt;br&gt;2500"]):::uptodate
     xb88b325298077171&gt;"calc_gdd_doy"]:::uptodate --&gt; x4e641563f83bc893["gdd_doy_50&lt;br&gt;50"]:::uptodate
-    xd097f7e15f521741(["ne_vect_file"]):::uptodate --&gt; x4e641563f83bc893["gdd_doy_50&lt;br&gt;50"]:::uptodate
+    xe5ad1b541da28dc0(["casc_ne"]):::uptodate --&gt; x4e641563f83bc893["gdd_doy_50&lt;br&gt;50"]:::uptodate
     xe4ea051685a102ce["prism_tmean"]:::uptodate --&gt; x4e641563f83bc893["gdd_doy_50&lt;br&gt;50"]:::uptodate
     x6e52cb0f1668cc22(["readme"]):::dispatched --&gt; x6e52cb0f1668cc22(["readme"]):::dispatched
   end
@@ -128,7 +127,7 @@ ul.task-list li input[type="checkbox"] {
   linkStyle 2 stroke-width:0px;
   linkStyle 3 stroke-width:0px;
   linkStyle 4 stroke-width:0px;
-  linkStyle 39 stroke-width:0px;</code></pre>
+  linkStyle 41 stroke-width:0px;</code></pre>
 <hr>
 <p>Developed in collaboration with <a href="https://datascience.cct.arizona.edu/">CCT Data Science</a>.</p>
 </section>

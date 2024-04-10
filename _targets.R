@@ -23,7 +23,7 @@ tar_option_set(
   # which run as local R processes. Each worker launches when there is work
   # to do and exits if 60 seconds pass with no tasks to run.
   #
-    controller = crew::crew_controller_local(workers = 2, seconds_idle = 60)
+    controller = crew::crew_controller_local(workers = 3, seconds_idle = 60)
   #
   # Alternatively, if you want workers to run on a high-performance computing
   # cluster, select a controller from the {crew.cluster} package.
@@ -61,19 +61,21 @@ tar_plan(
     deployment = "main", #prevent downloads from running in parallel
     format = "file"
   ),
-  tar_file(ne_vect_file, "data/ne_states.geojson"),
+  tar_file(casc_ne_file, "data/Northeast_CASC.zip"),
+  tar_terra_vect(casc_ne, read_casc_ne(casc_ne_file)),
   tar_map(
     values = list(threshold = c(50, 1000, 2500)),
     tar_terra_rast(
       gdd_doy,
-      calc_gdd_doy(rast_dir = prism_tmean, ne_vect_file = ne_vect_file, gdd_threshold = threshold),
+      calc_gdd_doy(rast_dir = prism_tmean, casc_ne = casc_ne, gdd_threshold = threshold),
       pattern = map(prism_tmean),
       iteration = "list"
     ),
     #TODO: this is a workaround to get the output of the dynamic branching to be SpatRasters with multiple layers instead of lists of SpatRasters. Would love to not have to have this target.
     tar_terra_rast(
       gdd_doy_stack,
-      do.call(c, unname(gdd_doy))
+      terra::rast(unname(gdd_doy)),
+      deployment = "main" #workaround for bug in geotargets: https://github.com/njtierney/geotargets/issues/52
     ),
     tar_target(
       doy_plot,
