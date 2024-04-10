@@ -115,7 +115,7 @@ m1 <-
 #| label: fig-gam-simple
 #| message: false
 #| fig-cap: "Partial effects from a simple GAM with lat/lon fit as a bivariate smoother (A) and time as a parametric effect (B) and no interaction."
-m1_draw <- draw(m1, parametric = TRUE, wrap = FALSE)
+m1_draw <- draw(m1,rug = FALSE, dist = 0.05, parametric = TRUE, wrap = FALSE)
 ((m1_draw[[1]] + coord_sf(crs = crs(doy_trend_50))) |
 (m1_draw[[2]])) + plot_annotation(tag_levels = "A")
 ```
