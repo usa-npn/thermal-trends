@@ -12,9 +12,9 @@ library(crew.cluster)
 
 # Detect whether you're on HPC & not with an Open On Demand session (which cannot submit SLURM jobs) and set appropriate controller
 slurm_host <- Sys.getenv("SLURM_SUBMIT_HOST")
-
+hpc <- grepl("hpc\\.arizona\\.edu", slurm_host) & !grepl("ood", slurm_host)
 # If on HPC, use SLURM jobs for parallel workers
-if (grepl("hpc\\.arizona\\.edu", slurm_host) & !grepl("ood", slurm_host)) {
+if (isTRUE(hpc)) {
   controller <- crew.cluster::crew_controller_slurm(
     workers = 3, #TODO increase for production
     seconds_idle = 120, #time until workers are shut down after idle
@@ -27,7 +27,8 @@ if (grepl("hpc\\.arizona\\.edu", slurm_host) & !grepl("ood", slurm_host)) {
     script_lines = c(
       "#SBATCH --account theresam",
       "module load R",
-      "module load gdal"
+      "module load gdal",
+      "module load eigen"
       #add additional lines to the SLURM job script as necessary here
     )
   )
@@ -54,7 +55,7 @@ tar_source()
 # tar_source("other_functions.R") # Source other scripts as needed.
 
 # Replace the target list below with your own:
-tar_plan(
+main <- tar_plan(
   # years = seq(1981, 2023, by = 4),
   years = 1981:2023,
   tar_target(
@@ -104,8 +105,17 @@ tar_plan(
       format = "file"
     )
   ),
-  
+)
+
+reports <- tar_plan(
   # Reports
   tar_quarto(spatial_report, path = "docs/spatial-trends-report.qmd", working_directory = "docs"),
   tar_quarto(readme, path = "README.Rmd", cue = tar_cue("always"))
 )
+
+#if on HPC don't render quarto docs (no quarto or pandoc on HPC)
+if (isTRUE(hpc)) {
+  main
+} else {
+  list(main, reports)
+}
