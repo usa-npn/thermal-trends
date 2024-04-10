@@ -81,10 +81,14 @@ ul.task-list li input[type="checkbox"] {
   subgraph Graph
     direction LR
     x143c225a85b6f8ef["gdd_doy_1000&lt;br&gt;1000"]:::uptodate --&gt; x40c2e72d4bfe48c6(["gdd_doy_stack_1000&lt;br&gt;1000"]):::uptodate
+    x8b570043a37c4f3f(["normals_summary_1000&lt;br&gt;1000"]):::uptodate --&gt; x39dc65dec856c05d(["normals_mean_plot_1000&lt;br&gt;1000"]):::dispatched
+    xa917b7eaa4a3ab69&gt;"plot_normals_mean"]:::uptodate --&gt; x39dc65dec856c05d(["normals_mean_plot_1000&lt;br&gt;1000"]):::dispatched
+    x03a837447b8e1f85(["gdd_doy_stack_2500&lt;br&gt;2500"]):::uptodate --&gt; x45979941e033c65c(["normals_summary_2500&lt;br&gt;2500"]):::uptodate
+    x5057cf71ad61ffba&gt;"summarize_normals"]:::uptodate --&gt; x45979941e033c65c(["normals_summary_2500&lt;br&gt;2500"]):::uptodate
     x03a837447b8e1f85(["gdd_doy_stack_2500&lt;br&gt;2500"]):::uptodate --&gt; xf560c6147541e200(["doy_trend_2500&lt;br&gt;2500"]):::uptodate
     xbfe90ebeeb7a071e&gt;"get_lm_slope"]:::uptodate --&gt; xf560c6147541e200(["doy_trend_2500&lt;br&gt;2500"]):::uptodate
-    x03a837447b8e1f85(["gdd_doy_stack_2500&lt;br&gt;2500"]):::uptodate --&gt; x4571a9b7d2c4f70f(["doy_plot_2500&lt;br&gt;2500"]):::uptodate
-    x13c8ccaa5d631ad7&gt;"plot_doy"]:::uptodate --&gt; x4571a9b7d2c4f70f(["doy_plot_2500&lt;br&gt;2500"]):::uptodate
+    x03a837447b8e1f85(["gdd_doy_stack_2500&lt;br&gt;2500"]):::uptodate --&gt; x4571a9b7d2c4f70f(["doy_plot_2500&lt;br&gt;2500"]):::outdated
+    x13c8ccaa5d631ad7&gt;"plot_doy"]:::uptodate --&gt; x4571a9b7d2c4f70f(["doy_plot_2500&lt;br&gt;2500"]):::outdated
     xb88b325298077171&gt;"calc_gdd_doy"]:::uptodate --&gt; x5d124cd085114def["gdd_doy_2500&lt;br&gt;2500"]:::uptodate
     xe5ad1b541da28dc0(["casc_ne"]):::uptodate --&gt; x5d124cd085114def["gdd_doy_2500&lt;br&gt;2500"]:::uptodate
     xe4ea051685a102ce["prism_tmean"]:::uptodate --&gt; x5d124cd085114def["gdd_doy_2500&lt;br&gt;2500"]:::uptodate
@@ -94,16 +98,24 @@ ul.task-list li input[type="checkbox"] {
     x298e720a0d38fbab&gt;"plot_slopes"]:::uptodate --&gt; x56ad0a64704ce37e(["trend_plot_1000&lt;br&gt;1000"]):::uptodate
     x067ed113746ada91(["doy_trend_50&lt;br&gt;50"]):::uptodate --&gt; xb10cda98be740603(["trend_plot_50&lt;br&gt;50"]):::uptodate
     x298e720a0d38fbab&gt;"plot_slopes"]:::uptodate --&gt; xb10cda98be740603(["trend_plot_50&lt;br&gt;50"]):::uptodate
-    xef0f3bd95aeea8a1(["gdd_doy_stack_50&lt;br&gt;50"]):::uptodate --&gt; xa4e7d2ec2b26ed98(["doy_plot_50&lt;br&gt;50"]):::uptodate
-    x13c8ccaa5d631ad7&gt;"plot_doy"]:::uptodate --&gt; xa4e7d2ec2b26ed98(["doy_plot_50&lt;br&gt;50"]):::uptodate
+    xdcf6fe500c4f6c47(["normals_summary_50&lt;br&gt;50"]):::uptodate --&gt; xe0edcdcfe499bd71(["normals_mean_plot_50&lt;br&gt;50"]):::dispatched
+    xa917b7eaa4a3ab69&gt;"plot_normals_mean"]:::uptodate --&gt; xe0edcdcfe499bd71(["normals_mean_plot_50&lt;br&gt;50"]):::dispatched
+    xef0f3bd95aeea8a1(["gdd_doy_stack_50&lt;br&gt;50"]):::uptodate --&gt; xa4e7d2ec2b26ed98(["doy_plot_50&lt;br&gt;50"]):::outdated
+    x13c8ccaa5d631ad7&gt;"plot_doy"]:::uptodate --&gt; xa4e7d2ec2b26ed98(["doy_plot_50&lt;br&gt;50"]):::outdated
+    xef0f3bd95aeea8a1(["gdd_doy_stack_50&lt;br&gt;50"]):::uptodate --&gt; xdcf6fe500c4f6c47(["normals_summary_50&lt;br&gt;50"]):::uptodate
+    x5057cf71ad61ffba&gt;"summarize_normals"]:::uptodate --&gt; xdcf6fe500c4f6c47(["normals_summary_50&lt;br&gt;50"]):::uptodate
+    x40c2e72d4bfe48c6(["gdd_doy_stack_1000&lt;br&gt;1000"]):::uptodate --&gt; x8b570043a37c4f3f(["normals_summary_1000&lt;br&gt;1000"]):::uptodate
+    x5057cf71ad61ffba&gt;"summarize_normals"]:::uptodate --&gt; x8b570043a37c4f3f(["normals_summary_1000&lt;br&gt;1000"]):::uptodate
     x40c2e72d4bfe48c6(["gdd_doy_stack_1000&lt;br&gt;1000"]):::uptodate --&gt; x5a7177ac72d59179(["doy_trend_1000&lt;br&gt;1000"]):::uptodate
     xbfe90ebeeb7a071e&gt;"get_lm_slope"]:::uptodate --&gt; x5a7177ac72d59179(["doy_trend_1000&lt;br&gt;1000"]):::uptodate
-    x40c2e72d4bfe48c6(["gdd_doy_stack_1000&lt;br&gt;1000"]):::uptodate --&gt; x1198f75c36e06a6d(["doy_plot_1000&lt;br&gt;1000"]):::uptodate
-    x13c8ccaa5d631ad7&gt;"plot_doy"]:::uptodate --&gt; x1198f75c36e06a6d(["doy_plot_1000&lt;br&gt;1000"]):::uptodate
+    x40c2e72d4bfe48c6(["gdd_doy_stack_1000&lt;br&gt;1000"]):::uptodate --&gt; x1198f75c36e06a6d(["doy_plot_1000&lt;br&gt;1000"]):::dispatched
+    x13c8ccaa5d631ad7&gt;"plot_doy"]:::uptodate --&gt; x1198f75c36e06a6d(["doy_plot_1000&lt;br&gt;1000"]):::dispatched
     x5d124cd085114def["gdd_doy_2500&lt;br&gt;2500"]:::uptodate --&gt; x03a837447b8e1f85(["gdd_doy_stack_2500&lt;br&gt;2500"]):::uptodate
     x4e641563f83bc893["gdd_doy_50&lt;br&gt;50"]:::uptodate --&gt; xef0f3bd95aeea8a1(["gdd_doy_stack_50&lt;br&gt;50"]):::uptodate
-    x067ed113746ada91(["doy_trend_50&lt;br&gt;50"]):::uptodate --&gt; x9dd6eb88f0f020eb(["spatial_report"]):::outdated
-    xef0f3bd95aeea8a1(["gdd_doy_stack_50&lt;br&gt;50"]):::uptodate --&gt; x9dd6eb88f0f020eb(["spatial_report"]):::outdated
+    x067ed113746ada91(["doy_trend_50&lt;br&gt;50"]):::uptodate --&gt; x9dd6eb88f0f020eb(["spatial_report"]):::uptodate
+    xef0f3bd95aeea8a1(["gdd_doy_stack_50&lt;br&gt;50"]):::uptodate --&gt; x9dd6eb88f0f020eb(["spatial_report"]):::uptodate
+    x45979941e033c65c(["normals_summary_2500&lt;br&gt;2500"]):::uptodate --&gt; x2f5625350a1b19db(["normals_mean_plot_2500&lt;br&gt;2500"]):::outdated
+    xa917b7eaa4a3ab69&gt;"plot_normals_mean"]:::uptodate --&gt; x2f5625350a1b19db(["normals_mean_plot_2500&lt;br&gt;2500"]):::outdated
     x4796032f25dfd47a&gt;"get_prism_tmean"]:::uptodate --&gt; xe4ea051685a102ce["prism_tmean"]:::uptodate
     x25dbf37c6e783c25(["years"]):::uptodate --&gt; xe4ea051685a102ce["prism_tmean"]:::uptodate
     xb88b325298077171&gt;"calc_gdd_doy"]:::uptodate --&gt; x143c225a85b6f8ef["gdd_doy_1000&lt;br&gt;1000"]:::uptodate
@@ -117,6 +129,7 @@ ul.task-list li input[type="checkbox"] {
     xe5ad1b541da28dc0(["casc_ne"]):::uptodate --&gt; x4e641563f83bc893["gdd_doy_50&lt;br&gt;50"]:::uptodate
     xe4ea051685a102ce["prism_tmean"]:::uptodate --&gt; x4e641563f83bc893["gdd_doy_50&lt;br&gt;50"]:::uptodate
     x6e52cb0f1668cc22(["readme"]):::dispatched --&gt; x6e52cb0f1668cc22(["readme"]):::dispatched
+    x3831a3d6946cd453&gt;"plot_normals_sd"]:::uptodate --&gt; x3831a3d6946cd453&gt;"plot_normals_sd"]:::uptodate
   end
   classDef uptodate stroke:#000000,color:#ffffff,fill:#354823;
   classDef dispatched stroke:#000000,color:#000000,fill:#DC863B;
@@ -127,7 +140,8 @@ ul.task-list li input[type="checkbox"] {
   linkStyle 2 stroke-width:0px;
   linkStyle 3 stroke-width:0px;
   linkStyle 4 stroke-width:0px;
-  linkStyle 41 stroke-width:0px;</code></pre>
+  linkStyle 53 stroke-width:0px;
+  linkStyle 54 stroke-width:0px;</code></pre>
 <hr>
 <p>Developed in collaboration with <a href="https://datascience.cct.arizona.edu/">CCT Data Science</a>.</p>
 </section>

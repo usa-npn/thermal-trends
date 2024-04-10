@@ -89,6 +89,16 @@ tar_plan(
     tar_target(
       trend_plot,
       plot_slopes(doy_trend, gdd_threshold = threshold)
+    ),
+    tar_terra_rast(
+      normals_summary,
+      summarize_normals(gdd_doy_stack),
+      deployment = "main"
+    ),
+    tar_target(
+      normals_mean_plot,
+      plot_normals_mean(normals_summary, threshold, height = 7, width = 7),
+      format = "file"
     )
   ),
   
