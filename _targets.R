@@ -109,8 +109,8 @@ main <- tar_plan(
 
 reports <- tar_plan(
   # Reports
-  tar_quarto(spatial_report, path = "docs/spatial-trends-report.qmd", working_directory = "docs"),
-  tar_quarto(readme, path = "README.Rmd", cue = tar_cue("always"))
+  # tar_quarto(spatial_report, path = "docs/spatial-trends-report.qmd", working_directory = "docs"),
+  # tar_quarto(readme, path = "README.Rmd", cue = tar_cue("always"))
 )
 
 #if on HPC don't render quarto docs (no quarto or pandoc on HPC)
