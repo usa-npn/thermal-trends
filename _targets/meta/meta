@@ -1,5 +1,5 @@
 name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
-.Random.seed|object|1c64aeae5ac2ab08|||||||||||||||
+.Random.seed|object|a92aba325caebae7|||||||||||||||
 calc_gdd_doy|function|b9c1e4a155bd3c34|||||||||||||||
 casc_ne|stem|7eb0c49f53587119|76ef69b7eaea8f82|65a782bf9bd78f76|-378259297||t19822.944089602s|53e524b7b13c706c|49880|format_custom&read=ZnVuY3Rpb24gKHBhdGgpIAp0ZXJyYTo6dmVjdChwYXRoKQ&write=ZnVuY3Rpb24gKG9iamVjdCwgcGF0aCkgCnsKICAgIHRlcnJhOjp3cml0ZVZlY3RvcihvYmplY3QsIHBhdGgsIGZpbGV0eXBlID0gIkdlb0pTT04iLCBvdmVyd3JpdGUgPSBUUlVFLCAKICAgICAgICBvcHRpb25zID0gIkVOQ09ESU5HPVVURi04IikKfQ&marshal=ZnVuY3Rpb24gKG9iamVjdCkgCnRlcnJhOjp3cmFwKG9iamVjdCk&unmarshal=ZnVuY3Rpb24gKG9iamVjdCkgCnRlcnJhOjp1bndyYXAob2JqZWN0KQ&convert=&copy=&repository=|local|vector|||0.041||
 casc_ne_file|stem|acaa795243d2ee26|ab9d20f719dc68a4|ef46db3751d8e999|1805870740|data/Northeast_CASC.zip|t19823.0663603671s|0737b9014d69b678|20606|file|local|vector|||5.068||
@@ -201,7 +201,7 @@ prism_tmean_f5b34c08|branch|b65e2cd53939c1c8|d85a38a490b96371|221ff5db32d86403|1
 prism_tmean_f888eb7b|branch|f30b3d106a4a6231|d85a38a490b96371|221ff5db32d86403|1435839722|data/prism/1985|t19811.9199151981s|f5d7cfaeaf879451|11776|file|local|vector|prism_tmean||528.712||
 prism_tmean_fb38cf22|branch|cbbf17a834752634|d85a38a490b96371|221ff5db32d86403|372135165|data/prism/2019|t19802.748693177s|278ecc85af1c32e9|11744|file|local|vector|prism_tmean||692.618||
 read_casc_ne|function|ea23aa15fc6ab04f|||||||||||||||
-readme|stem|a3632d54baa0769a|c8379b03241a1546|ef46db3751d8e999|980901812|README_files*README.html*README.Rmd|t19823.9080038903s|1072d2f3a05ab18e|870141|file|local|vector|||90.047||
+readme|stem|56dddc4de6308cf1|fca9703bdc0354b1|ef46db3751d8e999|980901812|README.md*README.Qmd|t19823.9918717161s|544e4f210cafc199|9365|file|local|vector|||83.835||
 spatial_report|stem|cd4d6d090ddc8b83|c2d92fe59b08e1eb|cc11f7640dc38f5b|1102522345|docs/spatial-trends-report.html*docs/spatial-trends-report.qmd|t19823.066360534s|17c44df69ecbb135|56147|file|local|vector|||763.699||
 summarize_normals|function|d83bec156648b463|||||||||||||||
 trend_plot_1000|stem|9e4240ab7ce6e318|a90e275c069a9794|ffcf6b7cc2817c74|1101298718||t19823.0359780572s|e42ed4625f93f45f|114|rds|local|vector|||2.833||

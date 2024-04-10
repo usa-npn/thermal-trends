@@ -104,5 +104,5 @@ tar_plan(
   
   # Reports
   tar_quarto(spatial_report, path = "docs/spatial-trends-report.qmd", working_directory = "docs"),
-  tar_quarto(readme, path = "README.Rmd", cue = tar_cue("always"))
+  tar_quarto(readme, path = "README.Qmd", cue = tar_cue("always"))
 )
