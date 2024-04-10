@@ -72,55 +72,55 @@ ul.task-list li input[type="checkbox"] {
   style Graph fill:#FFFFFF00,stroke:#000000;
   subgraph Legend
     direction LR
-    x7420bd9270f8d27d([""Up to date""]):::uptodate --- x0a52b03877696646([""Outdated""]):::outdated
-    x0a52b03877696646([""Outdated""]):::outdated --- xa8565c104d8f0705([""Dispatched""]):::dispatched
-    xa8565c104d8f0705([""Dispatched""]):::dispatched --- xbf4603d6c2c2ad6b([""Stem""]):::none
+    x7420bd9270f8d27d([""Up to date""]):::uptodate --- xa8565c104d8f0705([""Dispatched""]):::dispatched
+    xa8565c104d8f0705([""Dispatched""]):::dispatched --- x0a52b03877696646([""Outdated""]):::outdated
+    x0a52b03877696646([""Outdated""]):::outdated --- xbf4603d6c2c2ad6b([""Stem""]):::none
     xbf4603d6c2c2ad6b([""Stem""]):::none --- x70a5fa6bea6f298d[""Pattern""]:::none
     x70a5fa6bea6f298d[""Pattern""]:::none --- xf0bce276fe2b9d3e&gt;""Function""]:::none
   end
   subgraph Graph
     direction LR
-    x143c225a85b6f8ef["gdd_doy_1000&lt;br&gt;1000"]:::uptodate --&gt; x40c2e72d4bfe48c6(["gdd_doy_stack_1000&lt;br&gt;1000"]):::outdated
-    x03a837447b8e1f85(["gdd_doy_stack_2500&lt;br&gt;2500"]):::outdated --&gt; xf560c6147541e200(["doy_trend_2500&lt;br&gt;2500"]):::outdated
-    xbfe90ebeeb7a071e&gt;"get_lm_slope"]:::uptodate --&gt; xf560c6147541e200(["doy_trend_2500&lt;br&gt;2500"]):::outdated
-    x03a837447b8e1f85(["gdd_doy_stack_2500&lt;br&gt;2500"]):::outdated --&gt; x4571a9b7d2c4f70f(["doy_plot_2500&lt;br&gt;2500"]):::outdated
-    x13c8ccaa5d631ad7&gt;"plot_doy"]:::uptodate --&gt; x4571a9b7d2c4f70f(["doy_plot_2500&lt;br&gt;2500"]):::outdated
+    x143c225a85b6f8ef["gdd_doy_1000&lt;br&gt;1000"]:::uptodate --&gt; x40c2e72d4bfe48c6(["gdd_doy_stack_1000&lt;br&gt;1000"]):::uptodate
+    x03a837447b8e1f85(["gdd_doy_stack_2500&lt;br&gt;2500"]):::uptodate --&gt; xf560c6147541e200(["doy_trend_2500&lt;br&gt;2500"]):::uptodate
+    xbfe90ebeeb7a071e&gt;"get_lm_slope"]:::uptodate --&gt; xf560c6147541e200(["doy_trend_2500&lt;br&gt;2500"]):::uptodate
+    x03a837447b8e1f85(["gdd_doy_stack_2500&lt;br&gt;2500"]):::uptodate --&gt; x4571a9b7d2c4f70f(["doy_plot_2500&lt;br&gt;2500"]):::uptodate
+    x13c8ccaa5d631ad7&gt;"plot_doy"]:::uptodate --&gt; x4571a9b7d2c4f70f(["doy_plot_2500&lt;br&gt;2500"]):::uptodate
     xb88b325298077171&gt;"calc_gdd_doy"]:::uptodate --&gt; x5d124cd085114def["gdd_doy_2500&lt;br&gt;2500"]:::uptodate
     xe5ad1b541da28dc0(["casc_ne"]):::uptodate --&gt; x5d124cd085114def["gdd_doy_2500&lt;br&gt;2500"]:::uptodate
     xe4ea051685a102ce["prism_tmean"]:::uptodate --&gt; x5d124cd085114def["gdd_doy_2500&lt;br&gt;2500"]:::uptodate
     x09ece08de4b3110b(["casc_ne_file"]):::uptodate --&gt; xe5ad1b541da28dc0(["casc_ne"]):::uptodate
     x2e865c2cb7f7f0bd&gt;"read_casc_ne"]:::uptodate --&gt; xe5ad1b541da28dc0(["casc_ne"]):::uptodate
-    x5a7177ac72d59179(["doy_trend_1000&lt;br&gt;1000"]):::outdated --&gt; x56ad0a64704ce37e(["trend_plot_1000&lt;br&gt;1000"]):::outdated
-    x298e720a0d38fbab&gt;"plot_slopes"]:::uptodate --&gt; x56ad0a64704ce37e(["trend_plot_1000&lt;br&gt;1000"]):::outdated
-    x067ed113746ada91(["doy_trend_50&lt;br&gt;50"]):::outdated --&gt; xb10cda98be740603(["trend_plot_50&lt;br&gt;50"]):::outdated
-    x298e720a0d38fbab&gt;"plot_slopes"]:::uptodate --&gt; xb10cda98be740603(["trend_plot_50&lt;br&gt;50"]):::outdated
-    xef0f3bd95aeea8a1(["gdd_doy_stack_50&lt;br&gt;50"]):::outdated --&gt; xa4e7d2ec2b26ed98(["doy_plot_50&lt;br&gt;50"]):::outdated
-    x13c8ccaa5d631ad7&gt;"plot_doy"]:::uptodate --&gt; xa4e7d2ec2b26ed98(["doy_plot_50&lt;br&gt;50"]):::outdated
-    x40c2e72d4bfe48c6(["gdd_doy_stack_1000&lt;br&gt;1000"]):::outdated --&gt; x5a7177ac72d59179(["doy_trend_1000&lt;br&gt;1000"]):::outdated
-    xbfe90ebeeb7a071e&gt;"get_lm_slope"]:::uptodate --&gt; x5a7177ac72d59179(["doy_trend_1000&lt;br&gt;1000"]):::outdated
-    x40c2e72d4bfe48c6(["gdd_doy_stack_1000&lt;br&gt;1000"]):::outdated --&gt; x1198f75c36e06a6d(["doy_plot_1000&lt;br&gt;1000"]):::outdated
-    x13c8ccaa5d631ad7&gt;"plot_doy"]:::uptodate --&gt; x1198f75c36e06a6d(["doy_plot_1000&lt;br&gt;1000"]):::outdated
-    x5d124cd085114def["gdd_doy_2500&lt;br&gt;2500"]:::uptodate --&gt; x03a837447b8e1f85(["gdd_doy_stack_2500&lt;br&gt;2500"]):::outdated
-    x4e641563f83bc893["gdd_doy_50&lt;br&gt;50"]:::outdated --&gt; xef0f3bd95aeea8a1(["gdd_doy_stack_50&lt;br&gt;50"]):::outdated
-    x067ed113746ada91(["doy_trend_50&lt;br&gt;50"]):::outdated --&gt; x9dd6eb88f0f020eb(["spatial_report"]):::outdated
-    xef0f3bd95aeea8a1(["gdd_doy_stack_50&lt;br&gt;50"]):::outdated --&gt; x9dd6eb88f0f020eb(["spatial_report"]):::outdated
+    x5a7177ac72d59179(["doy_trend_1000&lt;br&gt;1000"]):::uptodate --&gt; x56ad0a64704ce37e(["trend_plot_1000&lt;br&gt;1000"]):::uptodate
+    x298e720a0d38fbab&gt;"plot_slopes"]:::uptodate --&gt; x56ad0a64704ce37e(["trend_plot_1000&lt;br&gt;1000"]):::uptodate
+    x067ed113746ada91(["doy_trend_50&lt;br&gt;50"]):::uptodate --&gt; xb10cda98be740603(["trend_plot_50&lt;br&gt;50"]):::uptodate
+    x298e720a0d38fbab&gt;"plot_slopes"]:::uptodate --&gt; xb10cda98be740603(["trend_plot_50&lt;br&gt;50"]):::uptodate
+    xef0f3bd95aeea8a1(["gdd_doy_stack_50&lt;br&gt;50"]):::uptodate --&gt; xa4e7d2ec2b26ed98(["doy_plot_50&lt;br&gt;50"]):::uptodate
+    x13c8ccaa5d631ad7&gt;"plot_doy"]:::uptodate --&gt; xa4e7d2ec2b26ed98(["doy_plot_50&lt;br&gt;50"]):::uptodate
+    x40c2e72d4bfe48c6(["gdd_doy_stack_1000&lt;br&gt;1000"]):::uptodate --&gt; x5a7177ac72d59179(["doy_trend_1000&lt;br&gt;1000"]):::uptodate
+    xbfe90ebeeb7a071e&gt;"get_lm_slope"]:::uptodate --&gt; x5a7177ac72d59179(["doy_trend_1000&lt;br&gt;1000"]):::uptodate
+    x40c2e72d4bfe48c6(["gdd_doy_stack_1000&lt;br&gt;1000"]):::uptodate --&gt; x1198f75c36e06a6d(["doy_plot_1000&lt;br&gt;1000"]):::uptodate
+    x13c8ccaa5d631ad7&gt;"plot_doy"]:::uptodate --&gt; x1198f75c36e06a6d(["doy_plot_1000&lt;br&gt;1000"]):::uptodate
+    x5d124cd085114def["gdd_doy_2500&lt;br&gt;2500"]:::uptodate --&gt; x03a837447b8e1f85(["gdd_doy_stack_2500&lt;br&gt;2500"]):::uptodate
+    x4e641563f83bc893["gdd_doy_50&lt;br&gt;50"]:::uptodate --&gt; xef0f3bd95aeea8a1(["gdd_doy_stack_50&lt;br&gt;50"]):::uptodate
+    x067ed113746ada91(["doy_trend_50&lt;br&gt;50"]):::uptodate --&gt; x9dd6eb88f0f020eb(["spatial_report"]):::outdated
+    xef0f3bd95aeea8a1(["gdd_doy_stack_50&lt;br&gt;50"]):::uptodate --&gt; x9dd6eb88f0f020eb(["spatial_report"]):::outdated
     x4796032f25dfd47a&gt;"get_prism_tmean"]:::uptodate --&gt; xe4ea051685a102ce["prism_tmean"]:::uptodate
     x25dbf37c6e783c25(["years"]):::uptodate --&gt; xe4ea051685a102ce["prism_tmean"]:::uptodate
     xb88b325298077171&gt;"calc_gdd_doy"]:::uptodate --&gt; x143c225a85b6f8ef["gdd_doy_1000&lt;br&gt;1000"]:::uptodate
     xe5ad1b541da28dc0(["casc_ne"]):::uptodate --&gt; x143c225a85b6f8ef["gdd_doy_1000&lt;br&gt;1000"]:::uptodate
     xe4ea051685a102ce["prism_tmean"]:::uptodate --&gt; x143c225a85b6f8ef["gdd_doy_1000&lt;br&gt;1000"]:::uptodate
-    xef0f3bd95aeea8a1(["gdd_doy_stack_50&lt;br&gt;50"]):::outdated --&gt; x067ed113746ada91(["doy_trend_50&lt;br&gt;50"]):::outdated
-    xbfe90ebeeb7a071e&gt;"get_lm_slope"]:::uptodate --&gt; x067ed113746ada91(["doy_trend_50&lt;br&gt;50"]):::outdated
-    xf560c6147541e200(["doy_trend_2500&lt;br&gt;2500"]):::outdated --&gt; xb9525cb3d2f5752d(["trend_plot_2500&lt;br&gt;2500"]):::outdated
-    x298e720a0d38fbab&gt;"plot_slopes"]:::uptodate --&gt; xb9525cb3d2f5752d(["trend_plot_2500&lt;br&gt;2500"]):::outdated
-    xb88b325298077171&gt;"calc_gdd_doy"]:::uptodate --&gt; x4e641563f83bc893["gdd_doy_50&lt;br&gt;50"]:::outdated
-    xe5ad1b541da28dc0(["casc_ne"]):::uptodate --&gt; x4e641563f83bc893["gdd_doy_50&lt;br&gt;50"]:::outdated
-    xe4ea051685a102ce["prism_tmean"]:::uptodate --&gt; x4e641563f83bc893["gdd_doy_50&lt;br&gt;50"]:::outdated
+    xef0f3bd95aeea8a1(["gdd_doy_stack_50&lt;br&gt;50"]):::uptodate --&gt; x067ed113746ada91(["doy_trend_50&lt;br&gt;50"]):::uptodate
+    xbfe90ebeeb7a071e&gt;"get_lm_slope"]:::uptodate --&gt; x067ed113746ada91(["doy_trend_50&lt;br&gt;50"]):::uptodate
+    xf560c6147541e200(["doy_trend_2500&lt;br&gt;2500"]):::uptodate --&gt; xb9525cb3d2f5752d(["trend_plot_2500&lt;br&gt;2500"]):::uptodate
+    x298e720a0d38fbab&gt;"plot_slopes"]:::uptodate --&gt; xb9525cb3d2f5752d(["trend_plot_2500&lt;br&gt;2500"]):::uptodate
+    xb88b325298077171&gt;"calc_gdd_doy"]:::uptodate --&gt; x4e641563f83bc893["gdd_doy_50&lt;br&gt;50"]:::uptodate
+    xe5ad1b541da28dc0(["casc_ne"]):::uptodate --&gt; x4e641563f83bc893["gdd_doy_50&lt;br&gt;50"]:::uptodate
+    xe4ea051685a102ce["prism_tmean"]:::uptodate --&gt; x4e641563f83bc893["gdd_doy_50&lt;br&gt;50"]:::uptodate
     x6e52cb0f1668cc22(["readme"]):::dispatched --&gt; x6e52cb0f1668cc22(["readme"]):::dispatched
   end
   classDef uptodate stroke:#000000,color:#ffffff,fill:#354823;
-  classDef outdated stroke:#000000,color:#000000,fill:#78B7C5;
   classDef dispatched stroke:#000000,color:#000000,fill:#DC863B;
+  classDef outdated stroke:#000000,color:#000000,fill:#78B7C5;
   classDef none stroke:#000000,color:#000000,fill:#94a4ac;
   linkStyle 0 stroke-width:0px;
   linkStyle 1 stroke-width:0px;

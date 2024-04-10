@@ -1,5 +1,5 @@
 name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
-.Random.seed|object|24183f54c863333d|||||||||||||||
+.Random.seed|object|79bdcb5b01eafc64|||||||||||||||
 calc_gdd_doy|function|b9c1e4a155bd3c34|||||||||||||||
 casc_ne|stem|7eb0c49f53587119|76ef69b7eaea8f82|65a782bf9bd78f76|-378259297||t19822.944089602s|53e524b7b13c706c|49880|format_custom&read=ZnVuY3Rpb24gKHBhdGgpIAp0ZXJyYTo6dmVjdChwYXRoKQ&write=ZnVuY3Rpb24gKG9iamVjdCwgcGF0aCkgCnsKICAgIHRlcnJhOjp3cml0ZVZlY3RvcihvYmplY3QsIHBhdGgsIGZpbGV0eXBlID0gIkdlb0pTT04iLCBvdmVyd3JpdGUgPSBUUlVFLCAKICAgICAgICBvcHRpb25zID0gIkVOQ09ESU5HPVVURi04IikKfQ&marshal=ZnVuY3Rpb24gKG9iamVjdCkgCnRlcnJhOjp3cmFwKG9iamVjdCk&unmarshal=ZnVuY3Rpb24gKG9iamVjdCkgCnRlcnJhOjp1bndyYXAob2JqZWN0KQ&convert=&copy=&repository=|local|vector|||0.041||
 casc_ne_file|stem|acaa795243d2ee26|ab9d20f719dc68a4|ef46db3751d8e999|1805870740|data/Northeast_CASC.zip|t19822.9401674497s|0737b9014d69b678|20606|file|local|vector|||5.068||
@@ -262,8 +262,8 @@ prism_tmean_f5b34c08|branch|b65e2cd53939c1c8|d85a38a490b96371|221ff5db32d86403|1
 prism_tmean_f888eb7b|branch|f30b3d106a4a6231|d85a38a490b96371|221ff5db32d86403|1435839722|data/prism/1985|t19811.9199151981s|f5d7cfaeaf879451|11776|file|local|vector|prism_tmean||528.712||
 prism_tmean_fb38cf22|branch|cbbf17a834752634|d85a38a490b96371|221ff5db32d86403|372135165|data/prism/2019|t19802.748693177s|278ecc85af1c32e9|11744|file|local|vector|prism_tmean||692.618||
 read_casc_ne|function|ea23aa15fc6ab04f|||||||||||||||
-readme|stem|28de9eed63a0e361|c8379b03241a1546|ef46db3751d8e999|980901812|README_files*README.html*README.Rmd|t19823.0339815481s|b770a30dc8416782|868309|file|local|vector|||81.442||
-spatial_report|stem|5141e8a99d721933|c2d92fe59b08e1eb|cc11f7640dc38f5b|1102522345|docs/spatial-trends-report.html*docs/spatial-trends-report.qmd|t19823.0492155238s|e6c284d613c1ffb1|56122|file|local|vector|||729.323||
+readme|stem|17f8c943d689668c|c8379b03241a1546|ef46db3751d8e999|980901812|README_files*README.html*README.Rmd|t19823.0544951331s|b770a30dc8416782|868309|file|local|vector|||82.694||
+spatial_report|stem|cd4d6d090ddc8b83|c2d92fe59b08e1eb|cc11f7640dc38f5b|1102522345|docs/spatial-trends-report.html*docs/spatial-trends-report.qmd|t19823.0633554463s|17c44df69ecbb135|56147|file|local|vector|||763.699||
 thresholds|stem|d8eb7f8273ee2ea3|ecfa7e0b2bf90e65|ef46db3751d8e999|1391322145||t19801.8471948637s|9064907978062c20|56|rds|local|vector|||1.612||
 trend_plot_1000|stem|9e4240ab7ce6e318|a90e275c069a9794|ffcf6b7cc2817c74|1101298718||t19823.0359780572s|e42ed4625f93f45f|114|rds|local|vector|||2.833||
 trend_plot_200|stem|39c35874bfd705f0|27af252aebc3312c|d032422332a35ad5|-1911911203||t19802.8715045956s|303de8fdb625d7f0|113|rds|local|vector|||0.652||
@@ -271,10 +271,3 @@ trend_plot_2500|stem|ee2fafb7179507fd|493d2999c0034efd|46dd6d02a31c9c1d|77788719
 trend_plot_300|stem|e33da73995fa4bc6|bdc51c4242493f60|07001c614215a48a|2144771705||t19802.8714967917s|303de8fdb625d7f0|113|rds|local|vector|||0.67||
 trend_plot_50|stem|13d95824fde1817d|87566a93dcc18bb8|86b6ad32ad65ecea|-1481227218||t19823.0493844601s|bf0d8caacacad815|112|rds|local|vector|||4.002||
 years|stem|4962cc1a6c36684e|493e38b917e8cc12|ef46db3751d8e999|-251243143||t19811.8842329544s|241bf920421d9078|105|rds|local|vector||years_ccd0a3f5*years_146c2aa0*years_76a3c9fb*years_7a4a6e6e*years_090fbcb4*years_75ed4191*years_6d9dc448*years_1000cc42*years_7669bdf1*years_761ee556*years_93b0b8cc*years_63d22e52*years_2a2673f9*years_e566f279*years_389bbf2a*years_4447f850*years_6d652c0f*years_305cde50*years_eb6a4d88*years_f24ff7b6*years_71817cb3*years_811b8d8f*years_1b9dfa4c*years_98ac405d*years_3507997e*years_246233d0*years_e21705ac*years_a704d29f*years_34dbac61*years_840b5acb*years_a147c765*years_fe25e234*years_c7d0bddf*years_b6b0e781*years_f1acad11*years_f90769be*years_6549f23e*years_ead54fb0*years_c3c42a21*years_42c0dfe9*years_14a7fccb*years_71778769*years_69cc6f61|1.822||
-plot_doy|function|33160bea615fcc30
-get_prism_tmean|function|d9410049b706840b
-read_casc_ne|function|ea23aa15fc6ab04f
-.Random.seed|object|79bdcb5b01eafc64
-get_lm_slope|function|8ca7fe32eed2a434
-calc_gdd_doy|function|b9c1e4a155bd3c34
-plot_slopes|function|1484272525839d71
