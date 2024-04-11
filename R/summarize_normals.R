@@ -4,6 +4,10 @@
 
 summarize_normals <- function(stack, years = 1991:2020) {
   
+  if(!(all(as.character(1991:2020)  %in% names(stack)))) {
+    message("stack does not contain all years from 1991:2020")
+  }
+  
   years <- as.character(years)
   years <- years[ which(years %in% names(stack))]
   
