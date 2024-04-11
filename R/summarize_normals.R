@@ -1,10 +1,19 @@
-# library(targets)
-# tar_load_globals()
-# tar_load(gdd_doy_stack_50)
-
+#' Summarize over normals period
+#'
+#' @param stack a gdd_doy_stack for a particular GDD threshold
+#' @param years a climate normals period, defaults to 1991:2020
+#'
+#' @return
 summarize_normals <- function(stack, years = 1991:2020) {
-  stack[[as.character(years)]] |> 
+  
+  if(!(all(as.character(years)  %in% names(stack)))) {
+    warning("`stack` does not contain all years in `years`")
+  }
+  
+  years <- as.character(years)
+  years <- years[ which(years %in% names(stack))]
+  
+  stack[[years]] |> 
     terra::app(function(x) c(mean = mean(x, na.rm = TRUE), sd = sd(x, na.rm = TRUE)))
 }
 
-# gdd_doy_stack_50[[as.character(1991:2020)]] |> app(function(x) c(mean = mean(x), sd = sd(x))) 

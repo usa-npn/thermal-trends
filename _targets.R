@@ -53,7 +53,7 @@ tar_source()
 # Replace the target list below with your own:
 tar_plan(
   # years = seq(1981, 2023, by = 4),
-  years = 1981:2023,
+  years = 1990:2000,
   tar_target(
     name = prism_tmean,
     command = get_prism_tmean(years),
