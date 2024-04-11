@@ -1699,14 +1699,14 @@
     },
     "munsell": {
       "Package": "munsell",
-      "Version": "0.5.0",
+      "Version": "0.5.1",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
         "colorspace",
         "methods"
       ],
-      "Hash": "6dfe8bf774944bd5595785e3229d8771"
+      "Hash": "4fd8900853b746af55b81fda99da7695"
     },
     "mvnfast": {
       "Package": "mvnfast",
@@ -1956,9 +1956,15 @@
     },
     "prism": {
       "Package": "prism",
-      "Version": "0.2.1",
-      "Source": "Repository",
-      "Repository": "CRAN",
+      "Version": "0.2.1.9000",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteRepo": "prism",
+      "RemoteUsername": "ropensci",
+      "RemotePkgRef": "ropensci/prism@2e3b711bad1513beec999278fe3ef223af4399bc",
+      "RemoteRef": "2e3b711bad1513beec999278fe3ef223af4399bc",
+      "RemoteSha": "2e3b711bad1513beec999278fe3ef223af4399bc",
       "Requirements": [
         "dplyr",
         "ggplot2",
@@ -1969,7 +1975,7 @@
         "stringr",
         "utils"
       ],
-      "Hash": "afa34e55047fc21538d74f397b35adb0"
+      "Hash": "be7871c27903c471e7cd1568f779953d"
     },
     "processx": {
       "Package": "processx",
@@ -2641,7 +2647,7 @@
       "Package": "tibble",
       "Version": "3.2.1",
       "Source": "Repository",
-      "Repository": "https://packagemanager.posit.co/cran/latest",
+      "Repository": "CRAN",
       "Requirements": [
         "R",
         "fansi",
@@ -2791,7 +2797,7 @@
       "Package": "tzdb",
       "Version": "0.4.0",
       "Source": "Repository",
-      "Repository": "https://packagemanager.posit.co/cran/latest",
+      "Repository": "CRAN",
       "Requirements": [
         "R",
         "cpp11"
