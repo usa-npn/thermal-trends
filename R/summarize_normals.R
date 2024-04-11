@@ -7,7 +7,7 @@
 summarize_normals <- function(stack, years = 1991:2020) {
   
   if(!(all(as.character(years)  %in% names(stack)))) {
-    warning("Raster stack does not contain all years in `years`")
+    warning("`stack` does not contain all years in `years`")
   }
   
   years <- as.character(years)
