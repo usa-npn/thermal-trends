@@ -46,7 +46,7 @@ if (isTRUE(hpc)) {
 tar_option_set(
   # Packages that your targets need for their tasks.
   packages = c("prism", "fs", "terra", "stringr", "lubridate", "colorspace", "purrr",
-               "ggplot2", "tidyterra", "glue", "car"),
+               "ggplot2", "tidyterra", "glue", "car", "purrr"),
   controller = controller,
   
   #assumes workers have access to data/ and _targets/ which I think they do?

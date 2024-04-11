@@ -9,7 +9,8 @@
 #' @return path to folder for that year of data
 get_prism_tmean <- function(year, prism_dir = "data/prism") {
   prism_set_dl_dir(path(prism_dir, year), create = TRUE)
-  get_prism_dailys(type = "tmean", minDate = make_date(year, 1, 1), maxDate = make_date(year, 12, 31))
+  get_prism_dailys_retry <- purrr::insistently(get_prism_dailys)
+  get_prism_dailys_retry(type = "tmean", minDate = make_date(year, 1, 1), maxDate = make_date(year, 12, 31))
   
   #removed un-zipped folders (we don't need them and I can't stop get_prism_dailys() from unzipping!)
   dir_ls(path(prism_dir, year), type = "directory") |> dir_delete()
