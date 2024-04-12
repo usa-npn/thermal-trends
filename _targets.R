@@ -17,7 +17,8 @@ hpc <- grepl("hpc\\.arizona\\.edu", slurm_host) & !grepl("ood", slurm_host)
 if (isTRUE(hpc)) {
   controller <- crew.cluster::crew_controller_slurm(
     workers = 3, #TODO increase for production
-    seconds_idle = 120, #time until workers are shut down after idle
+    seconds_idle = 300, #time until workers are shut down after idle
+    launch_max = 10L, #increase number of unproductive launched workers until error
     slurm_partition = "standard",
     slurm_time_minutes = 60, #wall time for each worker
     slurm_log_output = "logs/crew_log_%A.out",
@@ -34,7 +35,7 @@ if (isTRUE(hpc)) {
   )
   #when on HPC, do ALL the thresholds
   # threshold <- seq(50, 2500, by = 50) #Uncomment to do them all
-  threshold <- c(50, 100, 1000, 2500)
+  threshold <- c(50, 1000, 2500)
   
 } else { # If local or on OOD session, use multiple R sessions for workers
   controller <- crew::crew_controller_local(workers = 3, seconds_idle = 60)
@@ -50,8 +51,9 @@ tar_option_set(
   controller = controller,
   
   #assumes workers have access to data/ and _targets/ which I think they do?
-  storage = "worker",
-  retrieval = "worker"
+  #TODO I think this doesn't work.  Would work if storage was S3 maybe?
+  # storage = "worker",
+  # retrieval = "worker"
 )
 
 # Run the R scripts in the R/ folder with your custom functions:
