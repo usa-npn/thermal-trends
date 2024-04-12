@@ -1962,9 +1962,9 @@
       "RemoteHost": "api.github.com",
       "RemoteRepo": "prism",
       "RemoteUsername": "ropensci",
-      "RemotePkgRef": "ropensci/prism@2e3b711bad1513beec999278fe3ef223af4399bc",
-      "RemoteRef": "2e3b711bad1513beec999278fe3ef223af4399bc",
-      "RemoteSha": "2e3b711bad1513beec999278fe3ef223af4399bc",
+      "RemotePkgRef": "ropensci/prism@c2050789d35c3a6ac43ec3ef2ba225f29836e9f3",
+      "RemoteRef": "c2050789d35c3a6ac43ec3ef2ba225f29836e9f3",
+      "RemoteSha": "c2050789d35c3a6ac43ec3ef2ba225f29836e9f3",
       "Requirements": [
         "dplyr",
         "ggplot2",
@@ -1975,7 +1975,7 @@
         "stringr",
         "utils"
       ],
-      "Hash": "be7871c27903c471e7cd1568f779953d"
+      "Hash": "e7221363e70a3518e55913c020d3a786"
     },
     "processx": {
       "Package": "processx",

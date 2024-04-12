@@ -8,7 +8,7 @@
 #'
 #' @return path to folder for that year of data
 get_prism_tmean <- function(year, prism_dir = "data/prism") {
-  prism::prism_set_dl_dir(path(prism_dir, year), create = TRUE)
+  prism::prism_set_dl_dir(fs::path(prism_dir, year), create = TRUE)
   
   #add automatic retry to get_prism_dailys().  Ideally this would happen *within* the function at the level of each download, but this will have to do for now—downloads were occasionally failing when run on the HPC.
   get_prism_dailys_retry <- purrr::insistently(prism::get_prism_dailys)
