@@ -84,8 +84,7 @@ main <- tar_plan(
     #TODO: this is a workaround to get the output of the dynamic branching to be SpatRasters with multiple layers instead of lists of SpatRasters. Would love to not have to have this target.
     tar_terra_rast(
       gdd_doy_stack,
-      terra::rast(unname(gdd_doy)),
-      deployment = "main" #workaround for bug in geotargets: https://github.com/njtierney/geotargets/issues/52
+      terra::rast(unname(gdd_doy))
     ),
     tar_target(
       doy_plot,
