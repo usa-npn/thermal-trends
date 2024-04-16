@@ -8,7 +8,7 @@
 #'
 #' @return path to folder for that year of data
 get_prism_tmean <- function(year, prism_dir = "data/prism") {
-  
+  message("Downloading PRISM tmean data for ", year)
   #TODO check for provisional versions of files and prompt to replace or not with stable versions
   
   #check if path exists and create if not
