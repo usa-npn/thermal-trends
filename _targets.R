@@ -73,6 +73,7 @@ main <- tar_plan(
     values = list(threshold = threshold),
     tar_terra_rast(
       gdd_doy,
+      #TODO: this is not the final method for calculating GDD
       calc_gdd_doy(rast_dir = prism_tmean, casc_ne = casc_ne, gdd_threshold = threshold),
       pattern = map(prism_tmean),
       iteration = "list"
