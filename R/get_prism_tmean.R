@@ -39,11 +39,26 @@ get_prism_tmean <- function(year, prism_dir = "data/prism") {
         str_remove("filename=") |>
         str_remove_all('\\"') |> 
         path()})
-  
-  files_exist <- fs::file_exists(path(year_dir, filenames))
+  filepaths <- path(year_dir, filenames)
+  # Figure out which ones need to be downloaded
+  files_exist <- fs::file_exists(filepaths)
   
   reqs_to_perform <- reqs[!files_exist]
-  filenames_to_download <- filenames[!files_exist]
+  files_to_dl <- filepaths[!files_exist]
+  
+  #check for provisional files that need to be replaced
+  provisional_filename <- str_replace(files_to_dl, "stable", "provisional")
+  already_downloaded <- dir_ls(path(year_dir))
+  provisional_to_be_replaced <- 
+    already_downloaded[already_downloaded %in% provisional_filename]
+  files_replacing_provisional <- files_to_dl[file_exists(provisional_filename)]
+  stopifnot(length(provisional_to_be_replaced) == length(files_replacing_provisional))
+  
+  if (length(files_replacing_provisional) > 0) {
+    message("Stable versions will be downloaded to replace ", length(files_replacing_provisional), " provisional files")
+    #remove provisional versions
+    file_delete(provisional_to_be_replaced)
+  }
   
   message(length(reqs_to_perform), " files to download")
   
@@ -51,12 +66,12 @@ get_prism_tmean <- function(year, prism_dir = "data/prism") {
     resp <- 
       req_perform_sequential(
         reqs_to_perform,
-        paths = path(year_dir, filenames_to_download),
+        paths = path(year_dir, files_to_dl),
         progress = "Downloading"
       )
     #check that they are actually zip files and if not change extension to .txt
     
-    walk(path(year_dir, filenames_to_download), \(x) {
+    walk(path(year_dir, files_to_dl), \(x) {
       is_zip <- check_zip_file(x)
       if (!isTRUE(is_zip)) {
         warning(is_zip)
@@ -68,7 +83,7 @@ get_prism_tmean <- function(year, prism_dir = "data/prism") {
   }
   
   #return all the file paths
-  invisible(path(year_dir, filenames))
+  invisible(filepaths)
 }
 
 
