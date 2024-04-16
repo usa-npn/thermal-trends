@@ -9,11 +9,10 @@
 #' @return path to folder for that year of data
 get_prism_tmean <- function(year, prism_dir = "data/prism") {
   message("Downloading PRISM tmean data for ", year)
-  #TODO check for provisional versions of files and prompt to replace or not with stable versions
   
   #check if path exists and create if not
   year_dir <- fs::dir_create(path(prism_dir, year))
-  
+
   #make sequence of dates
   date_start <- make_date(year = year)
   date_end <- make_date(year = year, month = 12, day = 31)

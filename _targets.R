@@ -7,43 +7,48 @@
 library(targets)
 library(tarchetypes)
 library(geotargets)
+library(crew)
+library(crew.cluster)
+
+# Detect whether you're on HPC & not with an Open On Demand session (which cannot submit SLURM jobs) and set appropriate controller
+slurm_host <- Sys.getenv("SLURM_SUBMIT_HOST")
+hpc <- grepl("hpc\\.arizona\\.edu", slurm_host) & !grepl("ood", slurm_host)
+# If on HPC, use SLURM jobs for parallel workers
+if (isTRUE(hpc)) {
+  controller <- crew.cluster::crew_controller_slurm(
+    workers = 3, #TODO increase for production
+    seconds_idle = 300, #time until workers are shut down after idle
+    launch_max = 10L, #increase number of unproductive launched workers until error
+    slurm_partition = "standard",
+    slurm_time_minutes = 60, #wall time for each worker
+    slurm_log_output = "logs/crew_log_%A.out",
+    slurm_log_error = "logs/crew_log_%A.err",
+    slurm_memory_gigabytes_per_cpu = 4,
+    slurm_cpus_per_task = 1,
+    script_lines = c(
+      "#SBATCH --account theresam",
+      "module load R",
+      "module load gdal",
+      "module load eigen"
+      #add additional lines to the SLURM job script as necessary here
+    )
+  )
+  #when on HPC, do ALL the thresholds
+  # threshold <- seq(50, 2500, by = 50) #Uncomment to do them all
+  threshold <- c(50, 1000, 2500)
+  
+} else { # If local or on OOD session, use multiple R sessions for workers
+  controller <- crew::crew_controller_local(workers = 3, seconds_idle = 60)
+  
+  threshold <- c(50, 1000, 2500)
+}
 
 # Set target options:
 tar_option_set(
   # Packages that your targets need for their tasks.
   packages = c("fs", "terra", "stringr", "lubridate", "colorspace", "purrr",
                "ggplot2", "tidyterra", "glue", "car", "httr2"),
-  #
-  # Pipelines that take a long time to run may benefit from
-  # optional distributed computing. To use this capability
-  # in tar_make(), supply a {crew} controller
-  # as discussed at https://books.ropensci.org/targets/crew.html.
-  # Choose a controller that suits your needs. For example, the following
-  # sets a controller that scales up to a maximum of two workers
-  # which run as local R processes. Each worker launches when there is work
-  # to do and exits if 60 seconds pass with no tasks to run.
-  #
-    controller = crew::crew_controller_local(workers = 3, seconds_idle = 60)
-  #
-  # Alternatively, if you want workers to run on a high-performance computing
-  # cluster, select a controller from the {crew.cluster} package.
-  # For the cloud, see plugin packages like {crew.aws.batch}.
-  # The following example is a controller for Sun Grid Engine (SGE).
-  # 
-  #   controller = crew.cluster::crew_controller_sge(
-  #     # Number of workers that the pipeline can scale up to:
-  #     workers = 10,
-  #     # It is recommended to set an idle time so workers can shut themselves
-  #     # down if they are not running tasks.
-  #     seconds_idle = 120,
-  #     # Many clusters install R as an environment module, and you can load it
-  #     # with the script_lines argument. To select a specific verison of R,
-  #     # you may need to include a version string, e.g. "module load R/4.3.2".
-  #     # Check with your system administrator if you are unsure.
-  #     script_lines = "module load R"
-  #   )
-  #
-  # Set other options as needed.
+  controller = controller
 )
 
 # Run the R scripts in the R/ folder with your custom functions:
@@ -51,9 +56,9 @@ tar_source()
 # tar_source("other_functions.R") # Source other scripts as needed.
 
 # Replace the target list below with your own:
-tar_plan(
-  # years = seq(1981, 2023, by = 4),
-  # years = 1990:2000,
+
+main <- tar_plan(
+  # years = seq(1981, 2023, by = 8),
   years = 1981:2023,
   tar_target(
     name = prism_tmean,
@@ -65,7 +70,7 @@ tar_plan(
   tar_file(casc_ne_file, "data/Northeast_CASC.zip"),
   tar_terra_vect(casc_ne, read_casc_ne(casc_ne_file)),
   tar_map(
-    values = list(threshold = c(50, 1000, 2500)),
+    values = list(threshold = threshold),
     tar_terra_rast(
       gdd_doy,
       calc_gdd_doy(rast_dir = prism_tmean, casc_ne = casc_ne, gdd_threshold = threshold),
@@ -107,8 +112,17 @@ tar_plan(
       format = "file"
     )
   ),
-  
-  # Reports
-  tar_quarto(spatial_report, path = "docs/spatial-trends-report.qmd", working_directory = "docs"),
-  tar_quarto(readme, path = "README.Qmd", cue = tar_cue("always"))
 )
+
+reports <- tar_plan(
+  # Reports
+  # tar_quarto(spatial_report, path = "docs/spatial-trends-report.qmd", working_directory = "docs"),
+  # tar_quarto(readme, path = "README.Qmd", cue = tar_cue("always"))
+)
+
+#if on HPC don't render quarto docs (no quarto or pandoc on HPC)
+if (isTRUE(hpc)) {
+  main
+} else {
+  list(main, reports)
+}
