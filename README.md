@@ -37,73 +37,77 @@ graph LR
   style Graph fill:#FFFFFF00,stroke:#000000;
   subgraph Legend
     direction LR
-    x7420bd9270f8d27d([""Up to date""]):::uptodate --- xa8565c104d8f0705([""Dispatched""]):::dispatched
-    xa8565c104d8f0705([""Dispatched""]):::dispatched --- xbf4603d6c2c2ad6b([""Stem""]):::none
-    xbf4603d6c2c2ad6b([""Stem""]):::none --- x70a5fa6bea6f298d[""Pattern""]:::none
-    x70a5fa6bea6f298d[""Pattern""]:::none --- xf0bce276fe2b9d3e>""Function""]:::none
+    x2db1ec7a48f65a9b([""Outdated""]):::outdated --- xb6630624a7b3aa0f([""Dispatched""]):::dispatched
+    xb6630624a7b3aa0f([""Dispatched""]):::dispatched --- xf1522833a4d242c5([""Up to date""]):::uptodate
+    xf1522833a4d242c5([""Up to date""]):::uptodate --- xd03d7c7dd2ddda2b([""Stem""]):::none
+    xd03d7c7dd2ddda2b([""Stem""]):::none --- x6f7e04ea3427f824[""Pattern""]:::none
+    x6f7e04ea3427f824[""Pattern""]:::none --- xeb2d7cac8a1ce544>""Function""]:::none
   end
   subgraph Graph
     direction LR
-    x143c225a85b6f8ef["gdd_doy_1000<br>1000"]:::uptodate --> x40c2e72d4bfe48c6(["gdd_doy_stack_1000<br>1000"]):::uptodate
-    x8b570043a37c4f3f(["normals_summary_1000<br>1000"]):::uptodate --> x39dc65dec856c05d(["normals_mean_plot_1000<br>1000"]):::uptodate
-    xa917b7eaa4a3ab69>"plot_normals_mean"]:::uptodate --> x39dc65dec856c05d(["normals_mean_plot_1000<br>1000"]):::uptodate
-    x03a837447b8e1f85(["gdd_doy_stack_2500<br>2500"]):::uptodate --> x45979941e033c65c(["normals_summary_2500<br>2500"]):::uptodate
-    x5057cf71ad61ffba>"summarize_normals"]:::uptodate --> x45979941e033c65c(["normals_summary_2500<br>2500"]):::uptodate
-    x03a837447b8e1f85(["gdd_doy_stack_2500<br>2500"]):::uptodate --> xf560c6147541e200(["doy_trend_2500<br>2500"]):::uptodate
-    xbfe90ebeeb7a071e>"get_lm_slope"]:::uptodate --> xf560c6147541e200(["doy_trend_2500<br>2500"]):::uptodate
-    x03a837447b8e1f85(["gdd_doy_stack_2500<br>2500"]):::uptodate --> x4571a9b7d2c4f70f(["doy_plot_2500<br>2500"]):::uptodate
-    x13c8ccaa5d631ad7>"plot_doy"]:::uptodate --> x4571a9b7d2c4f70f(["doy_plot_2500<br>2500"]):::uptodate
-    xb88b325298077171>"calc_gdd_doy"]:::uptodate --> x5d124cd085114def["gdd_doy_2500<br>2500"]:::uptodate
-    xe5ad1b541da28dc0(["casc_ne"]):::uptodate --> x5d124cd085114def["gdd_doy_2500<br>2500"]:::uptodate
-    xe4ea051685a102ce["prism_tmean"]:::uptodate --> x5d124cd085114def["gdd_doy_2500<br>2500"]:::uptodate
-    x09ece08de4b3110b(["casc_ne_file"]):::uptodate --> xe5ad1b541da28dc0(["casc_ne"]):::uptodate
-    x2e865c2cb7f7f0bd>"read_casc_ne"]:::uptodate --> xe5ad1b541da28dc0(["casc_ne"]):::uptodate
-    x5a7177ac72d59179(["doy_trend_1000<br>1000"]):::uptodate --> x56ad0a64704ce37e(["trend_plot_1000<br>1000"]):::uptodate
-    x298e720a0d38fbab>"plot_slopes"]:::uptodate --> x56ad0a64704ce37e(["trend_plot_1000<br>1000"]):::uptodate
-    x067ed113746ada91(["doy_trend_50<br>50"]):::uptodate --> xb10cda98be740603(["trend_plot_50<br>50"]):::uptodate
-    x298e720a0d38fbab>"plot_slopes"]:::uptodate --> xb10cda98be740603(["trend_plot_50<br>50"]):::uptodate
-    xdcf6fe500c4f6c47(["normals_summary_50<br>50"]):::uptodate --> xe0edcdcfe499bd71(["normals_mean_plot_50<br>50"]):::uptodate
-    xa917b7eaa4a3ab69>"plot_normals_mean"]:::uptodate --> xe0edcdcfe499bd71(["normals_mean_plot_50<br>50"]):::uptodate
-    xef0f3bd95aeea8a1(["gdd_doy_stack_50<br>50"]):::uptodate --> xa4e7d2ec2b26ed98(["doy_plot_50<br>50"]):::uptodate
-    x13c8ccaa5d631ad7>"plot_doy"]:::uptodate --> xa4e7d2ec2b26ed98(["doy_plot_50<br>50"]):::uptodate
-    xef0f3bd95aeea8a1(["gdd_doy_stack_50<br>50"]):::uptodate --> xdcf6fe500c4f6c47(["normals_summary_50<br>50"]):::uptodate
-    x5057cf71ad61ffba>"summarize_normals"]:::uptodate --> xdcf6fe500c4f6c47(["normals_summary_50<br>50"]):::uptodate
-    x40c2e72d4bfe48c6(["gdd_doy_stack_1000<br>1000"]):::uptodate --> x8b570043a37c4f3f(["normals_summary_1000<br>1000"]):::uptodate
-    x5057cf71ad61ffba>"summarize_normals"]:::uptodate --> x8b570043a37c4f3f(["normals_summary_1000<br>1000"]):::uptodate
-    x40c2e72d4bfe48c6(["gdd_doy_stack_1000<br>1000"]):::uptodate --> x5a7177ac72d59179(["doy_trend_1000<br>1000"]):::uptodate
-    xbfe90ebeeb7a071e>"get_lm_slope"]:::uptodate --> x5a7177ac72d59179(["doy_trend_1000<br>1000"]):::uptodate
-    x40c2e72d4bfe48c6(["gdd_doy_stack_1000<br>1000"]):::uptodate --> x1198f75c36e06a6d(["doy_plot_1000<br>1000"]):::uptodate
-    x13c8ccaa5d631ad7>"plot_doy"]:::uptodate --> x1198f75c36e06a6d(["doy_plot_1000<br>1000"]):::uptodate
-    x5d124cd085114def["gdd_doy_2500<br>2500"]:::uptodate --> x03a837447b8e1f85(["gdd_doy_stack_2500<br>2500"]):::uptodate
-    x4e641563f83bc893["gdd_doy_50<br>50"]:::uptodate --> xef0f3bd95aeea8a1(["gdd_doy_stack_50<br>50"]):::uptodate
-    x067ed113746ada91(["doy_trend_50<br>50"]):::uptodate --> x9dd6eb88f0f020eb(["spatial_report"]):::uptodate
-    xef0f3bd95aeea8a1(["gdd_doy_stack_50<br>50"]):::uptodate --> x9dd6eb88f0f020eb(["spatial_report"]):::uptodate
-    x45979941e033c65c(["normals_summary_2500<br>2500"]):::uptodate --> x2f5625350a1b19db(["normals_mean_plot_2500<br>2500"]):::uptodate
-    xa917b7eaa4a3ab69>"plot_normals_mean"]:::uptodate --> x2f5625350a1b19db(["normals_mean_plot_2500<br>2500"]):::uptodate
-    x4796032f25dfd47a>"get_prism_tmean"]:::uptodate --> xe4ea051685a102ce["prism_tmean"]:::uptodate
-    x25dbf37c6e783c25(["years"]):::uptodate --> xe4ea051685a102ce["prism_tmean"]:::uptodate
-    xb88b325298077171>"calc_gdd_doy"]:::uptodate --> x143c225a85b6f8ef["gdd_doy_1000<br>1000"]:::uptodate
-    xe5ad1b541da28dc0(["casc_ne"]):::uptodate --> x143c225a85b6f8ef["gdd_doy_1000<br>1000"]:::uptodate
-    xe4ea051685a102ce["prism_tmean"]:::uptodate --> x143c225a85b6f8ef["gdd_doy_1000<br>1000"]:::uptodate
-    xef0f3bd95aeea8a1(["gdd_doy_stack_50<br>50"]):::uptodate --> x067ed113746ada91(["doy_trend_50<br>50"]):::uptodate
-    xbfe90ebeeb7a071e>"get_lm_slope"]:::uptodate --> x067ed113746ada91(["doy_trend_50<br>50"]):::uptodate
-    xf560c6147541e200(["doy_trend_2500<br>2500"]):::uptodate --> xb9525cb3d2f5752d(["trend_plot_2500<br>2500"]):::uptodate
-    x298e720a0d38fbab>"plot_slopes"]:::uptodate --> xb9525cb3d2f5752d(["trend_plot_2500<br>2500"]):::uptodate
-    xb88b325298077171>"calc_gdd_doy"]:::uptodate --> x4e641563f83bc893["gdd_doy_50<br>50"]:::uptodate
-    xe5ad1b541da28dc0(["casc_ne"]):::uptodate --> x4e641563f83bc893["gdd_doy_50<br>50"]:::uptodate
-    xe4ea051685a102ce["prism_tmean"]:::uptodate --> x4e641563f83bc893["gdd_doy_50<br>50"]:::uptodate
-    x6e52cb0f1668cc22(["readme"]):::dispatched --> x6e52cb0f1668cc22(["readme"]):::dispatched
-    x3831a3d6946cd453>"plot_normals_sd"]:::uptodate --> x3831a3d6946cd453>"plot_normals_sd"]:::uptodate
+    xab9f05120e038f63>"check_zip_file"]:::uptodate --> x66b13d5a9d20761a>"get_prism_tmean"]:::uptodate
+    xe29a7570fd64b783(["doy_trend_2500<br>2500"]):::outdated --> x4a7371f634a1c6ee(["trend_plot_2500<br>2500"]):::outdated
+    x9c6eebcf51a630b0>"plot_slopes"]:::uptodate --> x4a7371f634a1c6ee(["trend_plot_2500<br>2500"]):::outdated
+    xff529209e87def7b["gdd_doy_1000<br>1000"]:::outdated --> x46cc5bc3b6c68c1a(["gdd_doy_stack_1000<br>1000"]):::outdated
+    x47d67438bee47c7b(["normals_summary_1000<br>1000"]):::outdated --> xd1093b48fdaa3b26(["normals_mean_plot_1000<br>1000"]):::outdated
+    xdd6e5783f4aa3d91>"plot_normals_mean"]:::uptodate --> xd1093b48fdaa3b26(["normals_mean_plot_1000<br>1000"]):::outdated
+    xcff06c9512a11109>"calc_gdd_doy"]:::uptodate --> x28c62ae9542e7849["gdd_doy_2500<br>2500"]:::outdated
+    x6976cced396df4c9(["casc_ne"]):::outdated --> x28c62ae9542e7849["gdd_doy_2500<br>2500"]:::outdated
+    xf1e1014b1abe0030["prism_tmean"]:::outdated --> x28c62ae9542e7849["gdd_doy_2500<br>2500"]:::outdated
+    xb106621904434716(["casc_ne_file"]):::dispatched --> x6976cced396df4c9(["casc_ne"]):::outdated
+    x78206bf5e8c258ec>"read_casc_ne"]:::uptodate --> x6976cced396df4c9(["casc_ne"]):::outdated
+    xcff06c9512a11109>"calc_gdd_doy"]:::uptodate --> x786a1a0a06ddc553["gdd_doy_50<br>50"]:::outdated
+    x6976cced396df4c9(["casc_ne"]):::outdated --> x786a1a0a06ddc553["gdd_doy_50<br>50"]:::outdated
+    xf1e1014b1abe0030["prism_tmean"]:::outdated --> x786a1a0a06ddc553["gdd_doy_50<br>50"]:::outdated
+    xd87e155a2058b73d(["normals_summary_50<br>50"]):::outdated --> xb6b5b21811b62e8e(["normals_mean_plot_50<br>50"]):::outdated
+    xdd6e5783f4aa3d91>"plot_normals_mean"]:::uptodate --> xb6b5b21811b62e8e(["normals_mean_plot_50<br>50"]):::outdated
+    x05f2370eca178222(["doy_trend_1000<br>1000"]):::outdated --> x31a3593b535e23c4(["trend_plot_1000<br>1000"]):::outdated
+    x9c6eebcf51a630b0>"plot_slopes"]:::uptodate --> x31a3593b535e23c4(["trend_plot_1000<br>1000"]):::outdated
+    x21326ed6e10cd0d0(["gdd_doy_stack_2500<br>2500"]):::outdated --> xe29a7570fd64b783(["doy_trend_2500<br>2500"]):::outdated
+    x5d601d40e571c532>"get_lm_slope"]:::uptodate --> xe29a7570fd64b783(["doy_trend_2500<br>2500"]):::outdated
+    x46cc5bc3b6c68c1a(["gdd_doy_stack_1000<br>1000"]):::outdated --> x2c8ecb326142bdff(["doy_plot_1000<br>1000"]):::outdated
+    x2d2070bf4c44e867>"plot_doy"]:::uptodate --> x2c8ecb326142bdff(["doy_plot_1000<br>1000"]):::outdated
+    x08bdbd4f78dad638(["doy_trend_50<br>50"]):::outdated --> x5a26c52d2d28f1dc(["trend_plot_50<br>50"]):::outdated
+    x9c6eebcf51a630b0>"plot_slopes"]:::uptodate --> x5a26c52d2d28f1dc(["trend_plot_50<br>50"]):::outdated
+    x0b494d9bc4b357f4(["gdd_doy_stack_50<br>50"]):::outdated --> x08bdbd4f78dad638(["doy_trend_50<br>50"]):::outdated
+    x5d601d40e571c532>"get_lm_slope"]:::uptodate --> x08bdbd4f78dad638(["doy_trend_50<br>50"]):::outdated
+    x46cc5bc3b6c68c1a(["gdd_doy_stack_1000<br>1000"]):::outdated --> x47d67438bee47c7b(["normals_summary_1000<br>1000"]):::outdated
+    xf91ccb269c3645a7>"summarize_normals"]:::uptodate --> x47d67438bee47c7b(["normals_summary_1000<br>1000"]):::outdated
+    x28c62ae9542e7849["gdd_doy_2500<br>2500"]:::outdated --> x21326ed6e10cd0d0(["gdd_doy_stack_2500<br>2500"]):::outdated
+    x46cc5bc3b6c68c1a(["gdd_doy_stack_1000<br>1000"]):::outdated --> x05f2370eca178222(["doy_trend_1000<br>1000"]):::outdated
+    x5d601d40e571c532>"get_lm_slope"]:::uptodate --> x05f2370eca178222(["doy_trend_1000<br>1000"]):::outdated
+    xfdc192d56cd8f9ef(["normals_summary_2500<br>2500"]):::outdated --> xa1c9e5079d21856f(["normals_mean_plot_2500<br>2500"]):::outdated
+    xdd6e5783f4aa3d91>"plot_normals_mean"]:::uptodate --> xa1c9e5079d21856f(["normals_mean_plot_2500<br>2500"]):::outdated
+    x08bdbd4f78dad638(["doy_trend_50<br>50"]):::outdated --> xe6f43699e6499b95(["spatial_report"]):::outdated
+    x0b494d9bc4b357f4(["gdd_doy_stack_50<br>50"]):::outdated --> xe6f43699e6499b95(["spatial_report"]):::outdated
+    x0b494d9bc4b357f4(["gdd_doy_stack_50<br>50"]):::outdated --> x233d6af147d6e9d1(["doy_plot_50<br>50"]):::outdated
+    x2d2070bf4c44e867>"plot_doy"]:::uptodate --> x233d6af147d6e9d1(["doy_plot_50<br>50"]):::outdated
+    xcff06c9512a11109>"calc_gdd_doy"]:::uptodate --> xff529209e87def7b["gdd_doy_1000<br>1000"]:::outdated
+    x6976cced396df4c9(["casc_ne"]):::outdated --> xff529209e87def7b["gdd_doy_1000<br>1000"]:::outdated
+    xf1e1014b1abe0030["prism_tmean"]:::outdated --> xff529209e87def7b["gdd_doy_1000<br>1000"]:::outdated
+    x21326ed6e10cd0d0(["gdd_doy_stack_2500<br>2500"]):::outdated --> x07c639dff4c1c0c9(["doy_plot_2500<br>2500"]):::outdated
+    x2d2070bf4c44e867>"plot_doy"]:::uptodate --> x07c639dff4c1c0c9(["doy_plot_2500<br>2500"]):::outdated
+    x66b13d5a9d20761a>"get_prism_tmean"]:::uptodate --> xf1e1014b1abe0030["prism_tmean"]:::outdated
+    xf9ac23fbc741da6f(["years"]):::dispatched --> xf1e1014b1abe0030["prism_tmean"]:::outdated
+    x0b494d9bc4b357f4(["gdd_doy_stack_50<br>50"]):::outdated --> xd87e155a2058b73d(["normals_summary_50<br>50"]):::outdated
+    xf91ccb269c3645a7>"summarize_normals"]:::uptodate --> xd87e155a2058b73d(["normals_summary_50<br>50"]):::outdated
+    x21326ed6e10cd0d0(["gdd_doy_stack_2500<br>2500"]):::outdated --> xfdc192d56cd8f9ef(["normals_summary_2500<br>2500"]):::outdated
+    xf91ccb269c3645a7>"summarize_normals"]:::uptodate --> xfdc192d56cd8f9ef(["normals_summary_2500<br>2500"]):::outdated
+    x786a1a0a06ddc553["gdd_doy_50<br>50"]:::outdated --> x0b494d9bc4b357f4(["gdd_doy_stack_50<br>50"]):::outdated
+    xc11069275cfeb620(["readme"]):::dispatched --> xc11069275cfeb620(["readme"]):::dispatched
+    x7913874ff1a7ce23>"plot_normals_sd"]:::uptodate --> x7913874ff1a7ce23>"plot_normals_sd"]:::uptodate
   end
-  classDef uptodate stroke:#000000,color:#ffffff,fill:#354823;
+  classDef outdated stroke:#000000,color:#000000,fill:#78B7C5;
   classDef dispatched stroke:#000000,color:#000000,fill:#DC863B;
+  classDef uptodate stroke:#000000,color:#ffffff,fill:#354823;
   classDef none stroke:#000000,color:#000000,fill:#94a4ac;
   linkStyle 0 stroke-width:0px;
   linkStyle 1 stroke-width:0px;
   linkStyle 2 stroke-width:0px;
   linkStyle 3 stroke-width:0px;
-  linkStyle 52 stroke-width:0px;
-  linkStyle 53 stroke-width:0px;
+  linkStyle 4 stroke-width:0px;
+  linkStyle 54 stroke-width:0px;
+  linkStyle 55 stroke-width:0px;
 ```
 
 ------------------------------------------------------------------------
