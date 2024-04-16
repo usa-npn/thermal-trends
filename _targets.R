@@ -46,14 +46,9 @@ if (isTRUE(hpc)) {
 # Set target options:
 tar_option_set(
   # Packages that your targets need for their tasks.
-  packages = c("prism", "fs", "terra", "stringr", "lubridate", "colorspace", "purrr",
-               "ggplot2", "tidyterra", "glue", "car", "purrr"),
-  controller = controller,
-  
-  #assumes workers have access to data/ and _targets/ which I think they do?
-  #TODO I think this doesn't work.  Would work if storage was S3 maybe?
-  # storage = "worker",
-  # retrieval = "worker"
+  packages = c("fs", "terra", "stringr", "lubridate", "colorspace", "purrr",
+               "ggplot2", "tidyterra", "glue", "car", "httr2"),
+  controller = controller
 )
 
 # Run the R scripts in the R/ folder with your custom functions:
@@ -61,6 +56,7 @@ tar_source()
 # tar_source("other_functions.R") # Source other scripts as needed.
 
 # Replace the target list below with your own:
+
 main <- tar_plan(
   years = seq(1981, 2023, by = 8),
   # years = 1981:2023,
@@ -81,7 +77,8 @@ main <- tar_plan(
       pattern = map(prism_tmean),
       iteration = "list"
     ),
-    #TODO: this is a workaround to get the output of the dynamic branching to be SpatRasters with multiple layers instead of lists of SpatRasters. Would love to not have to have this target.
+    
+    #This converts the output of the dynamic branching to be SpatRasters with multiple layers instead of lists of SpatRasters. Would love to not have to have this target, but there is no way to customize how iteration works.
     tar_terra_rast(
       gdd_doy_stack,
       terra::rast(unname(gdd_doy))
@@ -107,6 +104,11 @@ main <- tar_plan(
     tar_target(
       normals_mean_plot,
       plot_normals_mean(normals_summary, threshold, height = 7, width = 7),
+      format = "file"
+    ),
+    tar_target(
+      normals_sd_plot,
+      plot_normals_sd(normals_summary, threshold, height = 7, width = 7),
       format = "file"
     )
   ),
