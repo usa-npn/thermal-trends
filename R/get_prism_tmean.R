@@ -82,8 +82,8 @@ get_prism_tmean <- function(year, prism_dir = "data/prism") {
     message("Skipping downloading.")
   }
   
-  #return all the file paths
-  invisible(filepaths)
+  #return the path to the folder so targets tracks the whole dang thing
+  invisible(year_dir)
 }
 
 
