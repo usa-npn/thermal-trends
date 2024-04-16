@@ -53,7 +53,8 @@ tar_source()
 # Replace the target list below with your own:
 tar_plan(
   # years = seq(1981, 2023, by = 4),
-  years = 1990:2000,
+  # years = 1990:2000,
+  years = 1981:2023,
   tar_target(
     name = prism_tmean,
     command = get_prism_tmean(years),
@@ -71,11 +72,11 @@ tar_plan(
       pattern = map(prism_tmean),
       iteration = "list"
     ),
-    #TODO: this is a workaround to get the output of the dynamic branching to be SpatRasters with multiple layers instead of lists of SpatRasters. Would love to not have to have this target.
+    
+    #This converts the output of the dynamic branching to be SpatRasters with multiple layers instead of lists of SpatRasters. Would love to not have to have this target, but there is no way to customize how iteration works.
     tar_terra_rast(
       gdd_doy_stack,
-      terra::rast(unname(gdd_doy)),
-      deployment = "main" #workaround for bug in geotargets: https://github.com/njtierney/geotargets/issues/52
+      terra::rast(unname(gdd_doy))
     ),
     tar_target(
       doy_plot,
@@ -98,6 +99,11 @@ tar_plan(
     tar_target(
       normals_mean_plot,
       plot_normals_mean(normals_summary, threshold, height = 7, width = 7),
+      format = "file"
+    ),
+    tar_target(
+      normals_sd_plot,
+      plot_normals_sd(normals_summary, threshold, height = 7, width = 7),
       format = "file"
     )
   ),
