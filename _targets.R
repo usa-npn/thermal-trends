@@ -11,8 +11,8 @@ library(geotargets)
 # Set target options:
 tar_option_set(
   # Packages that your targets need for their tasks.
-  packages = c("prism", "fs", "terra", "stringr", "lubridate", "colorspace", "purrr",
-               "ggplot2", "tidyterra", "glue", "car"),
+  packages = c("fs", "terra", "stringr", "lubridate", "colorspace", "purrr",
+               "ggplot2", "tidyterra", "glue", "car", "httr2"),
   #
   # Pipelines that take a long time to run may benefit from
   # optional distributed computing. To use this capability
