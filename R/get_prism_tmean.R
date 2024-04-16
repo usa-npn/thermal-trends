@@ -36,8 +36,8 @@ get_prism_tmean <- function(year, prism_dir = "data/prism") {
   filenames <- head_resps |> 
     purrr::map_chr(\(x) {
       x$headers$`Content-Disposition` |> 
-        str_remove("filename=") |>
-        str_remove_all('\\"') |> 
+        stringr::str_remove("filename=") |>
+        stringr::str_remove_all('\\"') |> 
         path()})
   filepaths <- path(year_dir, filenames)
   # Figure out which ones need to be downloaded
@@ -66,12 +66,12 @@ get_prism_tmean <- function(year, prism_dir = "data/prism") {
     resp <- 
       req_perform_sequential(
         reqs_to_perform,
-        paths = path(year_dir, files_to_dl),
+        paths = files_to_dl,
         progress = "Downloading"
       )
     #check that they are actually zip files and if not change extension to .txt
     
-    walk(path(year_dir, files_to_dl), \(x) {
+    walk(files_to_dl, \(x) {
       is_zip <- check_zip_file(x)
       if (!isTRUE(is_zip)) {
         warning(is_zip)
