@@ -2489,7 +2489,7 @@
     },
     "targets": {
       "Package": "targets",
-      "Version": "1.6.0.9003",
+      "Version": "1.7.0.9000",
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
@@ -2497,7 +2497,7 @@
       "RemoteUsername": "ropensci",
       "RemotePkgRef": "ropensci/targets",
       "RemoteRef": "HEAD",
-      "RemoteSha": "751281e8a7c4944fd2cd44a11d140cdbfd658b35",
+      "RemoteSha": "adc116f8aa5582320226ef8d62b1fea42450e520",
       "Requirements": [
         "R",
         "R6",
@@ -2519,7 +2519,7 @@
         "vctrs",
         "yaml"
       ],
-      "Hash": "551ac5bd86ef9ec7b738f097d763d959"
+      "Hash": "d5e413993d13f10f6926eaa1a10da545"
     },
     "terra": {
       "Package": "terra",

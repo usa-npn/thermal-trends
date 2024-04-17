@@ -23,7 +23,9 @@ The goal of this project is to estimate spatial and temporal trends in phenology
 This analytical pipeline downloads daily data, calculates growing degree days (GDD) for each day, and then finds the day of year (DOY) that certain threshold GDD are reached for this region.
 Products will include rasters of mean DOY for a variety of GDD thresholds over the normals period (1991-2020), and rasters of estimated rates of change in DOY for these thresholds.
 
-<!--This is a collaboration between USA-NPN, USDA, the NY Phenology Project, and University of Arizona CCT Data Science.--> <!--# I'm not 100% sure about this, so I'll leave commented out for now -->
+<!--This is a collaboration between USA-NPN, USDA, the NY Phenology Project, and University of Arizona CCT Data Science.-->
+
+<!--# I'm not 100% sure about this, so I'll leave commented out for now -->
 
 Report of work in progress: <https://usa-npn.github.io/cales-thermal-calendars/spatial-trends-report.html>
 
