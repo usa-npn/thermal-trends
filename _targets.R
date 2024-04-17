@@ -17,14 +17,15 @@ hpc <- grepl("hpc\\.arizona\\.edu", slurm_host) & !grepl("ood", slurm_host)
 if (isTRUE(hpc)) {
   controller <- crew.cluster::crew_controller_slurm(
     workers = 3, #TODO increase for production
-    seconds_idle = 300, #time until workers are shut down after idle
-    launch_max = 10L, #increase number of unproductive launched workers until error
+    seconds_idle = 300, #  time until workers are shut down after idle
+    garbage_collection = TRUE, # run garbage collection between tasks
+    launch_max = 5L, # number of unproductive launched workers until error
     slurm_partition = "standard",
     slurm_time_minutes = 60, #wall time for each worker
     slurm_log_output = "logs/crew_log_%A.out",
     slurm_log_error = "logs/crew_log_%A.err",
-    slurm_memory_gigabytes_per_cpu = 4,
-    slurm_cpus_per_task = 1,
+    slurm_memory_gigabytes_per_cpu = 5,
+    slurm_cpus_per_task = 3, #use 3 cpus per worker
     script_lines = c(
       "#SBATCH --account theresam",
       "module load R",
