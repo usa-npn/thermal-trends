@@ -1,4 +1,5 @@
-plot_doy <- function(gdd_stack, gdd_threshold) {
+plot_doy <- function(gdd_stack, threshold, out_dir = "output/figs", ext = "png", ...) {
+  fs::dir_create(out_dir)
   p <- ggplot() +
     geom_spatraster(data = gdd_stack) +
     scale_fill_viridis_c(
@@ -7,10 +8,10 @@ plot_doy <- function(gdd_stack, gdd_threshold) {
       end = 0.9 #don't use the lightest yellow—hard to see on white background
     ) +    facet_wrap(~lyr) +
     labs(
-      title = glue::glue("Days to reach > {gdd_threshold} GDD"),
+      title = glue::glue("Days to reach > {threshold} GDD"),
       fill = "DOY"
     ) +
     theme_minimal()
-
-  ggsave(filename = glue::glue("output/doy_{gdd_threshold}.png"), plot = p)
+  filename <- glue::glue("doy_{threshold}.{ext}")
+  ggsave(filename = filename, path = out_dir, plot = p, ...)
 }

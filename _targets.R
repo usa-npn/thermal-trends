@@ -87,7 +87,7 @@ main <- tar_plan(
     ),
     tar_target(
       doy_plot,
-      plot_doy(gdd_doy_stack, gdd_threshold = threshold),
+      plot_doy(gdd_doy_stack, threshold = threshold),
       format = "file"
     ),
     tar_terra_rast(
@@ -96,12 +96,17 @@ main <- tar_plan(
     ),
     tar_target(
       trend_plot,
-      plot_slopes(doy_trend, gdd_threshold = threshold)
+      plot_slopes(doy_trend, threshold = threshold)
     ),
     tar_terra_rast(
       normals_summary,
       summarize_normals(gdd_doy_stack),
       deployment = "main"
+    ),
+    tar_target(
+      normals_means_gtiff,
+      write_tiff(normals_summary[[1]], filename = paste0("normals_mean_", threshold, ".tiff")),
+      format = "file"
     ),
     tar_target(
       normals_mean_plot,
