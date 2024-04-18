@@ -6,3 +6,5 @@
 .quarto
 data/prism/
 _targets/
+logs/
+
