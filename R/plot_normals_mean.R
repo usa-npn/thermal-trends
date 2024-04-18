@@ -1,9 +1,5 @@
-# library(targets)
-# tar_load_globals()
-# tar_load(normals_summary_50)
-# threshold <- 50
-
-plot_normals_mean <- function(normals_summary, threshold, path = "output/", ext = "png", ...) {
+plot_normals_mean <- function(normals_summary, threshold, out_dir = "output/figs", ext = "png", ...) {
+  fs::dir_create(out_dir)
   p <-
     ggplot() +
     geom_spatraster(data = normals_summary, aes(fill = mean)) +
@@ -17,5 +13,5 @@ plot_normals_mean <- function(normals_summary, threshold, path = "output/", ext 
     theme_minimal()
   
   filename <- glue::glue("normals_mean_{threshold}.{ext}")
-  ggsave(filename = filename, path = path, plot = p, ...)
+  ggsave(filename = filename, path = out_dir, plot = p, ...)
 }

@@ -1,4 +1,5 @@
-plot_normals_sd <- function(normals_summary, threshold, path = "output/", ext = "png", ...) {
+plot_normals_sd <- function(normals_summary, threshold, out_dir = "output/figs", ext = "png", ...) {
+  fs::dir_create(out_dir)
   p <-
     ggplot() +
     geom_spatraster(data = normals_summary, aes(fill = sd)) +
@@ -8,5 +9,5 @@ plot_normals_sd <- function(normals_summary, threshold, path = "output/", ext = 
     theme_minimal()
   
   filename <- glue::glue("normals_sd_{threshold}.{ext}")
-  ggsave(filename = filename, path = path, plot = p, ...)
+  ggsave(filename = filename, path = out_dir, plot = p, ...)
 }
