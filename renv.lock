@@ -983,16 +983,17 @@
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
-      "RemoteUsername": "njtierney",
       "RemoteRepo": "geotargets",
-      "RemoteRef": "master",
-      "RemoteSha": "8ad4e66b2e2f2373a6237e5b4d8092a7711e6da3",
+      "RemoteUsername": "njtierney",
+      "RemotePkgRef": "njtierney/geotargets",
+      "RemoteRef": "HEAD",
+      "RemoteSha": "131e3fb6b4dd9dffa1941735e9f6b5de3c36e2b7",
       "Requirements": [
         "cli",
         "rlang",
         "targets"
       ],
-      "Hash": "0f0635718a4f1935f7a6eec7cb583903"
+      "Hash": "6ce505a642434c76777364700ebba42d"
     },
     "getip": {
       "Package": "getip",
@@ -2468,16 +2469,16 @@
     },
     "tarchetypes": {
       "Package": "tarchetypes",
-      "Version": "0.8.0",
+      "Version": "0.9.0",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
         "R",
-        "digest",
         "dplyr",
         "fs",
         "parallel",
         "rlang",
+        "secretbase",
         "targets",
         "tibble",
         "tidyselect",
@@ -2485,19 +2486,13 @@
         "vctrs",
         "withr"
       ],
-      "Hash": "38eddad863e58b95761d967887d7b59a"
+      "Hash": "094a74cdaa048b727d52aebf4c80ed7a"
     },
     "targets": {
       "Package": "targets",
-      "Version": "1.7.0.9000",
-      "Source": "GitHub",
-      "RemoteType": "github",
-      "RemoteHost": "api.github.com",
-      "RemoteRepo": "targets",
-      "RemoteUsername": "ropensci",
-      "RemotePkgRef": "ropensci/targets",
-      "RemoteRef": "HEAD",
-      "RemoteSha": "adc116f8aa5582320226ef8d62b1fea42450e520",
+      "Version": "1.7.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
       "Requirements": [
         "R",
         "R6",
@@ -2519,7 +2514,7 @@
         "vctrs",
         "yaml"
       ],
-      "Hash": "d5e413993d13f10f6926eaa1a10da545"
+      "Hash": "27ee47827a89430be0d38b78c0cb8fb7"
     },
     "terra": {
       "Package": "terra",
