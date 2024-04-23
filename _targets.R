@@ -28,9 +28,7 @@ if (isTRUE(hpc)) {
     slurm_cpus_per_task = 3, #use 3 cpus per worker
     script_lines = c(
       "#SBATCH --account theresam",
-      "module load R",
-      "module load gdal",
-      "module load eigen"
+      "module load gdal/3.8.5 R/4.3 eigen/3.4.0"
       #add additional lines to the SLURM job script as necessary here
     )
   )
