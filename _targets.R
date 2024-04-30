@@ -16,7 +16,7 @@ hpc <- grepl("hpc\\.arizona\\.edu", slurm_host) & !grepl("ood", slurm_host)
 # If on HPC, use SLURM jobs for parallel workers
 if (isTRUE(hpc)) {
   controller <- crew.cluster::crew_controller_slurm(
-    workers = 3, #TODO increase for production
+    workers = 5, 
     seconds_idle = 300, #  time until workers are shut down after idle
     garbage_collection = TRUE, # run garbage collection between tasks
     launch_max = 5L, # number of unproductive launched workers until error
@@ -33,8 +33,8 @@ if (isTRUE(hpc)) {
     )
   )
   #when on HPC, do ALL the thresholds
-  # threshold <- seq(50, 2500, by = 50) #Uncomment to do them all
-  threshold <- c(50, 1000, 2500)
+  threshold <- seq(50, 2500, by = 50)
+  # threshold <- c(50, 1000, 2500)
   
 } else { # If local or on OOD session, use multiple R sessions for workers
   controller <- crew::crew_controller_local(workers = 3, seconds_idle = 60)
@@ -57,7 +57,6 @@ tar_source()
 # Replace the target list below with your own:
 
 main <- tar_plan(
-  # years = seq(1981, 2023, by = 8),
   years = 1981:2023,
   tar_target(
     name = prism_tmean,
@@ -72,13 +71,14 @@ main <- tar_plan(
     values = list(threshold = threshold),
     tar_terra_rast(
       gdd_doy,
-      #TODO: this is not the final method for calculating GDD
       calc_gdd_doy(rast_dir = prism_tmean, casc_ne = casc_ne, gdd_threshold = threshold),
       pattern = map(prism_tmean),
       iteration = "list"
     ),
     
-    #This converts the output of the dynamic branching to be SpatRasters with multiple layers instead of lists of SpatRasters. Would love to not have to have this target, but there is no way to customize how iteration works.
+    # This converts the output of the dynamic branching to be SpatRasters with
+    # multiple layers instead of lists of SpatRasters. Would love to not have to
+    # have this target, but there is no way to customize how iteration works.
     tar_terra_rast(
       gdd_doy_stack,
       terra::rast(unname(gdd_doy))
@@ -102,8 +102,8 @@ main <- tar_plan(
       deployment = "main"
     ),
     tar_target(
-      normals_means_gtiff,
-      write_tiff(normals_summary[[1]], filename = paste0("normals_mean_", threshold, ".tiff")),
+      normals_gtiff,
+      write_tiff(normals_summary, filename = paste0("normals_summary_", threshold, ".tiff")),
       format = "file"
     ),
     tar_target(
