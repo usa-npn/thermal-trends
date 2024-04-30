@@ -46,7 +46,7 @@ if (isTRUE(hpc)) {
 tar_option_set(
   # Packages that your targets need for their tasks.
   packages = c("fs", "terra", "stringr", "lubridate", "colorspace", "purrr",
-               "ggplot2", "tidyterra", "glue", "car", "httr2"),
+               "ggplot2", "tidyterra", "glue", "car", "httr2", "tidyr"),
   controller = controller
 )
 
@@ -119,6 +119,14 @@ main <- tar_plan(
   ),
 )
 
+#just use one threshold for now
+gams <- tar_plan(
+  tar_target(
+    gam_df,
+    make_model_df(gdd_doy_stack_50)
+  )
+)
+
 reports <- tar_plan(
   # Reports
   # tar_quarto(spatial_report, path = "docs/spatial-trends-report.qmd", working_directory = "docs"),
@@ -127,7 +135,7 @@ reports <- tar_plan(
 
 #if on HPC don't render quarto docs (no quarto or pandoc on HPC)
 if (isTRUE(hpc)) {
-  main
+  list(main, gams)
 } else {
-  list(main, reports)
+  list(main, gams, reports)
 }
