@@ -122,8 +122,13 @@ main <- tar_plan(
 #just use one threshold for now
 gams <- tar_plan(
   tar_target(
-    gam_df,
-    make_model_df(gdd_doy_stack_50)
+    gam_df_50,
+    make_model_df(gdd_doy_stack_50, agg_factor = 6)
+  ),
+  tar_target(
+    model_50,
+    fit_bam(gam_df_50),
+    packages = c("mgcv")
   )
 )
 
