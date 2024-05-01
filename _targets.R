@@ -102,8 +102,13 @@ main <- tar_plan(
       deployment = "main"
     ),
     tar_target(
-      normals_gtiff,
-      write_tiff(normals_summary, filename = paste0("normals_summary_", threshold, ".tiff")),
+      normals_mean_gtiff,
+      write_tiff(normals_summary[["mean"]], filename = paste0("normals_mean_", threshold, ".tiff")),
+      format = "file"
+    ),
+    tar_target(
+      normals_sd_gtiff,
+      write_tiff(normals_summary[["sd"]], filename = paste0("normals_sd_", threshold, ".tiff")),
       format = "file"
     ),
     tar_target(
