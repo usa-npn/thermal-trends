@@ -123,7 +123,7 @@ main <- tar_plan(
 gams <- tar_plan(
   tar_target(
     gam_df_50,
-    make_model_df(gdd_doy_stack_50, agg_factor = 6)
+    make_model_df(gdd_doy_stack_50, agg_factor = 8)
   ),
   tar_target(
     model_50,
