@@ -107,6 +107,7 @@ k[(m[j-1]+1):m[j]]
 #the indices to be predicted:
 i[(mi[j-1]+1):mi[j]]
 
+nei = list(k, m, i, mi)
 
 df |> 
   slice(k[(m[j-1]+1):m[j]]) |>
@@ -115,8 +116,91 @@ df |>
   geom_point(data = df |> slice(i[(mi[j-1]+1):mi[j]]), color = "red")
 
 
-nei = list(k, m, i, mi)
 
 m_spatial_ncv <- gam(z ~ s(x,y), data = df, method = "NCV", nei = nei)
 
 draw(m_spatial_ncv)
+
+
+
+# can we use terra to help in some way?
+library(terra)
+library(tidyterra)
+library(tidyverse)
+library(targets)
+library(sf)
+tar_load(gam_df_50)
+tar_load(gdd_doy_stack_50)
+#reproject into units of meters
+rast_m <- project(gdd_doy_stack_50, "EPSG:32618")
+rast_m
+plot(rast_m[[1]])
+# get buffers around each pixel (I think?)
+rast_buf <- buffer(rast_m, width =  10000) #10km
+plot(rast_buf[[1]])
+#nope, that gets a buffer around the whole thing
+
+#this creates a bunch of circles of radius 10km (I think) with the centers being each pixel?
+rast_buf2 <- rast_m |> as.points() |> buffer(width = 10000)
+rast_buf2 |> st_as_sf() |> select(`2018`) |> slice_head(n = 500) |> plot()
+
+#but how to get that into indexes??
+
+mod_df <-
+  rast_m |>
+  as_tibble(xy = TRUE, na.rm = TRUE) |> 
+  pivot_longer(c(-x, -y), names_to = "year", values_to = "doy", names_transform = list(year = as.numeric)) |> 
+  mutate(year_scaled = year - min(year))
+
+mod_sf <- sf::st_as_sf(mod_df, coords = c("x", "y"), crs = crs(rast_m))
+mod_sf |> st_buffer(dist = 10000)
+
+
+#Seems complicated to do this with circles and buffers, but what if we just try square neighborhoods with the actual data.  First, re-project so units are meters.
+
+rast_m <- project(gdd_doy_stack_50, "EPSG:32618")
+rast_m
+
+#then extract data as a tibble
+mod_df <-
+  rast_m |>
+  as_tibble(xy = TRUE, na.rm = TRUE) |> 
+  pivot_longer(c(-x, -y), names_to = "year", values_to = "doy", names_transform = list(year = as.numeric)) |> 
+  mutate(year_scaled = year - min(year))
+
+
+#then create the nei list elements
+
+buffer <- 10000 #10km I think
+
+k_list <- 
+  map2(mod_df$x, mod_df$y, #for every row...
+       \(x.i, y.i) { 
+         mod_df |> 
+           rownames_to_column("i") |>
+           #filter to include points within a range of each point
+           filter(x > x.i - buffer, 
+                  x < x.i + buffer,
+                  y > y.i - buffer, 
+                  y < y.i + buffer) |> 
+           pull(i) #and get the indexes
+       }
+  )
+k <- list_c(k_list) #combine into a single vector
+#index of k that is the end of each neighborhood
+m <-  k_list |> map_dbl(length) |> cumsum()
+
+# center of each neighborhood for all years
+# so just the indexes of each *unique* pixel
+i_list <- #hmm something like 
+  map2(mod_df$x, mod_df$y, \(x.i, y.i) {
+    mod_df |> 
+      rownames_to_column("i") |> 
+      filter(x == x.i, y == y.i) |>
+      pull(i)
+  })
+i <- list_c(i)
+  
+mi <- i_list |> map_dbl(length) |> cumsum()
+
+nei <- list(k, m, i, mi)
