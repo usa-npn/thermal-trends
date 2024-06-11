@@ -2,7 +2,7 @@
 get_lm_slope <- function(gdd_stack) {
   years <- as.integer(names(gdd_stack))
   getTrend <- function(x) {
-    if (any(is.na(x))) {
+    if (sum(!is.na(x)) < 3) { 
       c(slope = NA, p.val = NA)
     } else {
       m = lm(x ~ years)
