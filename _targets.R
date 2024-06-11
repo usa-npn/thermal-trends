@@ -39,14 +39,14 @@ if (isTRUE(hpc)) {
 } else { # If local or on OOD session, use multiple R sessions for workers
   controller <- crew::crew_controller_local(workers = 3, seconds_idle = 60)
   
-  threshold <- c(50, 1000, 2500)
+  threshold <- c(50, 1250, 2500)
 }
 
 # Set target options:
 tar_option_set(
   # Packages that your targets need for their tasks.
   packages = c("fs", "terra", "stringr", "lubridate", "colorspace", "purrr",
-               "ggplot2", "tidyterra", "glue", "car", "httr2"),
+               "ggplot2", "tidyterra", "glue", "car", "httr2", "readr"),
   controller = controller
 )
 
@@ -94,7 +94,8 @@ main <- tar_plan(
     ),
     tar_target(
       trend_plot,
-      plot_slopes(doy_trend, threshold = threshold)
+      plot_slopes(doy_trend, threshold = threshold),
+      format = "file"
     ),
     tar_terra_rast(
       normals_summary,
@@ -124,15 +125,41 @@ main <- tar_plan(
   ),
 )
 
+get_results <- tar_plan(
+  tar_map(#for selected thresholds
+    values = list(
+      trend_raster = rlang::syms(
+        c("doy_trend_50", "doy_trend_1250", "doy_trend_2500")
+        # Or to do all of them
+        # paste("doy_trend", threshold, sep = "_")
+      )
+    ),
+    tar_target(
+      df,
+      trend_rast2df(trend_raster)
+    )
+  )
+)
+
+combine_results <- tar_plan(
+  tar_combine(
+    trend_data,
+    get_results
+  ),
+  tar_file(
+    trend_data_csv,
+    tar_write_csv(trend_data, "output/slopes.csv")
+  )
+)
 reports <- tar_plan(
-  # Reports
+  # Reports 
   # tar_quarto(spatial_report, path = "docs/spatial-trends-report.qmd", working_directory = "docs"),
   # tar_quarto(readme, path = "README.Qmd", cue = tar_cue("always"))
 )
 
 #if on HPC don't render quarto docs (no quarto or pandoc on HPC)
 if (isTRUE(hpc)) {
-  main
+  list(main, get_results, combine_results)
 } else {
-  list(main, reports)
+  list(main, get_results, combine_results, reports)
 }
