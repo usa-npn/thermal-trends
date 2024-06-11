@@ -1,206 +1,67 @@
-library(mgcv)
-library(dplyr)
-library(ggplot2)
-library(gratia)
-?NCV
-
-nei.cor <- function(h,n) { ## construct nei structure
-  nei <- list(mi=1:n,i=1:n)
-  nei$m <- cumsum(c((h+1):(2*h+1),rep(2*h+1,n-2*h-2),(2*h+1):(h+1)))
-  k0 <- rep(0,0); if (h>0) for (i in 1:h) k0 <- c(k0,1:(h+i))
-  k1 <- n-k0[length(k0):1]+1
-  nei$k <- c(k0,1:(2*h+1)+rep(0:(n-2*h-1),each=2*h+1),k1)
-  nei
-}
-set.seed(1)
-n <- 500;sig <- .6
-x <- 0:(n-1)/(n-1)
-f <- sin(4*pi*x)*exp(-x*2)*5/2
-e <- rnorm(n,0,sig)
-for (i in 2:n) e[i] <- 0.6*e[i-1] + e[i]
-y <- f + e ## autocorrelated data
-
-df |> slice <- tibble(x, y)
-ggplot(df |> slice, aes(x, y))+ geom_point()
-
-nei <- nei.cor(4,n) ## construct neighbourhoods to mitigate 
-View(nei)
-# in nei...
-# k is a sliding window of 9 index values
-head(nei$k, n = 20)
-# m is the index of k that is the end of each neighborhood.  For the 5th neighborhood...
-j = 5
-nei$m[j] #index 35 of k is the end of the neighborhood
-nei$k[nei$m[j]] # which is the 9th value
-#so the whole neighborhood is
-nei$k[(nei$m[j-1]+1):nei$m[j]]
-# i is the index of points to predict, in this case it's just every point?
-# mi is also just 1:500 in this example
-# I think that means this is leave-one-out example? "If m=n and α(k)=δ(k)=k then ordinary leave-one-out cross validation is recovered"
-
-
-
-b0 <- gam(y~s(x,k=40)) ## GCV based fit
-draw(b0)
-
-gc <- gam.control(ncv.threads=2)
-b1 <- gam(y~s(x,k=40),method="NCV",nei=nei,control=gc)
-draw(b1)
-
-## use "QNCV", which is identical here...
-b2 <- gam(y~s(x,k=40),method="QNCV",nei=nei,control=gc)
-draw(b2)
-
-## plot GCV and NCV based fits...
-compare_smooths(b0, b1, b2) |> draw()
-
-
-
-# spatial -----------------------------------------------------------------
-
-# What would this look like for a spatial gam?
-
-library(tidyr)
-df <- tidyr::expand_grid(x = 1:20, y = 1:20) |> 
-  mutate(z = rnorm(n()))
-
-m_spatial <- gam(z ~ s(x,y), data = df)
-draw(m_spatial)
-
-# let's try neighborhoods of 9 units on all sides of each point
-
-## We need a vector of indices to be dropped for each neighborhood.  Basically need a sliding window but in 2D space.
-
-library(purrr)
-#indices to be dropped
-k_list <- 
-  map2(df$x, df$y, \(x.i, y.i) {
-    expand_grid(x = x.i + -3:3, y = y.i + -3:3) 
-  }) |> 
-  map(\(exclude) {
-    which(df$x %in% exclude$x & df$y %in% exclude$y)
-  })
-
-k <- list_c(k_list)
-head(k, 20)
-df |> slice(head(k, 20))
-
-#index of k that is the end of each neighborhood
-m <-
-  k_list |> map_dbl(length) |> cumsum()
-
-# index of points to predict (not sure how to decide on this, but I think for leave-one-out NCV it's just all the points. i.e. the "one" in leave-one-out is the center of each neighborhood, which is each point)
-i <- seq_len(nrow(df))
-
-# mi is like m above, but for i.  Gives the end index of each i
-
-mi <- i
-  
-#for jth neighborhood
-
-j = 70
-
-#the indices of the neighborhood:
-
-k[(m[j-1]+1):m[j]]
-
-#the indices to be predicted:
-i[(mi[j-1]+1):mi[j]]
-
-nei = list(k, m, i, mi)
-
-df |> 
-  slice(k[(m[j-1]+1):m[j]]) |>
-  ggplot(aes(x,y)) +
-  geom_point() +
-  geom_point(data = df |> slice(i[(mi[j-1]+1):mi[j]]), color = "red")
-
-
-
-m_spatial_ncv <- gam(z ~ s(x,y), data = df, method = "NCV", nei = nei)
-
-draw(m_spatial_ncv)
-
-
-
-# can we use terra to help in some way?
-library(terra)
-library(tidyterra)
-library(tidyverse)
 library(targets)
-library(sf)
-tar_load(gam_df_50)
+library(tictoc)
+library(gratia)
+library(mgcv)
+tar_load_globals()
 tar_load(gdd_doy_stack_50)
-#reproject into units of meters
-rast_m <- project(gdd_doy_stack_50, "EPSG:32618")
-rast_m
-plot(rast_m[[1]])
-# get buffers around each pixel (I think?)
-rast_buf <- buffer(rast_m, width =  10000) #10km
-plot(rast_buf[[1]])
-#nope, that gets a buffer around the whole thing
 
-#this creates a bunch of circles of radius 10km (I think) with the centers being each pixel?
-rast_buf2 <- rast_m |> as.points() |> buffer(width = 10000)
-rast_buf2 |> st_as_sf() |> select(`2018`) |> slice_head(n = 500) |> plot()
+# Convert to meters so x and y are in same units
+gdd_rast_m <- gdd_doy_stack_50 |> project(crs("EPSG:32618"))
 
-#but how to get that into indexes??
+# Aggregate a TON to make this faster to iterate on
+model_df <- make_model_df(gdd_rast_m, agg_factor = 15)
+dim(model_df)
+ggplot(model_df, aes(x = x, y = y)) +
+  geom_raster(aes(fill = doy)) +
+  scale_fill_viridis_c()
 
-mod_df <-
-  rast_m |>
-  as_tibble(xy = TRUE, na.rm = TRUE) |> 
-  pivot_longer(c(-x, -y), names_to = "year", values_to = "doy", names_transform = list(year = as.numeric)) |> 
-  mutate(year_scaled = year - min(year))
+# Create `nei` object with poorly written slow custom function
+nei <- make_nei(model_df, buffer = 100000)
+#TODO currently this nei only does NCV spatially, not spatio-temporally. I think the spatio-temporal version would extend this to think of time as a third dimension and each "neighborhood" would be a rectangular prism (±x, ±y, ±time) around a central pixel where the distance (in "pixels") in space could be different than the distance in time.
 
-mod_sf <- sf::st_as_sf(mod_df, coords = c("x", "y"), crs = crs(rast_m))
-mod_sf |> st_buffer(dist = 10000)
+#check that this is doing what I think it's doing
+pl <- list()
+for(pli in sample(1:nrow(model_df), 9)){
+  # for(pli in c(10:18)) {
+  pl[[paste0(pli)]] <- ggplot(model_df, aes(x=x, y=y, fill=doy)) +
+    geom_raster() +
+    geom_point(aes(x=x, y=y), size=2,
+               data=model_df[nei$k[(nei$m[pli-1]+1):nei$m[pli]], ]) +
+    scale_fill_viridis_c() +
+    coord_equal() +
+    theme_minimal()
+}
 
+patchwork::wrap_plots(pl, ncol=3, nrow=3) + patchwork::plot_layout(guides = "collect", axes = "collect")
 
-#Seems complicated to do this with circles and buffers, but what if we just try square neighborhoods with the actual data.  First, re-project so units are meters.
+# Fit some GAMs.
+# Could use `bam()` for the REML version, but it doesn't work with "NCV", so using gam() for both to even the playing field
 
-rast_m <- project(gdd_doy_stack_50, "EPSG:32618")
-rast_m
+tic()
+doy_reml <- mgcv::gam(
+  doy ~ ti(y, x, bs = "cr", d = 2, k = 40) +
+    ti(year_scaled, bs = "cr") +
+    ti(y, x, year_scaled, d = c(2,1), bs = c("cr", "cr"), k = c(40, 5)),
+  data = model_df,
+  method = "REML"
+)
+toc() #9.2 sec with default knots
+k.check(doy_reml) #not enough knots
 
-#then extract data as a tibble
-mod_df <-
-  rast_m |>
-  as_tibble(xy = TRUE, na.rm = TRUE) |> 
-  pivot_longer(c(-x, -y), names_to = "year", values_to = "doy", names_transform = list(year = as.numeric)) |> 
-  mutate(year_scaled = year - min(year))
+#NCV
+tic()
+doy_ncv <- mgcv::gam(
+  doy ~ ti(y, x, bs = "cr", d = 2, k = 40) +
+    ti(year_scaled, bs = "cr") +
+    ti(y, x, year_scaled, d = c(2,1), bs = c("cr", "cr"), k = c(40, 5)),
+  data = model_df,
+  method = "NCV",
+  nei = nei
+)
+toc() #56.254 sec with default knots
+k.check(doy_ncv) #maybe enough knots?
 
-
-#then create the nei list elements
-
-buffer <- 10000 #10km I think
-
-k_list <- 
-  map2(mod_df$x, mod_df$y, #for every row...
-       \(x.i, y.i) { 
-         mod_df |> 
-           rownames_to_column("i") |>
-           #filter to include points within a range of each point
-           filter(x > x.i - buffer, 
-                  x < x.i + buffer,
-                  y > y.i - buffer, 
-                  y < y.i + buffer) |> 
-           pull(i) #and get the indexes
-       }
-  )
-k <- list_c(k_list) #combine into a single vector
-#index of k that is the end of each neighborhood
-m <-  k_list |> map_dbl(length) |> cumsum()
-
-# center of each neighborhood for all years
-# so just the indexes of each *unique* pixel
-i_list <- #hmm something like 
-  map2(mod_df$x, mod_df$y, \(x.i, y.i) {
-    mod_df |> 
-      rownames_to_column("i") |> 
-      filter(x == x.i, y == y.i) |>
-      pull(i)
-  })
-i <- list_c(i)
-  
-mi <- i_list |> map_dbl(length) |> cumsum()
-
-nei <- list(k, m, i, mi)
+summary(doy_ncv)
+summary(doy_reml)
+gratia::draw(doy_ncv)
+gratia::draw(doy_reml)
