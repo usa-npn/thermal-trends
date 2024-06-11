@@ -148,7 +148,7 @@ combine_results <- tar_plan(
   ),
   tar_file(
     trend_data_csv,
-    tar_write_csv(trend_data, "output/slopes.csv")
+    tar_write_csv(trend_data, "output/data/slopes.csv")
   )
 )
 reports <- tar_plan(
