@@ -1,2 +1,4 @@
-data/prism/
+data/
 notes/
+_targets/
+_output/
