@@ -153,7 +153,7 @@ gams <- tar_plan(
   ),
   tar_target(
     nei,
-    make_nei(gam_df_50, buffer = 100000),
+    make_nei(gam_df_50, buffer = 200000), #200km
     description = "create `nei` object required by mgcv for 'NCV' method"
   ),
   tar_map(
