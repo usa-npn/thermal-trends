@@ -6,7 +6,7 @@
 #   )
 # }
 
-fit_bam <- function(data, k_spatial = 25, k_year = 5) {
+fit_bam <- function(data, k_spatial = 25, k_year = 10) {
   mgcv::bam(
     doy ~ ti(y, x, bs = "cr", d = 2, k = k_spatial) +
       ti(year_scaled, bs = "cr", k = k_year) +
@@ -16,7 +16,7 @@ fit_bam <- function(data, k_spatial = 25, k_year = 5) {
   )
 }
 
-fit_ncv <- function(data, nei, k_spatial = 25, k_year = 5, threads = 2) {
+fit_ncv <- function(data, nei, k_spatial = 25, k_year = 10, threads = 2) {
   mgcv::gam(
     doy ~ ti(y, x, bs = "cr", d = 2, k = k_spatial) +
       ti(year_scaled, bs = "cr", k = k_year) +
