@@ -124,12 +124,26 @@ main <- tar_plan(
 gams <- tar_plan(
   tar_target(
     gam_df_50,
-    make_model_df(gdd_doy_stack_50, agg_factor = 8)
+    #project to units of meters and aggregate a LOT for testing
+    make_model_df(gdd_doy_stack_50 |> project(crs("EPSG:32618")), agg_factor = 15)
   ),
   tar_target(
-    model_50,
-    fit_bam(gam_df_50),
-    packages = c("mgcv")
+    nei,
+    make_nei(gam_df_50, buffer = 100000),
+    description = "create `nei` object required by mgcv for 'NCV' method"
+  ),
+  tar_map(
+    values = list(k_spatial = c(25, 30, 35)),
+    tar_target(
+      gam_reml,
+      fit_bam(gam_df_50, k_spatial = k_spatial),
+      packages = c("mgcv")
+    ),
+    tar_target(
+      gam_ncv,
+      fit_ncv(gam_df_50, nei = nei, k_spatial = k_spatial),
+      packages = c("mgcv")
+    )
   )
 )
 

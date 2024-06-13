@@ -2,7 +2,6 @@
 library(microbenchmark)
 d <- 1e3
 x <- matrix(rnorm(d^2), d, d)
-
 microbenchmark(tcrossprod(x), solve(x), svd(x), times = 10L)
 # Unit: milliseconds
 #          expr       min        lq      mean    median        uq       max neval
