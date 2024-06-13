@@ -170,6 +170,14 @@ gams <- tar_plan(
       resources = tar_resources(
         crew = tar_resources_crew(controller = ifelse(isTRUE(hpc), "hpc_heavy", "local"))
       )
+    ),
+    tar_file(
+      gam_ncv_png,
+      draw_gam(gam_ncv)
+    ),
+    tar_file(
+      gam_reml_png,
+      draw_gam(gam_reml)
     )
   )
 )
