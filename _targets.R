@@ -82,7 +82,6 @@ tar_source()
 # Replace the target list below with your own:
 
 main <- tar_plan(
-  # years = seq(1981, 2023, by = 8),
   years = 1981:2023,
   tar_target(
     name = prism_tmean,
@@ -97,13 +96,14 @@ main <- tar_plan(
     values = list(threshold = threshold),
     tar_terra_rast(
       gdd_doy,
-      #TODO: this is not the final method for calculating GDD
       calc_gdd_doy(rast_dir = prism_tmean, casc_ne = casc_ne, gdd_threshold = threshold),
       pattern = map(prism_tmean),
       iteration = "list"
     ),
     
-    #This converts the output of the dynamic branching to be SpatRasters with multiple layers instead of lists of SpatRasters. Would love to not have to have this target, but there is no way to customize how iteration works.
+    # This converts the output of the dynamic branching to be SpatRasters with
+    # multiple layers instead of lists of SpatRasters. Would love to not have to
+    # have this target, but there is no way to customize how iteration works.
     tar_terra_rast(
       gdd_doy_stack,
       terra::rast(unname(gdd_doy))
@@ -119,7 +119,8 @@ main <- tar_plan(
     ),
     tar_target(
       trend_plot,
-      plot_slopes(doy_trend, threshold = threshold)
+      plot_slopes(doy_trend, threshold = threshold),
+      format = "file"
     ),
     tar_terra_rast(
       normals_summary,
@@ -127,8 +128,13 @@ main <- tar_plan(
       deployment = "main"
     ),
     tar_target(
-      normals_means_gtiff,
-      write_tiff(normals_summary[[1]], filename = paste0("normals_mean_", threshold, ".tiff")),
+      normals_mean_gtiff,
+      write_tiff(normals_summary[["mean"]], filename = paste0("normals_mean_", threshold, ".tiff")),
+      format = "file"
+    ),
+    tar_target(
+      normals_sd_gtiff,
+      write_tiff(normals_summary[["sd"]], filename = paste0("normals_sd_", threshold, ".tiff")),
       format = "file"
     ),
     tar_target(
@@ -144,7 +150,6 @@ main <- tar_plan(
   ),
 )
 
-#just use one threshold for now
 gams <- tar_plan(
   tar_target(
     gam_df_50,
@@ -179,18 +184,45 @@ gams <- tar_plan(
       gam_reml_png,
       draw_gam(gam_reml)
     )
+  )      
+)
+
+get_results <- tar_plan(
+  tar_map(#for selected thresholds
+    values = list(
+      trend_raster = rlang::syms(
+        c("doy_trend_50", "doy_trend_1250", "doy_trend_2500")
+        # Or to do all of them
+        # paste("doy_trend", threshold, sep = "_")
+      )
+    ),
+    tar_target(
+      df,
+      trend_rast2df(trend_raster)
+    )
+  )
+)
+
+combine_results <- tar_plan(
+  tar_combine(
+    trend_data,
+    get_results
+  ),
+  tar_file(
+    trend_data_csv,
+    tar_write_csv(trend_data, "output/data/slopes.csv")
   )
 )
 
 reports <- tar_plan(
-  # Reports
+  # Reports 
   # tar_quarto(spatial_report, path = "docs/spatial-trends-report.qmd", working_directory = "docs"),
   # tar_quarto(readme, path = "README.Qmd", cue = tar_cue("always"))
 )
 
 #if on HPC don't render quarto docs (no quarto or pandoc on HPC)
 if (isTRUE(hpc)) {
-  list(main, gams)
+  list(main, gams, get_results, combine_results)
 } else {
-  list(main, gams, reports)
+  list(main, gams, get_results, combine_results, reports)
 }
