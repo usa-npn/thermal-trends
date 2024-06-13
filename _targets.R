@@ -157,7 +157,7 @@ gams <- tar_plan(
     description = "create `nei` object required by mgcv for 'NCV' method"
   ),
   tar_map(
-    values = list(k_spatial = c(25, 30, 35)),
+    values = list(k_spatial = c(25, 50, 75)),
     tar_target(
       gam_reml,
       fit_bam(gam_df_50, k_spatial = k_spatial),
