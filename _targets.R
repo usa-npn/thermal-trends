@@ -88,7 +88,7 @@ main <- tar_plan(
     command = get_prism_tmean(years),
     pattern = map(years),
     deployment = "main", #prevent downloads from running in parallel
-    format = "file"
+    format = "file_fast" #just check last modified date
   ),
   tar_file(casc_ne_file, "data/Northeast_CASC.zip"),
   tar_terra_vect(casc_ne, read_casc_ne(casc_ne_file)),
@@ -150,6 +150,39 @@ main <- tar_plan(
   ),
 )
 
+get_results <- tar_plan(
+  tar_map(#for selected thresholds
+    values = list(
+      trend_raster = rlang::syms(
+        c("doy_trend_50", "doy_trend_1250", "doy_trend_2500")
+        # Or to do all of them
+        # paste("doy_trend", threshold, sep = "_")
+      )
+    ),
+    tar_target(
+      df,
+      trend_rast2df(trend_raster)
+    )
+  )
+)
+
+combine_results <- tar_plan(
+  tar_combine(
+    trend_data,
+    get_results
+  ),
+  tar_file(
+    trend_data_csv,
+    tar_write_csv(trend_data, "output/data/slopes.csv")
+  )
+)
+
+reports <- tar_plan(
+  # Reports 
+  # tar_quarto(spatial_report, path = "docs/spatial-trends-report.qmd", working_directory = "docs"),
+  # tar_quarto(readme, path = "README.Qmd", cue = tar_cue("always"))
+)
+
 gams <- tar_plan(
   tar_target(
     gam_df_50,
@@ -185,39 +218,6 @@ gams <- tar_plan(
       draw_gam(gam_reml)
     )
   )      
-)
-
-get_results <- tar_plan(
-  tar_map(#for selected thresholds
-    values = list(
-      trend_raster = rlang::syms(
-        c("doy_trend_50", "doy_trend_1250", "doy_trend_2500")
-        # Or to do all of them
-        # paste("doy_trend", threshold, sep = "_")
-      )
-    ),
-    tar_target(
-      df,
-      trend_rast2df(trend_raster)
-    )
-  )
-)
-
-combine_results <- tar_plan(
-  tar_combine(
-    trend_data,
-    get_results
-  ),
-  tar_file(
-    trend_data_csv,
-    tar_write_csv(trend_data, "output/data/slopes.csv")
-  )
-)
-
-reports <- tar_plan(
-  # Reports 
-  # tar_quarto(spatial_report, path = "docs/spatial-trends-report.qmd", working_directory = "docs"),
-  # tar_quarto(readme, path = "README.Qmd", cue = tar_cue("always"))
 )
 
 #if on HPC don't render quarto docs (no quarto or pandoc on HPC)
