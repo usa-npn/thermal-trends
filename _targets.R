@@ -92,6 +92,10 @@ main <- tar_plan(
       doy_trend,
       get_lm_slope(gdd_doy_stack)
     ),
+    tar_file(
+      doy_trend_tif,
+      write_tiff(doy_trend, filename = paste0("doy_trend_", threshold, ".tif"))
+    ),
     tar_target(
       trend_plot,
       plot_slopes(doy_trend, threshold = threshold),
