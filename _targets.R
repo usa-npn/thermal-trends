@@ -65,7 +65,7 @@ main <- tar_plan(
     deployment = "main", #prevent downloads from running in parallel
     format = "file"
   ),
-  tar_terra_vect(roi, make_roi()),
+  tar_terra_vect(roi, make_roi(), deployment = "main"),
   tar_map(
     values = list(threshold = threshold),
     tar_terra_rast(
