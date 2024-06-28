@@ -46,7 +46,7 @@ if (isTRUE(hpc)) {
 tar_option_set(
   # Packages that your targets need for their tasks.
   packages = c("fs", "terra", "stringr", "lubridate", "colorspace", "purrr",
-               "ggplot2", "tidyterra", "glue", "car", "httr2", "readr"),
+               "ggplot2", "tidyterra", "glue", "car", "httr2", "readr", "sf", "maps"),
   controller = controller
 )
 
@@ -65,13 +65,12 @@ main <- tar_plan(
     deployment = "main", #prevent downloads from running in parallel
     format = "file"
   ),
-  tar_file(casc_ne_file, "data/Northeast_CASC.zip"),
-  tar_terra_vect(casc_ne, read_casc_ne(casc_ne_file)),
+  tar_terra_vect(roi, make_roi()),
   tar_map(
     values = list(threshold = threshold),
     tar_terra_rast(
       gdd_doy,
-      calc_gdd_doy(rast_dir = prism_tmean, casc_ne = casc_ne, gdd_threshold = threshold),
+      calc_gdd_doy(rast_dir = prism_tmean, roi = roi, gdd_threshold = threshold),
       pattern = map(prism_tmean),
       iteration = "list"
     ),
@@ -92,9 +91,10 @@ main <- tar_plan(
       doy_trend,
       get_lm_slope(gdd_doy_stack)
     ),
-    tar_file(
+    tar_target(
       doy_trend_tif,
-      write_tiff(doy_trend, filename = paste0("doy_trend_", threshold, ".tif"))
+      write_tiff(doy_trend, filename = paste0("doy_trend_", threshold, ".tif")),
+      format = "file"
     ),
     tar_target(
       trend_plot,

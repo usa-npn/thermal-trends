@@ -1,12 +1,12 @@
 #' Calculate DOY to reach a theshold GDD
 #'
 #' @param rast_dir Path to directory containing PRISM mean temp data for a single year. Assumes folder name is just the year.
-#' @param casc_ne SpatVector object with boundaries of CASC Northeast region
+#' @param roi SpatVector object with boundaries of region of interest
 #' @param gdd_threshold Threshold GDD
 #' @param gdd_base Temperature base, in ºC, for calculating GDD
 #'
 #' @return SpatRaster
-calc_gdd_doy <- function(rast_dir, casc_ne, gdd_threshold, gdd_base = 0) {
+calc_gdd_doy <- function(rast_dir, roi, gdd_threshold, gdd_base = 0) {
   files <- dir_ls(rast_dir, glob = "*.zip")
 
   #convert filenames to DOY to name layers later
@@ -31,9 +31,9 @@ calc_gdd_doy <- function(rast_dir, casc_ne, gdd_threshold, gdd_base = 0) {
   #sort layers by DOY
   prism <- subset(prism, as.character(min(doys):max(doys)))
   
-  #crop to northeast
-  ne <- casc_ne |> project(prism)
-  prism_ne <- crop(prism, ne, mask = TRUE)
+  #crop to roi
+  roi <- project(roi, prism)
+  prism_ne <- crop(prism, roi, mask = TRUE)
   
   # convert to degree days
   # function for a single layer:
