@@ -18,6 +18,7 @@ if (isTRUE(hpc)) {
   controller <- crew.cluster::crew_controller_slurm(
     workers = 5, 
     seconds_idle = 300, #  time until workers are shut down after idle
+    tasks_max = 20, # make workers semi-persistent—launch new SLURM job after 20 targets
     garbage_collection = TRUE, # run garbage collection between tasks
     launch_max = 5L, # number of unproductive launched workers until error
     slurm_partition = "standard",
