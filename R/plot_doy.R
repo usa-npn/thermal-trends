@@ -25,7 +25,7 @@ plot_doy <- function(gdd_stack, threshold, out_dir = "output/figs", ext = "png",
       option = "B",
       direction = -1, #earlier DOY = hotter color
       end = 0.9, #don't use the lightest yellow—hard to see on white background
-      oob = oob_squish_infinite,
+      oob = scales::oob_squish_infinite,
       breaks = breaks_squish_doy(values(gdd_stack))
     ) +    
     facet_wrap(~lyr, ncol = 10) +
