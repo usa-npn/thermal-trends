@@ -60,6 +60,7 @@ controller_hpc_heavy <-
 controller_local <-
   crew::crew_controller_local(
     name = "local",
+    local_log_directory = "logs/",
     workers = 3, 
     seconds_idle = 60
   )
@@ -69,7 +70,7 @@ if (isTRUE(hpc)) {
   threshold <- seq(50, 2500, by = 50)
   # threshold <- c(50, 1000, 2500)
 } else { # If local or on OOD session, use multiple R sessions for workers
-  threshold <- c(50, 1250, 2500)
+  threshold <- c(50, 900, 1250, 2500)
 }
 
 # Set target options:
@@ -118,6 +119,7 @@ main <- tar_plan(
     tar_target(
       doy_plot,
       plot_doy(gdd_doy_stack, threshold = threshold, width = 15, height = 8),
+      resources = tar_resources(crew = tar_resources_crew(controller = "hpc_heavy")),
       format = "file"
     ),
     tar_terra_rast(
