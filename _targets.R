@@ -65,12 +65,10 @@ controller_local <-
     seconds_idle = 60
   )
 
-#when on HPC, do ALL the thresholds
-if (isTRUE(hpc)) {
+if (isTRUE(hpc)) { #when on HPC, do ALL the thresholds
   threshold <- seq(50, 2500, by = 50)
-  # threshold <- c(50, 1000, 2500)
-} else { # If local or on OOD session, use multiple R sessions for workers
-  threshold <- c(50, 900, 1250, 2500)
+} else { # only do select thresholds
+  threshold <- c(50, 1250, 2500)
 }
 
 # Set target options:
@@ -88,8 +86,6 @@ tar_option_set(
 tar_source()
 # tar_source("other_functions.R") # Source other scripts as needed.
 
-# Replace the target list below with your own:
-
 main <- tar_plan(
   years = 1981:2023,
   tar_target(
@@ -97,7 +93,7 @@ main <- tar_plan(
     command = get_prism_tmean(years),
     pattern = map(years),
     deployment = "main", #prevent downloads from running in parallel
-    format = "file"
+    format = "file_fast" #just check last modified date when deciding whether to re-run
   ),
   tar_terra_vect(roi, make_roi(), deployment = "main"),
   tar_map(
