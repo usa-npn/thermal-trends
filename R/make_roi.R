@@ -19,7 +19,7 @@ make_roi <- function() {
     "Rhode Island",
     "Vermont",
     "West Virginia",
-    "Wisconson",
+    "Wisconsin",
     "Kentucky",
     "Virginia"
   ), plot = FALSE, fill = TRUE) |> 
