@@ -5,6 +5,7 @@ format: html
 editor: visual
 execute: 
   echo: false
+bibliography: references.bib
 ---
 
 ```{r}
@@ -25,34 +26,69 @@ library(colorspace)
 library(patchwork)
 library(flextable)
 library(marginaleffects)
-
-tar_load(doy_trend_50, store = here("_targets/"))
+theme_set(theme_minimal())
 tar_load(gdd_doy_stack_50, store = here("_targets/"))
 ```
 
-The goal is to understand spatial trends in phenology over time using data on the DOY that various threshold GDD are reached in the Northeastern US.
+The goal is to understand spatial and temporal trends in phenology using data on the DOY that various threshold GDD are reached in the Northeastern US.
+
+## Data
+
+For this example, I'll use the 50 GDD threshold data.
+For the sake of computational efficiency for this example, I'm going to downscale the data quite a bit, but the general evaluation should apply to the full resolution data.
+
+```{r}
+#downscale and extract as data frame
+gdd_df <- 
+  gdd_doy_stack_50 |>
+  aggregate(fact = 8) |> 
+  as_tibble(xy = TRUE, na.rm = TRUE) |> 
+  pivot_longer(c(-x, -y), names_to = "year", values_to = "DOY", names_transform = list(year = as.integer)) |>
+  mutate(year_scaled = year - min(year))
+```
 
 ## Pixel-wise regression
 
 A simple option is to run a regression for every pixel in the map, with one data point per year per GDD threshold.
 We can then map the slopes easily (@fig-trend-map).
 
-![Map of slopes from pixel-wise linear regressions of DOY to reach 50 GDD over time from 1981 to 2023](slopes_50.png){#fig-trend-map}
+```{r}
+#| label: fig-trend-map
+#| fig-cap: "Map of slopes from pixel-wise linear regressions of DOY to reach 50 GDD over time from 1981 to 2023"
+lm_df <- 
+  gdd_df |> 
+  nest(.by = c(x, y)) |> 
+  mutate(mod = purrr::map(data, \(.x) lm(DOY ~ year_scaled, data = .x))) |> 
+  mutate(resid = purrr::map(mod, \(.x) resid(.x))) |> 
+  mutate(slope = purrr::map_dbl(mod, \(.x) coef(.x)[2]),
+         p_val = purrr::map_dbl(mod, \(.x) broom::glance(.x)$p.value)) |> 
+  mutate(p_val_adj = p.adjust(p_val, method = "fdr"))
 
-However, we if we mask out areas that have slopes that are not statistically significantly different from zero, almost nothing is left (@fig-trend-map-hatched).
-This is because the large number of p-values calculated must be corrected for false discovery rate, as they are not independent, leaving little statistical power to detect trends.
+ggplot(lm_df, aes(x = x, y = y, fill = slope)) +
+  geom_raster() +
+  scale_fill_continuous_diverging(rev = TRUE) +
+  coord_sf(crs = crs(gdd_doy_stack_50)) +
+  labs(fill = "∆DOY/yr", x = "", y = "", title = "Trend in DOY to reach 50 GDD")
+```
+
+If we wish to make inferences based on these slopes, we may wish to know which are significantly different from zero.
+Because we are dealing with thousands of p-values (`{r} nrow(as_tibble(gdd_doy_stack_50, na.rm = TRUE))` to be specific) and thus the probability of false-positives is quite high.
+Whenever making multiple comparisons like this, it is necessary to control for either family-wise error rate (more stringent) or false discovery rate (less stringent).
 
 ```{r}
 #| label: fig-trend-map-hatched
-#| fig-cap: "Map of slopes with regions of non-significant slopes marked by hatching"
+#| fig-cap: "Map of slopes with regions of non-significant (alpha = 0.05) slopes marked by hatching.  The p-values have *not* been false-discovery-rate corrected—with FDR correction virtually all slopes are non-significant, especially if using the full non-aggregated dataset."
+
+pval_rast <- rast(lm_df |> select(x, y, p_val)) < 0.05
 
 non_sig <- 
-  as.polygons(doy_trend_50[["p.value"]] < 0.05) |>
-  filter(p.value == 0)  |>
-  mutate(p.value = as.factor(p.value))
+  as.polygons(pval_rast) |>
+  filter(p_val == 0)  |>
+  mutate(p_val = as.factor(p_val)) 
+crs(non_sig) <- crs(gdd_doy_stack_50)
 
-ggplot() +
-  geom_spatraster(data = doy_trend_50, aes(fill = slope)) +
+ggplot(lm_df) +
+  geom_raster(aes(x = x, y = y, fill = slope)) +
   geom_sf_pattern(
     data = st_as_sf(non_sig),
     aes(pattern_fill = ""), #TODO trick to get legend to show up, but there's a new way to do this in ggplot2 I think
@@ -64,162 +100,189 @@ ggplot() +
     pattern_spacing = 0.01, #make lines closer together
     pattern_res = 200, #make lines less pixelated
   ) +
-  scale_pattern_fill_manual("p > 0.05", values = c("grey30")) +
+  scale_pattern_fill_manual(values = c("grey30")) +
   scale_fill_continuous_diverging(na.value = "transparent", rev = TRUE) +
-  labs(fill = "∆DOY") +
-  theme_minimal() 
+  labs(fill = "∆DOY/yr",
+       pattern_fill = "p > 0.05",
+       title = "Trend in DOY to reach 50 GDD",
+       x = "",
+       y = "") +
+  coord_sf(crs = crs(gdd_doy_stack_50)) 
 ```
 
-## Spatial GAMs
+### Assumptions
 
-Generalized Additive Models (GAMs) are an alternative method that can take into account the non-independence of spatial data, but are still able to model trends in phenology over time, potentially with different slopes by region.
+#### ✅ Data are i.i.d. (no temporal autocorrelation)
+
+There doesn't appear to be any temporal autocorrelation in the residuals (@fig-acf), so the data can be treated as i.i.d.
+
+```{r}
+#| label: fig-acf
+#| fig-cap: "ACF plots for 6 randomly chosen pixels. If there was autocorrelation, the black vertical line segments would reach above or below the dashed blue lines."
+#| fig-subcap: ""
+#| layout-ncol: 3
+
+set.seed(123)
+lm_df |> 
+  slice_sample(n = 6) |>
+  pull(resid) |> 
+  purrr::walk(\(.x) acf(.x))
+```
+
+#### ✅ Normality
+
+Residuals are fairly well behaved despite the data being bounded at 0 and 365.
+Non-normality is **not** an issue (@fig-resid-samp, @fig-resids).
+
+```{r}
+#| label: fig-resid-samp
+#| fig-cap: "Q-Q plots for residuals from 6 randomly chosen pixel-wise linear regressions"
+set.seed(132)
+resid_df <- lm_df |> 
+  slice_sample(n = 6) |>
+  select(x,y,resid) |> 
+  unnest(cols = c(resid)) |> 
+  mutate(pixel = paste(x,y, sep = ", ")) 
+
+
+qqs <- resid_df |> 
+  ggplot(aes(sample = resid)) +
+  stat_qq() +
+  stat_qq_line(color = "red") +
+  facet_wrap(vars(pixel)) +
+  labs(x = "Theoretical Quantiles", y = "Sample Quantiles")
+
+qqs
+```
+
+```{r}
+#| label: fig-resids
+#| fig-cap: Histogram (A) and Q-Q plot (B) of residuals pooled from all pixel-wise regressions.
+
+resids <- lm_df |> select(resid) |> unnest() 
+
+ggplot(resids) + geom_histogram(aes(resid)) +
+ggplot(resids, aes(sample = resid)) + 
+  stat_qq(alpha = 0.2) +
+  stat_qq_line(color = "red") + 
+  labs(x = "Theoretical Quantlie", y = "Sample Quantile")
+```
+
+#### ❌ Linearity
+
+These data do *not* meet the assumption that there is a linear relationship between the response (DOY) and the predictor (time), in my opinion.
+@fig-linearity shows a few examples of what the timeseries look like.
+One could treat the non-linear fluctuation in these points as error around a trend, but given that we know there are climate fluctuations like El Niño possibly at play in addition to a warming trend, I'm not sure that is an appropriate assumption.
+
+```{r}
+#| label: fig-linearity
+#| fig-cap: Timeseries plots of 5 randomly sampled pixels for 50 GDD threshold
+set.seed(34567)
+plot_df <- gdd_df |> mutate(pixel = paste0(x,y))
+plot_df <- plot_df |> filter(pixel %in% sample(pixel, 5))
+plot_df |> 
+  ggplot(aes(x = year, y = DOY, group = pixel, color = pixel)) +
+  geom_line() +
+  theme(legend.position = "none")
+  
+```
+
+#### ❌ Independence of multiple-comparisons (spatial autocorrelation)
+
+I've already discussed the need to adjust p-values for multiple-comparisons, but that doesn't account for potential spatial autocorrelation.
+This is more difficult to test for, but even without a test I think it is safe to assume that pixels near each other are more likely to have similar DOY values than pixels far apart.
+Calculating slopes (and associated p-values) for pixels near each other is therefore a bit like pseudoreplication.
+
+## Alternative: Spatial GAMs
+
+Generalized Additive Models (GAMs) are an alternative method that involves fitting penalized splines to data.
+GAMs might solve our two problems above by allowing for non-linear relationships (both through time and across space) and by accounting for un-modeled short range spatial autocorrelation with a method called neighborhood cross-validation [@wood].
 
 GAMs fit penalized smooths to data capturing non-linear relationships with a statistically optimized amount of wiggliness.
 Two-dimensional smoothers can be used to capture spatial variation in data (with dimensions of lat/lon).
 Furthermore, we can model complex interactions including three-way interactions between latitude, longitude, and time.
 
-::: callout-note
-For these examples, data has been down-sampled for prototyping to speed up the model fitting process.
-:::
-
 ```{r}
-doy_df <-
-  #downsample spatially for testing
-  aggregate(gdd_doy_stack_50, fact = 8) |> 
-  as_tibble(xy = TRUE, na.rm = TRUE) |>
-  pivot_longer(
-    c(-x,-y),
-    names_to = "year",
-    values_to = "doy",
-    names_transform = list(year = as.numeric)
-  ) |> 
-  mutate(year_scaled = year - min(year))
-```
-
-A simple example spatial GAM (@lst-gam-simple, @fig-gam-simple) shows how you can capture spatial trends with a two-dimensional smoother.
-
-```{r}
-#| lst-label: lst-gam-simple
-#| lst-cap: "A simple spatial GAM fit with the `mgcv` package where year is included as a parametric term with no interaction with lat/lon."
+#| label: tbl-gam-summary
+#| tbl-cap: "Output of `summary()` for a spatial GAM"
 #| echo: true
-#| 
-m1 <-
-  gam(
-    doy ~ year_scaled + te(x, y),
-    data = doy_df,
+m_reml <- mgcv::bam(
+    DOY ~ 
+      ti(x, y, bs = "cr", d = 2, k = 25) +                                # <1>
+      ti(year_scaled, bs = "cr", k = 10) +                                # <2>
+      ti(x, y, year_scaled, d = c(2,1), bs = "cr", k = c(25, 10)),        # <3>
+    data = gdd_df,
     method = "REML"
   )
+as_flextable(m_reml)
 ```
 
+1.  Two-dimensional tensor-product smoother for space where both dimensions (lat and lon) are fit using a cubic regression spline (`"cr"`) with 25 knots.
+2.  One-dimensional cubic regression spline with 10 knots for change over time
+3.  The interaction between the 2D tensor product for space and the smooth for time
+
+From @tbl-gam-summary, we can conclude that there is significant spatial variation in DOY, a significant (non-linear) relationship with time, and a significant interaction between space and time (e.g. not all locations show the same (non-linear) trend).
+One can visualize the partial effects of each of these terms in @fig-gam.
+
 ```{r}
-#| label: fig-gam-simple
+#| label: fig-gam
 #| message: false
-#| fig-cap: "Partial effects from a simple GAM with lat/lon fit as a bivariate smoother (A) and time as a parametric effect (B) and no interaction."
-m1_draw <- draw(m1,rug = FALSE, dist = 0.05, parametric = TRUE, wrap = FALSE)
-((m1_draw[[1]] + coord_sf(crs = crs(doy_trend_50))) |
-(m1_draw[[2]])) + plot_annotation(tag_levels = "A")
+#| fig-cap: "Partial effects of space (A), time (B) and their interaction (C) from the best-fit GAM.  In C, the facets are just 6 evenly-spaced samples showing how the spatial effects vary over time from year 0 to 42."
+plots_reml <- draw(m_reml, rug = FALSE, dist = 0.05, n_3d = 6)
+
+((plots_reml[[1]] + coord_sf(crs = crs(gdd_doy_stack_50))) | plots_reml[[2]] ) / (plots_reml[[3]]) + plot_annotation(tag_levels = "A")
 ```
 
-In @fig-gam-simple A, there is spatial variation in DOY to reach 50 GDD with the north reaching that threshold later than the south.
-In addition, there is a general negative trend of DOY over time (@fig-gam-simple B).
-
-In my exploration, the GAM that had the best fit to data (by dAIC) included a single, complex smooth term that accounted for an interaction between space and time, allowing a wiggly trend through time that potentially varies spatially (@lst-gam-best, @fig-gam-best).
-
-```{r}
-#| lst-label: lst-gam-best
-#| lst-cap: "The best fit GAM model, among several candidates tested.  The interaction between space and time is fit as a tensor product spline with one dimension being a two-dimensional smooth of latitude and longitude fit with a 'spline on the sphere' basis (`'sos'`) and the other dimension being year fit with a cubic spline with shrinkage (`'cs'`)."
-#| label: tbl-gam-summary
-#| tbl-cap: "Output of `summary()` for a simple spatial GAM"
-#| echo: true
-m3a <- gam(
-  doy ~ te(y, x, year_scaled, d = c(2, 1), bs = c("sos", "cs")),
-  data = doy_df,
-  method = "REML"
-)
-as_flextable(m3a)
-```
-
-In the @tbl-gam-summary, the smooth term is significant, although that doesn't tell us if there are temporal trends, spatial trends, or both.
-A partial effects plot, such as in @fig-gam-best, helps a little, but is still difficult to interpret.
-
-```{r}
-#| label: fig-gam-best
-#| message: false
-#| fig-cap: "Partial effects from best-fit GAM.  Facets represent change in spatial relationship over time from year 0 to year 42."
-draw(m3a) & coord_flip()
-```
-
-If we just look at a single pixel of the map, we can see that the trend through time is non-linear (@fig-slice).
-For each pixel, we can calculate the *average* slope of that wiggly line and test whether it is different from 0 with the `marginaleffects` package.
-In @fig-gam-slopes-map, these average slopes are plotted with non-significant slopes hatched out like in @fig-trend-map-hatched.
-However, with this approach, we maintain more statistical power, even when p-values are corrected for false discovery rate.
-
-```{r}
-#| label: fig-slice
-#| fig-cap: "Fitted relationship (black line) ± 99% confidence interval (grey ribbon) between year and DOY to reach 50 GDD for a single pixel of the downsampled data. Actual values of DOY are displayed as points."
-
-data_slice <-
-  doy_df |>
-  filter(y == min(y, na.rm =TRUE)) |>
-  filter(x == min(x, na.rm =TRUE))
-
-doy_pred <- fitted_values(m3a, data_slice, unconditional = TRUE, ci_level = 0.99)
-
-ggplot(doy_pred, aes(x = year_scaled, y = .fitted)) +
-  geom_line() +
-  geom_point(aes(y = doy)) +
-  geom_ribbon(aes(ymin = .lower_ci, ymax = .upper_ci), alpha = 0.4) +
-  labs(x = "Year", y = "DOY", title = "Effect of year at 75.27ºW, 39.64ºN")
-
-```
+As you can see in @fig-gam B, the trend through time is not linear.
+If we want to extract information from this model to create a map similar to @fig-trend-map-hatched, we can get fitted values for each year of each pixel and calculate *average* slopes and associated p-values testing if those average slopes are different from zero.
 
 ```{r}
 #| label: fig-gam-slopes-map
-#| fig-cap: "Map of average slopes of DOY over time from a spatial GAM fit to downsampled data. P-values for slopes are false-discovery-rate adjusted using the sample size for the full data (n = 21414)"
+#| fig-cap: "Map of average slopes of DOY over time from a spatial GAM fit to downsampled data. P-values for slopes are false-discovery-rate adjusted"
 
-n_true <- 21414 #number of values in original data before down-scaling
-m3a_slopes <- 
+# n_true <- 21414 #number of values in original data before down-scaling
+m_reml_slopes <-
   avg_slopes(
-    m3a,
+    m_reml,
     variables = "year_scaled",
     by = c("y", "x"),
-    df = insight::get_df(m3a) #TODO: not sure if this is appropriate
-  ) 
-
-m3a_slopes_rast <- 
-  m3a_slopes |>
-  as_tibble() |> 
-  mutate(p.value = p.adjust(p.value, "fdr", n = n_true)) |> 
-  select(x, y, estimate, p.value) |> 
-  rast()
-
-crs(m3a_slopes_rast) <- crs(gdd_doy_stack_50)
-
-non_sig <- m3a_slopes_rast |> 
-  mutate(non_sig = ifelse(p.value > 0.05, TRUE, NA)) |> 
-  select(non_sig) |> 
-  as.polygons() |> 
-  st_as_sf()
-
-ggplot() +
-  geom_spatraster(data = m3a_slopes_rast, aes(fill = estimate)) +
-  scale_fill_continuous_diverging(na.value = "transparent", rev = TRUE) +
-  geom_sf_pattern(
-    data = non_sig,
-    aes(pattern_fill = ""), #TODO trick to get legend to show up, but there's a new way to do this in ggplot2 I think
-    pattern = "crosshatch",
-    fill = NA,
-    colour = NA,
-    pattern_alpha = 0.5, #maybe not necessary
-    pattern_size = 0.05, #make lines smaller
-    pattern_spacing = 0.01, #make lines closer together
-    pattern_res = 200, #make lines less pixelated
-  ) +
-  scale_pattern_fill_manual(values = c("grey30")) +
-  labs(title = "Estimated change in DOY over time for 50 GDD threshold", 
-       fill = "∆DOY/yr", pattern_fill = "p > 0.05") +
-  coord_sf() +
-  theme_minimal()
+    # df = insight::get_df(m_reml) #TODO: not sure if this is appropriate
+  )
+# 
+# m3a_slopes_rast <- 
+#   m3a_slopes |>
+#   as_tibble() |> 
+#   mutate(p.value = p.adjust(p.value, "fdr", n = n_true)) |> 
+#   select(x, y, estimate, p.value) |> 
+#   rast()
+# 
+# crs(m3a_slopes_rast) <- crs(gdd_doy_stack_50)
+# 
+# non_sig <- m3a_slopes_rast |> 
+#   mutate(non_sig = ifelse(p.value > 0.05, TRUE, NA)) |> 
+#   select(non_sig) |> 
+#   as.polygons() |> 
+#   st_as_sf()
+# 
+# ggplot() +
+#   geom_spatraster(data = m3a_slopes_rast, aes(fill = estimate)) +
+#   scale_fill_continuous_diverging(na.value = "transparent", rev = TRUE) +
+#   geom_sf_pattern(
+#     data = non_sig,
+#     aes(pattern_fill = ""), #TODO trick to get legend to show up, but there's a new way to do this in ggplot2 I think
+#     pattern = "crosshatch",
+#     fill = NA,
+#     colour = NA,
+#     pattern_alpha = 0.5, #maybe not necessary
+#     pattern_size = 0.05, #make lines smaller
+#     pattern_spacing = 0.01, #make lines closer together
+#     pattern_res = 200, #make lines less pixelated
+#   ) +
+#   scale_pattern_fill_manual(values = c("grey30")) +
+#   labs(title = "Estimated change in DOY over time for 50 GDD threshold", 
+#        fill = "∆DOY/yr", pattern_fill = "p > 0.05") +
+#   coord_sf() +
+#   theme_minimal()
 ```
 
 With the approach in @fig-gam-slopes-map, we have the power to detect significant decrease in the DOY to reach 50 GDD over time.
