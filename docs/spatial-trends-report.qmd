@@ -28,6 +28,7 @@ library(flextable)
 library(marginaleffects)
 theme_set(theme_minimal())
 tar_load(gdd_doy_stack_50, store = here("_targets/"))
+tar_load(roi, store = here("_targets/"))
 ```
 
 The goal is to understand spatial and temporal trends in phenology using data on the DOY that various threshold GDD are reached in the Northeastern US.
@@ -39,13 +40,15 @@ All results presented here are extremely preliminary and subject to change!
 ## Data
 
 For this example, I'll use the 50 GDD threshold data.
-For the sake of computational efficiency for this example, I'm going to downscale the data quite a bit, but the general evaluation should apply to the full resolution data.
+For the sake of computational efficiency for this example, I'm going to transform the raster to a CRS in meters and downscale to a resolution of 50km
 
 ```{r}
 #downscale and extract as data frame
+gdd_rast <- 
+  project(gdd_doy_stack_50, crs("ESRI:102010"), res = 50000)
+
 gdd_df <- 
-  gdd_doy_stack_50 |>
-  aggregate(fact = 12) |> 
+  gdd_rast |> 
   as_tibble(xy = TRUE, na.rm = TRUE) |> 
   pivot_longer(c(-x, -y), names_to = "year", values_to = "DOY", names_transform = list(year = as.integer)) |>
   mutate(year_scaled = year - min(year))
@@ -70,8 +73,9 @@ lm_df <-
 
 ggplot(lm_df, aes(x = x, y = y, fill = slope)) +
   geom_raster() +
+  geom_spatvector(data = roi, fill = NA, inherit.aes = FALSE) +
   scale_fill_continuous_diverging(rev = TRUE) +
-  coord_sf(crs = crs(gdd_doy_stack_50)) +
+  coord_sf(crs = crs(gdd_rast)) +
   labs(fill = "∆DOY/yr", x = "", y = "", title = "Trend in DOY to reach 50 GDD")
 ```
 
@@ -89,10 +93,11 @@ non_sig <-
   as.polygons(pval_rast) |>
   filter(p_val == 0)  |>
   mutate(p_val = as.factor(p_val)) 
-crs(non_sig) <- crs(gdd_doy_stack_50)
+crs(non_sig) <- crs(gdd_rast)
 
 ggplot(lm_df) +
   geom_raster(aes(x = x, y = y, fill = slope)) +
+  geom_spatvector(data = roi, fill = NA, inherit.aes = FALSE) +
   geom_sf_pattern(
     data = st_as_sf(non_sig),
     aes(pattern_fill = ""), #TODO trick to get legend to show up, but there's a new way to do this in ggplot2 I think
@@ -111,7 +116,7 @@ ggplot(lm_df) +
        title = "Trend in DOY to reach 50 GDD",
        x = "",
        y = "") +
-  coord_sf(crs = crs(gdd_doy_stack_50)) 
+  coord_sf(crs = crs(gdd_rast)) 
 ```
 
 ### Assumptions
@@ -200,6 +205,23 @@ I think it is safe to assume that pixels near each other are more likely to have
 False discovery rate corrections typically assume multiple tests are independent (although the `"BY"` method described in `?p.adjust.methods` does not) and base their corrections on the number of p-values which is a function of the somewhat arbitrary resolution of the data.
 Down-scaling (as I've done for this example) or up-scaling therefore changes the statistical significance of trends which doesn't make sense since only the representation of the trends is changing.
 
+```{r}
+#| include: false
+
+# Exploring spatial autocorrelation of residuals
+
+years <- seq.int(1981, 2023, length.out = 8)
+walk(years, \(.x) {
+  lm_df |> 
+    select(x, y, data, resid) |> unnest(c(data, resid)) |> 
+    filter(year == .x) |> 
+    select(x, y, resid) |> 
+    rast() |> 
+    autocor(global = FALSE) |>
+    plot(main = paste("Moran's I for", .x))
+})
+```
+
 ## Alternative: Spatial GAMs
 
 Generalized Additive Models (GAMs) are an alternative method that involves fitting penalized splines to data.
@@ -240,14 +262,14 @@ One can visualize the partial effects of each of these terms in @fig-gam.
 #| fig-height: 8
 plots_reml <- draw(m_reml, rug = FALSE, dist = 0.05, n_3d = 6)
 
-((plots_reml[[1]] + coord_sf(crs = crs(gdd_doy_stack_50))) | plots_reml[[2]] ) / (plots_reml[[3]]) + plot_annotation(tag_levels = "A")
+((plots_reml[[1]] + coord_sf(crs = crs(gdd_rast))) | plots_reml[[2]] ) / (plots_reml[[3]] + coord_sf(crs = crs(gdd_rast))) + plot_annotation(tag_levels = "A")
 ```
 
 As you can see in @fig-gam B, the trend through time is not linear.
 If we want to extract information from this model to create a map similar to @fig-trend-map-hatched, we can get fitted values for each year of each pixel and calculate *average* slopes and associated p-values testing if those average slopes are different from zero.
 
 ::: callout-note
-This is the most computationally intensive step.
+This is possibly the most computationally intensive step but can *possibly* be sped up using multiple cores or by predicting over a regular sample of points rather than every point.
 :::
 
 ```{r}
@@ -278,10 +300,11 @@ non_sig <-
   as.polygons(gam_pval_rast) |>
   filter(p.value == 0)  |>
   mutate(p.value = as.factor(p.value)) 
-crs(non_sig) <- crs(gdd_doy_stack_50)
+crs(non_sig) <- crs(gdd_rast)
 
 ggplot(reml_slopes_df) +
   geom_raster(aes(x = x, y = y, fill = estimate)) +
+  geom_spatvector(data = roi, fill = NA, inherit.aes = FALSE) +
   geom_sf_pattern(
     data = st_as_sf(non_sig),
     aes(pattern_fill = ""), #TODO trick to get legend to show up, but there's a new way to do this in ggplot2 I think
@@ -300,11 +323,44 @@ ggplot(reml_slopes_df) +
        title = "Trend in DOY to reach 50 GDD",
        x = "",
        y = "") +
-  coord_sf(crs = crs(gdd_doy_stack_50)) 
+  coord_sf(crs = crs(gdd_rast)) 
 ```
 
 With the approach in @fig-gam-slopes-map, we have the power to detect significant changes in the DOY to reach 50 GDD over time.
 The caveat here is that the relationship fit to time is not linear (see @fig-linearity for an example), and @fig-gam-slopes-map just shows the *average* slopes over time.
+
+### Checking temporal autocorrelation
+
+Checking residuals in a few random points to confirm that temporal autocorrelation is still not an issue.
+
+```{r}
+#| layout-ncol: 3
+set.seed(1234)
+locs <- slice_sample(gdd_df, n = 6) |> select(x, y)
+
+walk(seq(1, nrow(locs)), \(i) {
+  gdd_df |>
+    mutate(.resid = residuals(m_reml)) |> 
+    filter(x == locs$x[i], y == locs$y[i]) |> pull(.resid) |>
+    acf(main = paste(locs$x[i], locs$y[i], sep = ", "))
+})
+```
+
+### <!--# Checking for spatial autocorrelation  -->
+
+```{r}
+#| include: false
+walk(years, \(.x) {
+  gdd_df |>
+    mutate(.resid = residuals(m_reml)) |>
+    filter(year == .x) |>
+    select(x, y, .resid) |>
+    rast() |>
+    autocor(global = FALSE) |>
+    plot(main = paste("Moran's I for", .x))
+})
+
+```
 
 ### Accounting for spatial autocorrelation
 
