@@ -1,4 +1,5 @@
 data/
 notes/
 _targets/
-_output/
+logs/
+output/

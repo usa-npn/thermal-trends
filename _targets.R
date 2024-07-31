@@ -14,72 +14,77 @@ library(crew.cluster)
 slurm_host <- Sys.getenv("SLURM_SUBMIT_HOST")
 hpc <- grepl("hpc\\.arizona\\.edu", slurm_host) & !grepl("ood", slurm_host)
 # If on HPC, use SLURM jobs for parallel workers
-
-controller_hpc_light <- crew.cluster::crew_controller_slurm(
-  "hpc_light",
-  workers = 3, 
-  seconds_idle = 300, #  time until workers are shut down after idle
-  garbage_collection = TRUE, # run garbage collection between tasks
-  launch_max = 5L, # number of unproductive launched workers until error
-  slurm_partition = "standard",
-  slurm_time_minutes = 60, #wall time for each worker
-  slurm_log_output = "logs/crew_log_%A.out",
-  slurm_log_error = "logs/crew_log_%A.err",
-  slurm_memory_gigabytes_per_cpu = 5,
-  slurm_cpus_per_task = 3, #use 3 cpus per worker
-  script_lines = c(
-    "#SBATCH --account theresam",
-    "module load gdal/3.8.5 R/4.3 eigen/3.4.0",
-    "export LD_PRELOAD=/opt/ohpc/pub/libs/gnu8/openblas/0.3.7/lib/libopenblas.so" #use OpenBLAS
+controller_hpc_light <- 
+  crew.cluster::crew_controller_slurm(
+    name = "hpc_light",
+    workers = 5, 
+    seconds_idle = 300, #  time until workers are shut down after idle
+    tasks_max = 20, # make workers semi-persistent—launch new SLURM job after 20 targets
+    garbage_collection = TRUE, # run garbage collection between tasks
+    launch_max = 5L, # number of unproductive launched workers until error
+    slurm_partition = "standard",
+    slurm_time_minutes = 60, #wall time for each worker
+    slurm_log_output = "logs/crew_log_%A.out",
+    slurm_log_error = "logs/crew_log_%A.err",
+    slurm_memory_gigabytes_per_cpu = 5,
+    slurm_cpus_per_task = 3, #use 3 cpus per worker
+    script_lines = c(
+      "#SBATCH --account theresam",
+      "export LD_PRELOAD=/opt/ohpc/pub/libs/gnu8/openblas/0.3.7/lib/libopenblas.so",
+      "module load gdal/3.8.5 R/4.3 eigen/3.4.0"
+      #add additional lines to the SLURM job script as necessary here
+    )
   )
-)
-
-#a controller with more cores for use with NCV (one thread per core)
-controller_hpc_heavy <- crew.cluster::crew_controller_slurm(
-  "hpc_heavy",
-  workers = 2, 
-  seconds_idle = 300, #  time until workers are shut down after idle
-  garbage_collection = TRUE, # run garbage collection between tasks
-  launch_max = 5L, # number of unproductive launched workers until error
-  slurm_partition = "standard",
-  slurm_time_minutes = 2000, #wall time for each worker
-  slurm_log_output = "logs/crew_log_%A.out",
-  slurm_log_error = "logs/crew_log_%A.err",
-  slurm_memory_gigabytes_per_cpu = 5,
-  slurm_cpus_per_task = 6, #use 6 cpus per worker
-  script_lines = c(
-    "#SBATCH --account theresam",
-    "module load gdal/3.8.5 R/4.3 eigen/3.4.0",
-    "export LD_PRELOAD=/opt/ohpc/pub/libs/gnu8/openblas/0.3.7/lib/libopenblas.so" #use OpenBLAS
+controller_hpc_heavy <- 
+  crew.cluster::crew_controller_slurm(
+    name = "hpc_heavy",
+    workers = 5, 
+    seconds_idle = 300, #  time until workers are shut down after idle
+    tasks_max = 20, # make workers semi-persistent—launch new SLURM job after 20 targets
+    garbage_collection = TRUE, # run garbage collection between tasks
+    launch_max = 5L, # number of unproductive launched workers until error
+    slurm_partition = "standard",
+    slurm_time_minutes = 120, #wall time for each worker
+    slurm_log_output = "logs/crew_log_%A.out",
+    slurm_log_error = "logs/crew_log_%A.err",
+    slurm_memory_gigabytes_per_cpu = 5,
+    slurm_cpus_per_task = 5, 
+    script_lines = c(
+      "#SBATCH --account theresam",
+      "export LD_PRELOAD=/opt/ohpc/pub/libs/gnu8/openblas/0.3.7/lib/libopenblas.so",
+      "module load gdal/3.8.5 R/4.3 eigen/3.4.0"
+      #add additional lines to the SLURM job script as necessary here
+    )
   )
-)
 
-controller_local <- 
-  crew::crew_controller_local("local", workers = 3,
-                              seconds_idle = 60)
+controller_local <-
+  crew::crew_controller_local(
+    name = "local",
+    local_log_directory = "logs/",
+    workers = 3, 
+    seconds_idle = 60
+  )
 
-
-  #when on HPC, do ALL the thresholds
-if (hpc) {
-  threshold <- seq(50, 2500, by = 50) 
-} else { # If local or on OOD session, use multiple R sessions for workers
-  threshold <- c(50, 1000, 2500)
+if (isTRUE(hpc)) { #when on HPC, do ALL the thresholds
+  threshold <- seq(50, 2500, by = 50)
+} else { # only do select thresholds
+  threshold <- c(50, 1250, 2500)
 }
 
 # Set target options:
 tar_option_set(
   # Packages that your targets need for their tasks.
   packages = c("fs", "terra", "stringr", "lubridate", "colorspace", "purrr",
-               "ggplot2", "tidyterra", "glue", "car", "httr2", "tidyr"),
+               "ggplot2", "tidyterra", "glue", "car", "httr2", "readr", "sf", "maps"),
   controller = crew::crew_controller_group(controller_hpc_heavy, controller_hpc_light, controller_local),
-  resources = tar_resources(crew = tar_resources_crew(controller = ifelse(isTRUE(hpc), "hpc_light", "local")))
+  resources = tar_resources(
+    crew = tar_resources_crew(controller = ifelse(hpc, "hpc_light", "local"))
+  )
 )
 
 # Run the R scripts in the R/ folder with your custom functions:
 tar_source()
 # tar_source("other_functions.R") # Source other scripts as needed.
-
-# Replace the target list below with your own:
 
 main <- tar_plan(
   years = 1981:2023,
@@ -87,16 +92,15 @@ main <- tar_plan(
     name = prism_tmean,
     command = get_prism_tmean(years),
     pattern = map(years),
-    deployment = "main", #prevent downloads from running in parallel
-    format = "file_fast" #just check last modified date
+    deployment = "main", #prevent downloads from running in parallel=
+    format = "file_fast" #just check last modified date when deciding whether to re-run
   ),
-  tar_file(casc_ne_file, "data/Northeast_CASC.zip"),
-  tar_terra_vect(casc_ne, read_casc_ne(casc_ne_file)),
+  tar_terra_vect(roi, make_roi(), deployment = "main"),
   tar_map(
     values = list(threshold = threshold),
     tar_terra_rast(
       gdd_doy,
-      calc_gdd_doy(rast_dir = prism_tmean, casc_ne = casc_ne, gdd_threshold = threshold),
+      calc_gdd_doy(rast_dir = prism_tmean, roi = roi, gdd_threshold = threshold),
       pattern = map(prism_tmean),
       iteration = "list"
     ),
@@ -110,12 +114,19 @@ main <- tar_plan(
     ),
     tar_target(
       doy_plot,
-      plot_doy(gdd_doy_stack, threshold = threshold),
+      plot_doy(gdd_doy_stack, threshold = threshold, width = 15, height = 8),
+      resources = tar_resources(crew = tar_resources_crew(controller = "hpc_heavy")),
       format = "file"
     ),
     tar_terra_rast(
       doy_trend,
-      get_lm_slope(gdd_doy_stack)
+      get_lm_slope(gdd_doy_stack),
+      resources = tar_resources(crew = tar_resources_crew(controller = "hpc_heavy"))
+    ),
+    tar_target(
+      doy_trend_tif,
+      write_tiff(doy_trend, filename = paste0("doy_trend_", threshold, ".tif")),
+      format = "file"
     ),
     tar_target(
       trend_plot,
