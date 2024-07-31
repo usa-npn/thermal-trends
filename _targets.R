@@ -19,7 +19,7 @@ controller_hpc_light <-
     name = "hpc_light",
     workers = 5, 
     seconds_idle = 300, #  time until workers are shut down after idle
-    tasks_max = 20, # make workers semi-persistent—launch new SLURM job after 20 targets
+    tasks_max = 40, # make workers semi-persistent—launch new SLURM job after 40 targets
     garbage_collection = TRUE, # run garbage collection between tasks
     launch_max = 5L, # number of unproductive launched workers until error
     slurm_partition = "standard",
@@ -75,7 +75,7 @@ if (isTRUE(hpc)) { #when on HPC, do ALL the thresholds
 tar_option_set(
   # Packages that your targets need for their tasks.
   packages = c("fs", "terra", "stringr", "lubridate", "colorspace", "purrr",
-               "ggplot2", "tidyterra", "glue", "car", "httr2", "readr", "sf", "maps"),
+               "ggplot2", "tidyterra", "glue", "car", "httr2", "readr", "sf", "maps", "tidyr"),
   controller = crew::crew_controller_group(controller_hpc_heavy, controller_hpc_light, controller_local),
   resources = tar_resources(
     crew = tar_resources_crew(controller = ifelse(hpc, "hpc_light", "local"))
