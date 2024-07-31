@@ -79,7 +79,10 @@ tar_option_set(
   controller = crew::crew_controller_group(controller_hpc_heavy, controller_hpc_light, controller_local),
   resources = tar_resources(
     crew = tar_resources_crew(controller = ifelse(hpc, "hpc_light", "local"))
-  )
+  ),
+  #assume workers have access to the data as well
+  storage = "worker",
+  retrieval = "worker"
 )
 
 # Run the R scripts in the R/ folder with your custom functions:
@@ -195,40 +198,23 @@ reports <- tar_plan(
 )
 
 gams <- tar_plan(
-  tar_target(
-    gam_df_50,
-    #project to units of meters and aggregate a LOT for testing
-    make_model_df(gdd_doy_stack_50 |> project(crs("EPSG:32618")), agg_factor = 15)
-  ),
-  tar_target(
-    nei,
-    make_nei(gam_df_50, buffer = 200000), #200km
-    description = "create `nei` object required by mgcv for 'NCV' method"
-  ),
   tar_map(
-    values = list(k_spatial = c(25, 50, 75)),
-    tar_target(
-      gam_reml,
-      fit_bam(gam_df_50, k_spatial = k_spatial),
-      packages = c("mgcv")
+    values = tidyr::expand_grid(
+      resolution = c(50000, 25000, 10000),
+      k = c(50, 100, 200, 400)
     ),
     tar_target(
-      gam_ncv,
-      fit_ncv(gam_df_50, nei = nei, k_spatial = k_spatial, threads = ifelse(isTRUE(hpc), 6, 2)),
-      packages = c("mgcv"),
-      resources = tar_resources(
-        crew = tar_resources_crew(controller = ifelse(isTRUE(hpc), "hpc_heavy", "local"))
-      )
+      gam_dfs,
+      make_gam_df(gdd_doy_stack_50, res = resolution),
+      format = "qs"
     ),
-    tar_file(
-      gam_ncv_png,
-      draw_gam(gam_ncv)
-    ),
-    tar_file(
-      gam_reml_png,
-      draw_gam(gam_reml)
+    tar_target(
+      gam,
+      fit_bam(gam_dfs, k_spatial = k),
+      format = "qs",
+      resources = tar_resources(crew = tar_resources_crew(controller = "hpc_heavy"))
     )
-  )      
+  )
 )
 
 #if on HPC don't render quarto docs (no quarto or pandoc on HPC)
