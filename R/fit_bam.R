@@ -4,7 +4,7 @@ fit_bam <- function(data, k_spatial) {
       ti(year_scaled, bs = "cr", k = 20) +
       ti(y, x, year_scaled, d = c(2,1), bs = c("cr", "cr"), k = c(k_spatial, k_year)),
     data = data,
-    method = "REML"
+    method = "fREML"
   )
 }
 
