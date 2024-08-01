@@ -191,12 +191,6 @@ combine_results <- tar_plan(
   )
 )
 
-reports <- tar_plan(
-  # Reports 
-  # tar_quarto(spatial_report, path = "docs/spatial-trends-report.qmd", working_directory = "docs"),
-  # tar_quarto(readme, path = "README.Qmd", cue = tar_cue("always"))
-)
-
 gams <- tar_plan(
   tar_map(
     values = tidyr::expand_grid(
@@ -204,22 +198,22 @@ gams <- tar_plan(
       k = c(50, 100, 200, 400)
     ),
     tar_target(
-      gam_dfs,
+      gam_df,
       make_gam_df(gdd_doy_stack_50, res = resolution),
       format = "qs"
     ),
     tar_target(
       gam,
-      fit_bam(gam_dfs, k_spatial = k),
+      fit_bam(gam_df, k_spatial = k),
       format = "qs",
-      resources = tar_resources(crew = tar_resources_crew(controller = "hpc_heavy"))
+      resources = tar_resources(crew = tar_resources_crew(controller = ifelse(hpc, "hpc_heavy", "local")))
     )
   )
 )
 
-#if on HPC don't render quarto docs (no quarto or pandoc on HPC)
-if (isTRUE(hpc)) {
-  list(main, gams, get_results, combine_results)
-} else {
-  list(main, gams, get_results, combine_results, reports)
-}
+tar_plan(
+  main,
+  get_results,
+  combine_results,
+  gams
+)
