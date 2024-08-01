@@ -210,7 +210,8 @@ gams <- tar_plan(
     ),
     tar_target(
       k_check,
-      as.data.frame(k.check(gam))
+      as.data.frame(mgcv::k.check(gam)),
+      packages = c("mgcv")
     )
   ),
   tar_target(
