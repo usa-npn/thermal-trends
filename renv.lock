@@ -1,6 +1,6 @@
 {
   "R": {
-    "Version": "4.3.3",
+    "Version": "4.4.0",
     "Repositories": [
       {
         "Name": "CRAN",
@@ -934,15 +934,15 @@
       "RemoteHost": "api.github.com",
       "RemoteRepo": "geotargets",
       "RemoteUsername": "njtierney",
-      "RemotePkgRef": "njtierney/geotargets",
+      "RemotePkgRef": "njtierney/geotargets@HEAD",
       "RemoteRef": "HEAD",
-      "RemoteSha": "f8384b7b99c15a86a17e64fd3af3b3c5e278a9ee",
+      "RemoteSha": "76285d670cb8c176415835436616ea2bbd76003f",
       "Requirements": [
         "cli",
         "rlang",
         "targets"
       ],
-      "Hash": "991ccd2334a31540294619119dff7f11"
+      "Hash": "940be13c17c6e71b8f55364eb8c02cbf"
     },
     "getip": {
       "Package": "getip",
@@ -2404,14 +2404,15 @@
     },
     "systemfonts": {
       "Package": "systemfonts",
-      "Version": "1.0.5",
+      "Version": "1.1.0",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
         "R",
-        "cpp11"
+        "cpp11",
+        "lifecycle"
       ],
-      "Hash": "15b594369e70b975ba9f064295983499"
+      "Hash": "213b6b8ed5afbf934843e6c3b090d418"
     },
     "tarchetypes": {
       "Package": "tarchetypes",
@@ -2476,15 +2477,16 @@
     },
     "textshaping": {
       "Package": "textshaping",
-      "Version": "0.3.7",
+      "Version": "0.4.0",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
         "R",
         "cpp11",
+        "lifecycle",
         "systemfonts"
       ],
-      "Hash": "997aac9ad649e0ef3b97f96cddd5622b"
+      "Hash": "5142f8bc78ed3d819d26461b641627ce"
     },
     "tibble": {
       "Package": "tibble",
