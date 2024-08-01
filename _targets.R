@@ -195,7 +195,7 @@ gams <- tar_plan(
   tar_map(
     values = tidyr::expand_grid(
       resolution = c(50000, 25000, 10000),
-      k = c(50, 100, 200, 400)
+      k = c(50, 100, 200, 400, 800)
     ),
     tar_target(
       gam_df,
@@ -207,9 +207,25 @@ gams <- tar_plan(
       fit_bam(gam_df, k_spatial = k),
       format = "qs",
       resources = tar_resources(crew = tar_resources_crew(controller = ifelse(hpc, "hpc_heavy", "local")))
+    ),
+    tar_target(
+      k_check,
+      as.data.frame(k.check(gam))
     )
+  ),
+  tar_target(
+    k_check_df,
+    purrr::list_rbind(!!!{
+      tidyr::expand_grid(
+        resolution = c(50000, 25000, 10000),
+        k = c(50, 100, 200, 400, 800)
+      ) |> glue::glue_data("k_check_{resolution}_{k}") |> 
+        rlang::syms()  
+    }, names_to = "gam"),
+    tidy_eval = TRUE
   )
 )
+
 
 tar_plan(
   main,
