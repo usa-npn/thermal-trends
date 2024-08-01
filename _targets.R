@@ -31,7 +31,7 @@ controller_hpc_light <-
     script_lines = c(
       "#SBATCH --account theresam",
       "export LD_PRELOAD=/opt/ohpc/pub/libs/gnu8/openblas/0.3.7/lib/libopenblas.so",
-      "module load gdal/3.8.5 R/4.3 eigen/3.4.0"
+      "module load gdal/3.8.5 R/4.4 eigen/3.4.0"
       #add additional lines to the SLURM job script as necessary here
     )
   )
@@ -52,7 +52,7 @@ controller_hpc_heavy <-
     script_lines = c(
       "#SBATCH --account theresam",
       "export LD_PRELOAD=/opt/ohpc/pub/libs/gnu8/openblas/0.3.7/lib/libopenblas.so",
-      "module load gdal/3.8.5 R/4.3 eigen/3.4.0"
+      "module load gdal/3.8.5 R/4.4 eigen/3.4.0"
       #add additional lines to the SLURM job script as necessary here
     )
   )
