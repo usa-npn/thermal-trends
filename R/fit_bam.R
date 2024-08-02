@@ -1,5 +1,5 @@
 fit_bam <- function(data, k_spatial) {
-  safe_bam <- purrr::possibly(mgcv::bam)
+  safe_bam <- purrr::possibly(mgcv::bam, NA)
   safe_bam(
     DOY ~ ti(y, x, bs = "cr", d = 2, k = k_spatial) +
       ti(year_scaled, bs = "cr", k = 20) +
