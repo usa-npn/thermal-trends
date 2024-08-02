@@ -95,7 +95,7 @@ main <- tar_plan(
     name = prism_tmean,
     command = get_prism_tmean(years),
     pattern = map(years),
-    deployment = "main", #prevent downloads from running in parallel=
+    deployment = "main", #prevent downloads from running in parallel
     format = "file_fast" #just check last modified date when deciding whether to re-run
   ),
   tar_terra_vect(roi, make_roi(), deployment = "main"),
@@ -195,7 +195,9 @@ gams <- tar_plan(
   tar_map(
     values = tidyr::expand_grid(
       resolution = c(50000, 25000, 10000),
+      # resolution = c(50000),
       k = c(50, 100, 200, 400, 800)
+      # k = c(50, 100)
     ),
     tar_target(
       gam_df,
@@ -210,19 +212,21 @@ gams <- tar_plan(
     ),
     tar_target(
       k_check,
-      as.data.frame(mgcv::k.check(gam)),
-      packages = c("mgcv")
+      check_k(gam),
+      packages = c("mgcv", "dplyr")
     )
   ),
   tar_target(
     k_check_df,
-    purrr::list_rbind(!!!{
+    bind_rows(!!!rlang::syms(
       tidyr::expand_grid(
         resolution = c(50000, 25000, 10000),
+        # resolution = c(50000),
         k = c(50, 100, 200, 400, 800)
-      ) |> glue::glue_data("k_check_{resolution}_{k}") |> 
-        rlang::syms()  
-    }, names_to = "gam"),
+        # k = c(50, 100)
+      ) |> 
+      glue::glue_data("k_check_{resolution}_{k}")
+    )),
     tidy_eval = TRUE
   )
 )
