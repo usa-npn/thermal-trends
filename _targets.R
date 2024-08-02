@@ -228,6 +228,10 @@ gams <- tar_plan(
       glue::glue_data("k_check_{resolution}_{k}")
     )),
     tidy_eval = TRUE
+  ),
+  tar_file(
+    k_check_df_csv,
+    readr::write_csv(k_check_df, "k_check.csv")
   )
 )
 
