@@ -196,7 +196,7 @@ gams <- tar_plan(
     values = tidyr::expand_grid(
       resolution = c(50000, 25000, 10000),
       # resolution = c(50000),
-      k = c(50, 100, 200, 400, 800)
+      k = c(50, 100, 200, 400)
       # k = c(50, 100)
     ),
     tar_target(
