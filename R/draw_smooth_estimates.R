@@ -10,6 +10,9 @@
 
 
 draw_smooth_estimates <- function(gam, roi) {
+  if (!inherits(gam), "gam") { #if target doesn't exist...
+    return(NULL)
+  }
   roi <- project(roi, crs("ESRI:102010"))
   gam_name <- deparse(substitute(gam))
 
