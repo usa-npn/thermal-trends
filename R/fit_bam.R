@@ -3,7 +3,7 @@ fit_bam <- function(data, k_spatial) {
   safe_bam(
     DOY ~ ti(x, y, bs = "cr", d = 2, k = k_spatial) +
       ti(year_scaled, bs = "cr", k = 20) +
-      ti(x, y, year_scaled, d = c(2,1), bs = c("cr", "cr"), k = c(50, 20)),
+      ti(x, y, year_scaled, d = c(2,1), bs = c("cr", "cr"), k = c(100, 20)),
     data = data,
     method = "fREML"
   )

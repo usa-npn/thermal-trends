@@ -118,13 +118,17 @@ main <- tar_plan(
     tar_target(
       doy_plot,
       plot_doy(gdd_doy_stack, threshold = threshold, width = 15, height = 8),
-      resources = tar_resources(crew = tar_resources_crew(controller = "hpc_heavy")),
+      resources = tar_resources(
+        crew = tar_resources_crew(controller = "hpc_heavy")
+      ),
       format = "file"
     ),
     tar_terra_rast(
       doy_trend,
       get_lm_slope(gdd_doy_stack),
-      resources = tar_resources(crew = tar_resources_crew(controller = "hpc_heavy"))
+      resources = tar_resources(
+        crew = tar_resources_crew(controller = "hpc_heavy")
+      )
     ),
     tar_target(
       doy_trend_tif,
@@ -143,12 +147,14 @@ main <- tar_plan(
     ),
     tar_target(
       normals_mean_gtiff,
-      write_tiff(normals_summary[["mean"]], filename = paste0("normals_mean_", threshold, ".tiff")),
+      write_tiff(normals_summary[["mean"]],
+                 filename = paste0("normals_mean_", threshold, ".tiff")),
       format = "file"
     ),
     tar_target(
       normals_sd_gtiff,
-      write_tiff(normals_summary[["sd"]], filename = paste0("normals_sd_", threshold, ".tiff")),
+      write_tiff(normals_summary[["sd"]], 
+                 filename = paste0("normals_sd_", threshold, ".tiff")),
       format = "file"
     ),
     tar_target(
@@ -208,7 +214,9 @@ gams <- tar_plan(
       gam,
       fit_bam(gam_df, k_spatial = k),
       format = "qs",
-      resources = tar_resources(crew = tar_resources_crew(controller = ifelse(hpc, "hpc_heavy", "local")))
+      resources = tar_resources(
+        crew = tar_resources_crew(controller = ifelse(hpc, "hpc_heavy", "local"))
+      )
     ),
     tar_file(
       smooth_est,
@@ -227,10 +235,10 @@ gams <- tar_plan(
       tidyr::expand_grid(
         resolution = c(50000, 25000, 10000, 5000),
         # resolution = c(50000),
-        k = c(50, 100, 200, 400, 800)
+        k = c(100, 200, 400, 800)
         # k = c(50, 100)
       ) |> 
-      glue::glue_data("k_check_{resolution}_{k}")
+        glue::glue_data("k_check_{resolution}_{k}")
     )),
     tidy_eval = TRUE
   ),
