@@ -1,9 +1,9 @@
 fit_bam <- function(data, k_spatial) {
   safe_bam <- purrr::possibly(mgcv::bam, NA)
   safe_bam(
-    DOY ~ ti(y, x, bs = "cr", d = 2, k = k_spatial) +
+    DOY ~ ti(x, y, bs = "cr", d = 2, k = k_spatial) +
       ti(year_scaled, bs = "cr", k = 20) +
-      ti(y, x, year_scaled, d = c(2,1), bs = c("cr", "cr"), k = c(50, 20)),
+      ti(x, y, year_scaled, d = c(2,1), bs = c("cr", "cr"), k = c(50, 20)),
     data = data,
     method = "fREML"
   )

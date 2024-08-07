@@ -210,6 +210,11 @@ gams <- tar_plan(
       format = "qs",
       resources = tar_resources(crew = tar_resources_crew(controller = ifelse(hpc, "hpc_heavy", "local")))
     ),
+    tar_file(
+      smooth_est,
+      draw_smooth_estimates(gam, roi),
+      description = "Save smooth estimates plots"
+    ),
     tar_target(
       k_check,
       check_k(gam),
@@ -231,7 +236,7 @@ gams <- tar_plan(
   ),
   tar_file(
     k_check_df_csv,
-    readr::write_csv(k_check_df, "k_check.csv")
+    tar_write_csv(k_check_df, "k_check.csv")
   )
 )
 
