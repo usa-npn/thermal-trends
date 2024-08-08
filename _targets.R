@@ -202,7 +202,7 @@ gams <- tar_plan(
     values = tidyr::expand_grid(
       resolution = c(50000, 25000, 10000, 5000),
       # resolution = c(50000),
-      k = c(100, 200, 400, 800)
+      k = c(50, 100, 200, 400, 800)
       # k = c(50, 100)
     ),
     tar_target(
@@ -235,7 +235,7 @@ gams <- tar_plan(
       tidyr::expand_grid(
         resolution = c(50000, 25000, 10000, 5000),
         # resolution = c(50000),
-        k = c(100, 200, 400, 800)
+        k = c(50, 100, 200, 400, 800)
         # k = c(50, 100)
       ) |> 
         glue::glue_data("k_check_{resolution}_{k}")
@@ -245,6 +245,25 @@ gams <- tar_plan(
   tar_file(
     k_check_df_csv,
     tar_write_csv(k_check_df, "k_check.csv")
+  ),
+  tar_target(
+    slope_newdata,
+    make_slope_newdata(gdd_doy_stack_50, res_m = 50000)
+  ),
+  tar_map(
+    values = list(
+      gam = rlang::syms(c("gam_50000_50", "gam_50000_400", "gam_25000_400", "gam_25000_800", "gam_10000_800"))
+    ),
+    tar_target(
+      slopes,
+      calc_avg_slopes(gam, slope_newdata),
+      packages = c("marginaleffects", "mgcv")
+    ),
+    tar_file(
+      slopes_plot,
+      plot_avg_slopes(slopes),
+      packages = c("ggpattern", "ggplot2", "terra", "tidyterra")
+    )
   )
 )
 
