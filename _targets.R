@@ -229,6 +229,15 @@ gams <- tar_plan(
       packages = c("mgcv", "dplyr")
     )
   ),
+  #do a couple of GAMs with te() instead of ti()
+  tar_target(
+    gam_te_50000_100,
+    fit_bam_te(gam_df_50000_100, k_spatial = 100)
+  ),
+  tar_target(
+    gam_te_25000_400,
+    fit_bam_te(gam_df_25000_400, k_spatial = 400)
+  ),
   tar_target(
     k_check_df,
     bind_rows(!!!rlang::syms(
@@ -252,7 +261,8 @@ gams <- tar_plan(
   ),
   tar_map(
     values = list(
-      gam = rlang::syms(c("gam_50000_50", "gam_50000_400", "gam_25000_400", "gam_25000_800", "gam_10000_800"))
+      gam = rlang::syms(c("gam_50000_100", "gam_50000_400", "gam_25000_400", "gam_25000_800", "gam_10000_800",
+                          "gam_te_50000_100", "gam_df_25000_400"))
     ),
     tar_target(
       slopes,
