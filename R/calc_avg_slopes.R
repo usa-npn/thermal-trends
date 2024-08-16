@@ -15,7 +15,8 @@ calc_avg_slopes <- function(gam, newdata = NULL) {
       by = c("y", "x"),
       p_adjust = "BY",
       hypothesis = 0,
-      df = insight::get_df(gam, type = "model") #TODO: not 100% sure if this is appropriate
+      df = insight::get_df(gam, type = "model"), #TODO: not 100% sure if this is appropriate
+      discrete = TRUE #speeds up computation
     )
   #return as tibble
   as_tibble(slopes)
