@@ -264,7 +264,7 @@ gams <- tar_plan(
     ),
     tar_file(
       slopes_plot,
-      plot_avg_slopes(slopes),
+      plot_avg_slopes(slopes, roi),
       packages = c("ggpattern", "ggplot2", "terra", "tidyterra")
     )
   )
