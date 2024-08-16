@@ -257,7 +257,10 @@ gams <- tar_plan(
     tar_target(
       slopes,
       calc_avg_slopes(gam, slope_newdata),
-      packages = c("marginaleffects", "mgcv")
+      packages = c("marginaleffects", "mgcv"),
+      resources = tar_resources(
+        crew = tar_resources_crew(controller = ifelse(hpc, "hpc_heavy", "local"))
+      )
     ),
     tar_file(
       slopes_plot,
