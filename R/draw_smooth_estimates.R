@@ -48,7 +48,7 @@ draw_smooth_estimates <- function(gam, roi) {
   
   ti_xyyr_rast <-
     smooth_est |> 
-    filter(.smooth == "ti(x,y,year_scaled)") |> 
+    filter(.smooth %in% c("ti(x,y,year_scaled)", "ti(year_scaled,x,y)")) |> 
     select(x, y, year_scaled, .estimate) |> 
     mutate(year_scaled = as.character(year_scaled)) |> 
     as.data.frame() |> 
