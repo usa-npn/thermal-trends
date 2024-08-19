@@ -262,7 +262,7 @@ gams <- tar_plan(
   tar_map(
     values = list(
       gam = rlang::syms(c("gam_50000_100", "gam_50000_400", "gam_25000_400", "gam_25000_800", "gam_10000_800",
-                          "gam_te_50000_100", "gam_df_25000_400"))
+                          "gam_te_50000_100", "gam_te_25000_400"))
     ),
     tar_target(
       slopes,
