@@ -5,7 +5,7 @@ library(ggtext)
 meta <- read_csv("tar_meta_hpc.csv")
 
 meta |> 
-  filter(str_starts(name, "gam_"), !str_detect(name, "df")) |> 
+  filter(str_starts(name, "gam_"), !str_detect(name, "df"), !str_detect(name, "te")) |> 
   select(name, bytes, seconds) |> 
   separate(name, into = c("trash", "resolution", "df")) |> 
   select(-trash) |> 
@@ -34,7 +34,7 @@ meta |>
 
 k_check <- read_csv("k_check.csv")
 k_check |> 
-  filter(term == "ti(y,x)") |> 
+  filter(term %in% c("ti(y,x)", "ti(x,y)")) |> 
   mutate(res_km = factor(res_m/1000), res_km = fct_inseq(res_km)) |> 
   ggplot(aes(x = k, y = edf, color = res_km)) + 
   geom_line() +

@@ -257,7 +257,8 @@ gams <- tar_plan(
   ),
   tar_target(
     slope_newdata,
-    make_slope_newdata(gdd_doy_stack_50, res_m = 50000)
+    #doesn't matter which dataset since all that is used is x,y, and year_scaled
+    make_slope_newdata(gdd_doy_stack_50, res_m = 25000)
   ),
   tar_map(
     values = list(
