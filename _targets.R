@@ -259,7 +259,7 @@ gams <- tar_plan(
   ),
   tar_file(
     k_check_df_csv,
-    tar_write_csv(k_check_df, "k_check.csv")
+    tar_write_csv(k_check_df, "output/gams/k_check.csv")
   ),
   tar_target(
     slope_newdata,

@@ -32,7 +32,7 @@ meta |>
 
 ## check k
 
-k_check <- read_csv("k_check.csv")
+k_check <- read_csv("output/gams/k_check.csv")
 k_check |> 
   filter(term %in% c("ti(y,x)", "ti(x,y)")) |> 
   mutate(res_km = factor(res_m/1000), res_km = fct_inseq(res_km)) |> 
