@@ -258,7 +258,8 @@ gams <- tar_plan(
   tar_target(
     slope_newdata,
     #doesn't matter which dataset since all that is used is x,y, and year_scaled
-    make_slope_newdata(gdd_doy_stack_50, res_m = 25000)
+    #using very coarse newdata regardless of resolution of original data.
+    make_slope_newdata(gdd_doy_stack_50, res_m = 50000)
   ),
   tar_map(
     values = list(
