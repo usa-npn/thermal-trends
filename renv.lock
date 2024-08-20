@@ -666,14 +666,14 @@
     },
     "digest": {
       "Package": "digest",
-      "Version": "0.6.36",
+      "Version": "0.6.37",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
         "R",
         "utils"
       ],
-      "Hash": "fd6824ad91ede64151e93af67df6376b"
+      "Hash": "33698c4b3127fc9f506654607fb73676"
     },
     "dplyr": {
       "Package": "dplyr",
@@ -1401,7 +1401,7 @@
     },
     "insight": {
       "Package": "insight",
-      "Version": "0.20.2",
+      "Version": "0.20.3",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -1410,7 +1410,7 @@
         "stats",
         "utils"
       ],
-      "Hash": "74a0751aafb4d4bc140531e46deda4ab"
+      "Hash": "19a5e2db13306af8a80d4e605d3cb06e"
     },
     "isoband": {
       "Package": "isoband",
