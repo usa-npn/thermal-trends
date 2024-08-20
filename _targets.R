@@ -232,11 +232,17 @@ gams <- tar_plan(
   #do a couple of GAMs with te() instead of ti()
   tar_target(
     gam_te_50000_100,
-    fit_bam_te(gam_df_50000_100, k_spatial = 100)
+    fit_bam_te(gam_df_50000_100, k_spatial = 100),
+    resources = tar_resources(
+      crew = tar_resources_crew(controller = ifelse(hpc, "hpc_heavy", "local"))
+    )
   ),
   tar_target(
     gam_te_25000_400,
-    fit_bam_te(gam_df_25000_400, k_spatial = 400)
+    fit_bam_te(gam_df_25000_400, k_spatial = 400),
+    resources = tar_resources(
+      crew = tar_resources_crew(controller = ifelse(hpc, "hpc_heavy", "local"))
+    )
   ),
   tar_target(
     k_check_df,
