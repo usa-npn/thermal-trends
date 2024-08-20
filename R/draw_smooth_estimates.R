@@ -9,6 +9,15 @@
 # tar_load(roi)
 
 
+#' Draw partial effects plots
+#'
+#' @param gam a gam target
+#' @param roi the roi target
+#'
+#' @return path
+#' @export
+#'
+#' @examples
 draw_smooth_estimates <- function(gam, roi) {
   if (!inherits(gam, "gam")) { #if target doesn't exist...
     return(NULL)
