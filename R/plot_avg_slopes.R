@@ -3,7 +3,11 @@
 # library(tidyterra)
 # library(ggpattern)
 
-plot_avg_slopes <- function(slopes_df, roi) {
+plot_avg_slopes <- function(slopes_df, roi, cities_sf, cities_plot) {
+  
+  #figure out threshold from target name
+  slopes_df_name <- deparse(substitute(slopes_df))
+  threshold <- str_extract(slopes_df_name, "\\d+")
   
   gam_pval_rast <- 
     rast(slopes_df |> select(x, y, p.value)) < 0.05
@@ -29,22 +33,29 @@ plot_avg_slopes <- function(slopes_df, roi) {
       pattern_spacing = 0.01, #make lines closer together
       pattern_res = 200, #make lines less pixelated
     ) +
+    geom_sf(data = cities_sf) +
     scale_pattern_fill_manual(values = c("grey30")) +
     scale_fill_continuous_diverging(na.value = "transparent", rev = TRUE) +
-    labs(fill = "∆DOY/yr",
+    labs(fill = "Avg. slope (DOY/yr)",
          pattern_fill = "p > 0.05",
-         title = "Trend in DOY to reach 50 GDD",
+         title = glue::glue("Trend in the DOY that {threshold} GDD is reached"),
          x = "",
          y = "") +
     coord_sf(crs = "ESRI:102010") +
     theme_minimal()
+  
+  #assemble plots with patchwork
+  out <- free(p)/cities_plot +
+    plot_layout(heights = c(1, 0.4)) + 
+    plot_annotation(tag_levels ="A")
+  
   filename <- paste0(deparse(substitute(slopes_df)), ".png")
   ggsave(
     filename = filename,
-    plot = p, 
+    plot = out, 
     path = "output/gams/",
     bg = "white",
-    width = 5,
-    height = 5
+    width = 7,
+    height = 7
   )
 }

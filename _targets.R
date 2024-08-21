@@ -75,7 +75,7 @@ if (isTRUE(hpc)) { #when on HPC, do ALL the thresholds
 tar_option_set(
   # Packages that your targets need for their tasks.
   packages = c("fs", "terra", "stringr", "lubridate", "colorspace", "purrr",
-               "ggplot2", "tidyterra", "glue", "car", "httr2", "readr", "sf", "maps", "tidyr"),
+               "ggplot2", "tidyterra", "glue", "car", "httr2", "readr", "sf", "maps", "tidyr", "dplyr", "broom", "forcats", "mgcv"),
   controller = crew::crew_controller_group(controller_hpc_heavy, controller_hpc_light, controller_local),
   resources = tar_resources(
     crew = tar_resources_crew(controller = ifelse(hpc, "hpc_light", "local"))
@@ -285,6 +285,11 @@ gams <- tar_plan(
     #using very coarse newdata regardless of resolution of original data.
     make_slope_newdata(gdd_doy_stack_50, res_m = 50000)
   ),
+  tar_target(
+    cities_sf,
+    make_cities_sf(),
+    description = "Example cities for plotting fitted trends"
+  ),
   tar_map(
     values = list(gam = rlang::syms(c("gam_50gdd", "gam_1250gdd", "gam_2500gdd"))),
     tar_target(
@@ -295,10 +300,14 @@ gams <- tar_plan(
         crew = tar_resources_crew(controller = ifelse(hpc, "hpc_heavy", "local"))
       )
     ),
+    tar_target(
+      city_plot,
+      plot_city_trend(gam, cities_sf)
+    ),
     tar_file(
       slopes_plot,
-      plot_avg_slopes(slopes, roi),
-      packages = c("ggpattern", "ggplot2", "terra", "tidyterra")
+      plot_avg_slopes(slopes, roi, cities_sf, city_plot),
+      packages = c("ggpattern", "ggplot2", "terra", "tidyterra", "patchwork")
     )
   )
 )
