@@ -75,7 +75,7 @@ if (isTRUE(hpc)) { #when on HPC, do ALL the thresholds
 tar_option_set(
   # Packages that your targets need for their tasks.
   packages = c("fs", "terra", "stringr", "lubridate", "colorspace", "purrr",
-               "ggplot2", "tidyterra", "glue", "car", "httr2", "readr", "sf", "maps", "tidyr"),
+               "ggplot2", "tidyterra", "glue", "car", "httr2", "readr", "sf", "maps", "tidyr", "dplyr", "broom", "forcats", "mgcv"),
   controller = crew::crew_controller_group(controller_hpc_heavy, controller_hpc_light, controller_local),
   resources = tar_resources(
     crew = tar_resources_crew(controller = ifelse(hpc, "hpc_light", "local"))
@@ -197,65 +197,83 @@ combine_results <- tar_plan(
   )
 )
 
+
 gams <- tar_plan(
-  tar_map(
-    values = tidyr::expand_grid(
-      resolution = c(50000, 25000, 10000, 5000),
-      # resolution = c(50000),
-      k = c(50, 100, 200, 400, 800)
-      # k = c(50, 100)
-    ),
-    tar_target(
-      gam_df,
-      make_gam_df(gdd_doy_stack_50, res = resolution),
-      format = "qs"
-    ),
-    tar_target(
-      gam,
-      fit_bam(gam_df, k_spatial = k),
-      format = "qs",
-      resources = tar_resources(
-        crew = tar_resources_crew(controller = ifelse(hpc, "hpc_heavy", "local"))
-      )
-    ),
-    tar_file(
-      smooth_est,
-      draw_smooth_estimates(gam, roi),
-      description = "Save smooth estimates plots"
-    ),
-    tar_target(
-      k_check,
-      check_k(gam),
-      packages = c("mgcv", "dplyr")
-    )
-  ),
-  #do a couple of GAMs with te() instead of ti()
+  #prep data
   tar_target(
-    gam_te_50000_100,
-    fit_bam_te(gam_df_50000_100, k_spatial = 100),
+    gam_df_50gdd,
+    make_gam_df(gdd_doy_stack_50, res = 50000),
+    format = "qs"
+  ),
+  tar_target(
+    gam_df_1250gdd,
+    make_gam_df(gdd_doy_stack_1250, res = 50000),
+    format = "qs"
+  ),
+  tar_target(
+    gam_df_2500gdd,
+    make_gam_df(gdd_doy_stack_2500, res = 50000),
+    format = "qs"
+  ),
+  #fit gams
+  tar_target(
+    gam_50gdd,
+    fit_bam(gam_df_50gdd, k_spatial = 600),
+    format = "qs",
     resources = tar_resources(
       crew = tar_resources_crew(controller = ifelse(hpc, "hpc_heavy", "local"))
     )
   ),
   tar_target(
-    gam_te_25000_400,
-    fit_bam_te(gam_df_25000_400, k_spatial = 400),
+    gam_1250gdd,
+    fit_bam(gam_df_1250gdd, k_spatial = 600),
+    format = "qs",
     resources = tar_resources(
       crew = tar_resources_crew(controller = ifelse(hpc, "hpc_heavy", "local"))
     )
+  ),
+  tar_target(
+    gam_2500gdd,
+    fit_bam(gam_df_2500gdd, k_spatial = 600),
+    format = "qs",
+    resources = tar_resources(
+      crew = tar_resources_crew(controller = ifelse(hpc, "hpc_heavy", "local"))
+    )
+  ),
+  tar_file(
+    smooths_50gdd,
+    draw_smooth_estimates(gam_50gdd, roi)
+  ),
+  tar_file(
+    smooths_1250gdd,
+    draw_smooth_estimates(gam_1250gdd, roi)
+  ),
+  tar_file(
+    smooths_2500gdd,
+    draw_smooth_estimates(gam_2500gdd, roi)
+  ),
+  tar_target(
+    k_check_50gdd,
+    check_k(gam_50gdd),
+    packages = c("mgcv", "dplyr")
+  ),
+  tar_target(
+    k_check_1250gdd,
+    check_k(gam_1250gdd),
+    packages = c("mgcv", "dplyr")
+  ),
+  tar_target(
+    k_check_2500gdd,
+    check_k(gam_2500gdd),
+    packages = c("mgcv", "dplyr")
   ),
   tar_target(
     k_check_df,
-    bind_rows(!!!rlang::syms(
-      tidyr::expand_grid(
-        resolution = c(50000, 25000, 10000, 5000),
-        # resolution = c(50000),
-        k = c(50, 100, 200, 400, 800)
-        # k = c(50, 100)
-      ) |> 
-        glue::glue_data("k_check_{resolution}_{k}")
-    )),
-    tidy_eval = TRUE
+    bind_rows(!!!rlang::syms(c(
+      "k_check_50gdd", "k_check_1250gdd", "k_check_2500gdd"
+    ))),
+    tidy_eval = TRUE,
+    description = "Collect results from k_check targets"
   ),
   tar_file(
     k_check_df_csv,
@@ -267,11 +285,13 @@ gams <- tar_plan(
     #using very coarse newdata regardless of resolution of original data.
     make_slope_newdata(gdd_doy_stack_50, res_m = 50000)
   ),
+  tar_target(
+    cities_sf,
+    make_cities_sf(),
+    description = "Example cities for plotting fitted trends"
+  ),
   tar_map(
-    values = list(
-      gam = rlang::syms(c("gam_50000_100", "gam_50000_400", "gam_25000_400", "gam_25000_800", "gam_10000_800",
-                          "gam_te_50000_100", "gam_te_25000_400"))
-    ),
+    values = list(gam = rlang::syms(c("gam_50gdd", "gam_1250gdd", "gam_2500gdd"))),
     tar_target(
       slopes,
       calc_avg_slopes(gam, slope_newdata),
@@ -280,10 +300,14 @@ gams <- tar_plan(
         crew = tar_resources_crew(controller = ifelse(hpc, "hpc_heavy", "local"))
       )
     ),
+    tar_target(
+      city_plot,
+      plot_city_trend(gam, cities_sf)
+    ),
     tar_file(
       slopes_plot,
-      plot_avg_slopes(slopes, roi),
-      packages = c("ggpattern", "ggplot2", "terra", "tidyterra")
+      plot_avg_slopes(slopes, roi, cities_sf, city_plot),
+      packages = c("ggpattern", "ggplot2", "terra", "tidyterra", "patchwork")
     )
   )
 )

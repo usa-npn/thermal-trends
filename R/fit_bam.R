@@ -4,7 +4,7 @@ fit_bam <- function(data, k_spatial) {
     DOY ~ 
       ti(x, y, bs = "cr", d = 2, k = k_spatial) +
       ti(year_scaled, bs = "cr", k = 20) +
-      ti(x, y, year_scaled, d = c(2,1), bs = c("cr", "cr"), k = c(100, 20)),
+      ti(x, y, year_scaled, d = c(2,1), bs = c("cr", "cr"), k = c(200, 20)),
     data = data,
     discrete = TRUE, #speeds up computation
     samfrac = 0.1, #speeds up computation
