@@ -300,6 +300,7 @@ gams <- tar_plan(
       slopes,
       calc_avg_slopes(gam, slope_newdata),
       packages = c("marginaleffects", "mgcv"),
+      #TODO probably don't need heavy duty controller here
       resources = tar_resources(
         crew = tar_resources_crew(controller = ifelse(hpc, "hpc_heavy", "local"))
       ),
