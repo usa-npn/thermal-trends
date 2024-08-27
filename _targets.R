@@ -283,7 +283,11 @@ gams <- tar_plan(
     slope_newdata,
     #doesn't matter which dataset since all that is used is x,y, and year_scaled
     #using very coarse newdata regardless of resolution of original data.
-    make_slope_newdata(gdd_doy_stack_50, res_m = 50000)
+    make_slope_newdata(gdd_doy_stack_50, res_m = 50000) |> 
+      dplyr::group_by(group) |> 
+      targets::tar_group(),
+    #grouped by about 1000 pixels per group
+    iteration = "group"
   ),
   tar_target(
     cities_sf,
@@ -296,9 +300,11 @@ gams <- tar_plan(
       slopes,
       calc_avg_slopes(gam, slope_newdata),
       packages = c("marginaleffects", "mgcv"),
+      #TODO probably don't need heavy duty controller here
       resources = tar_resources(
         crew = tar_resources_crew(controller = ifelse(hpc, "hpc_heavy", "local"))
-      )
+      ),
+      pattern = map(slope_newdata)
     ),
     tar_target(
       city_plot,

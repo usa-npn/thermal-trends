@@ -13,7 +13,7 @@ calc_avg_slopes <- function(gam, newdata = NULL) {
       variables = "year_scaled",
       type = "response",
       by = c("y", "x"),
-      p_adjust = "BY",
+      # p_adjust = "BY", #will do p adjustment manually
       hypothesis = 0,
       df = insight::get_df(gam, type = "model"), #TODO: not 100% sure if this is appropriate
       discrete = TRUE #speeds up computation
