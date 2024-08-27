@@ -9,6 +9,10 @@ plot_avg_slopes <- function(slopes_df, roi, cities_sf, cities_plot) {
   slopes_df_name <- deparse(substitute(slopes_df))
   threshold <- str_extract(slopes_df_name, "\\d+")
   
+  #p.adjust for FDR
+  slopes_df <- slopes_df |> 
+    mutate(p.value = p.adjust(p.value, method = "BY"))
+  
   gam_pval_rast <- 
     rast(slopes_df |> select(x, y, p.value)) < 0.05
   
@@ -49,7 +53,7 @@ plot_avg_slopes <- function(slopes_df, roi, cities_sf, cities_plot) {
     plot_layout(heights = c(1, 0.4)) + 
     plot_annotation(tag_levels ="A")
   
-  filename <- paste0(deparse(substitute(slopes_df)), ".png")
+  filename <- paste0(slopes_df_name, ".png")
   ggsave(
     filename = filename,
     plot = out, 
