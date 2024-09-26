@@ -218,7 +218,7 @@ gams <- tar_plan(
   #fit gams
   tar_target(
     gam_50gdd,
-    fit_bam(gam_df_50gdd, k_spatial = 600),
+    fit_bam(gam_df_50gdd, k_spatial = 800),
     format = "qs",
     resources = tar_resources(
       crew = tar_resources_crew(controller = ifelse(hpc, "hpc_heavy", "local"))
@@ -226,7 +226,7 @@ gams <- tar_plan(
   ),
   tar_target(
     gam_1250gdd,
-    fit_bam(gam_df_1250gdd, k_spatial = 600),
+    fit_bam(gam_df_1250gdd, k_spatial = 800),
     format = "qs",
     resources = tar_resources(
       crew = tar_resources_crew(controller = ifelse(hpc, "hpc_heavy", "local"))
@@ -234,7 +234,7 @@ gams <- tar_plan(
   ),
   tar_target(
     gam_2500gdd,
-    fit_bam(gam_df_2500gdd, k_spatial = 600),
+    fit_bam(gam_df_2500gdd, k_spatial = 800),
     format = "qs",
     resources = tar_resources(
       crew = tar_resources_crew(controller = ifelse(hpc, "hpc_heavy", "local"))
