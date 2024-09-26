@@ -202,17 +202,17 @@ gams <- tar_plan(
   #prep data
   tar_target(
     gam_df_50gdd,
-    make_gam_df(gdd_doy_stack_50, res = 50000),
+    make_gam_df(gdd_doy_stack_50, res = 20000),
     format = "qs"
   ),
   tar_target(
     gam_df_1250gdd,
-    make_gam_df(gdd_doy_stack_1250, res = 50000),
+    make_gam_df(gdd_doy_stack_1250, res = 20000),
     format = "qs"
   ),
   tar_target(
     gam_df_2500gdd,
-    make_gam_df(gdd_doy_stack_2500, res = 50000),
+    make_gam_df(gdd_doy_stack_2500, res = 20000),
     format = "qs"
   ),
   #fit gams
@@ -283,7 +283,7 @@ gams <- tar_plan(
     slope_newdata,
     #doesn't matter which dataset since all that is used is x,y, and year_scaled
     #using very coarse newdata regardless of resolution of original data.
-    make_slope_newdata(gdd_doy_stack_50, res_m = 50000) |> 
+    make_slope_newdata(gdd_doy_stack_50, res_m = 20000) |> 
       dplyr::group_by(group) |> 
       targets::tar_group(),
     #grouped by about 1000 pixels per group
