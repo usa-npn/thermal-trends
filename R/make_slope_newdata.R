@@ -6,5 +6,5 @@ make_slope_newdata <- function(rast, res_m) {
     dplyr::mutate(year = as.numeric(year)) |> 
     dplyr::mutate(year_scaled = year - min(year, na.rm = TRUE)) |> 
     select(cell, x, y, year_scaled) |> 
-    mutate(group = cut(cell, breaks = ceiling(max(cell)/1000))) 
+    mutate(group = cut(cell, breaks = ceiling(max(cell)/750))) 
 }
