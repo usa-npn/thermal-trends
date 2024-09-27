@@ -300,7 +300,6 @@ gams <- tar_plan(
       slopes,
       calc_avg_slopes(gam, slope_newdata),
       packages = c("marginaleffects", "mgcv"),
-      #TODO probably don't need heavy duty controller here
       resources = tar_resources(
         crew = tar_resources_crew(controller = ifelse(hpc, "hpc_heavy", "local"))
       ),
@@ -313,7 +312,10 @@ gams <- tar_plan(
     tar_file(
       slopes_plot,
       plot_avg_slopes(slopes, roi, cities_sf, city_plot),
-      packages = c("ggpattern", "ggplot2", "terra", "tidyterra", "patchwork")
+      packages = c("ggpattern", "ggplot2", "terra", "tidyterra", "patchwork"),
+      resources = tar_resources(
+        crew = tar_resources_crew(controller = ifelse(hpc, "hpc_heavy", "local"))
+      )
     )
   )
 )
