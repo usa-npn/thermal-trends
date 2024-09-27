@@ -1,6 +1,6 @@
 {
   "R": {
-    "Version": "4.4.1",
+    "Version": "4.4.0",
     "Repositories": [
       {
         "Name": "CRAN",
@@ -933,15 +933,14 @@
       "RemoteHost": "api.github.com",
       "RemoteRepo": "geotargets",
       "RemoteUsername": "njtierney",
-      "RemotePkgRef": "njtierney/geotargets@HEAD",
-      "RemoteRef": "HEAD",
-      "RemoteSha": "76285d670cb8c176415835436616ea2bbd76003f",
+      "RemotePkgRef": "njtierney/geotargets",
+      "RemoteSha": "596bf4cfb1e0216dc39295f2c5a08d7864f41d1e",
       "Requirements": [
         "cli",
         "rlang",
         "targets"
       ],
-      "Hash": "940be13c17c6e71b8f55364eb8c02cbf"
+      "Hash": "e80887767619b1b204ab851e4942b961"
     },
     "getip": {
       "Package": "getip",
@@ -2113,13 +2112,13 @@
     },
     "renv": {
       "Package": "renv",
-      "Version": "1.0.7",
+      "Version": "1.0.8",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
         "utils"
       ],
-      "Hash": "397b7b2a265bc5a7a06852524dabae20"
+      "Hash": "e082251834fa427514e68bec8afc8fda"
     },
     "reprex": {
       "Package": "reprex",
