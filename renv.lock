@@ -627,14 +627,14 @@
     },
     "data.table": {
       "Package": "data.table",
-      "Version": "1.15.4",
+      "Version": "1.16.0",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
         "R",
         "methods"
       ],
-      "Hash": "8ee9ac56ef633d0c7cab8b2ca87d683e"
+      "Hash": "fb24e05d4a91d8b1c7ff8e284bde834a"
     },
     "dbplyr": {
       "Package": "dbplyr",
@@ -746,14 +746,13 @@
     },
     "evaluate": {
       "Package": "evaluate",
-      "Version": "0.24.0",
+      "Version": "1.0.0",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
-        "R",
-        "methods"
+        "R"
       ],
-      "Hash": "a1066cbc05caee9a4bf6d90f194ff4da"
+      "Hash": "6b567375113ceb7d9f800de4dd42218e"
     },
     "fansi": {
       "Package": "fansi",
@@ -1401,7 +1400,7 @@
     },
     "insight": {
       "Package": "insight",
-      "Version": "0.20.3",
+      "Version": "0.20.4",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -1410,7 +1409,7 @@
         "stats",
         "utils"
       ],
-      "Hash": "19a5e2db13306af8a80d4e605d3cb06e"
+      "Hash": "8457d6e682a49f2c87b698a830527b09"
     },
     "isoband": {
       "Package": "isoband",
@@ -1592,7 +1591,7 @@
     },
     "marginaleffects": {
       "Package": "marginaleffects",
-      "Version": "0.21.0",
+      "Version": "0.22.0",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -1604,10 +1603,9 @@
         "generics",
         "insight",
         "methods",
-        "rlang",
-        "utils"
+        "rlang"
       ],
-      "Hash": "ff81d0015a8b37d206b7fbaf8c888578"
+      "Hash": "aca54f5e84764a47cb7aea2484a5e52b"
     },
     "markdown": {
       "Package": "markdown",
@@ -1672,14 +1670,14 @@
     },
     "mirai": {
       "Package": "mirai",
-      "Version": "1.1.1",
+      "Version": "1.2.0",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
         "R",
         "nanonext"
       ],
-      "Hash": "f8b0cda5304cad0b629e98c09aad5471"
+      "Hash": "b43c6a7e1e791d2a03b3cefa0ffe2d45"
     },
     "modelr": {
       "Package": "modelr",
@@ -1724,13 +1722,13 @@
     },
     "nanonext": {
       "Package": "nanonext",
-      "Version": "1.1.1",
+      "Version": "1.2.1",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
         "R"
       ],
-      "Hash": "1f884ea35086b957409a9d351eaa2d9e"
+      "Hash": "c601dd0bd16c37df416cab6c47512815"
     },
     "nlme": {
       "Package": "nlme",
@@ -1956,14 +1954,14 @@
     },
     "ps": {
       "Package": "ps",
-      "Version": "1.7.7",
+      "Version": "1.8.0",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
         "R",
         "utils"
       ],
-      "Hash": "878b467580097e9c383acbb16adab57a"
+      "Hash": "4b9c8485b0c7eecdf0a9ba5132a45576"
     },
     "purrr": {
       "Package": "purrr",
@@ -2263,13 +2261,13 @@
     },
     "secretbase": {
       "Package": "secretbase",
-      "Version": "1.0.1",
+      "Version": "1.0.2",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
         "R"
       ],
-      "Hash": "28495386ab3f1e83c237c6d519508fe7"
+      "Hash": "02cf6443f61f1521def1ef3d6ce3638c"
     },
     "selectr": {
       "Package": "selectr",
@@ -2461,7 +2459,7 @@
     },
     "tarchetypes": {
       "Package": "tarchetypes",
-      "Version": "0.9.0",
+      "Version": "0.10.0",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -2478,7 +2476,7 @@
         "vctrs",
         "withr"
       ],
-      "Hash": "094a74cdaa048b727d52aebf4c80ed7a"
+      "Hash": "554afb784cbe615ae628dfed026cf77f"
     },
     "targets": {
       "Package": "targets",
@@ -2830,15 +2828,16 @@
     },
     "xfun": {
       "Package": "xfun",
-      "Version": "0.46",
+      "Version": "0.47",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
+        "R",
         "grDevices",
         "stats",
         "tools"
       ],
-      "Hash": "00ce32f398db0415dde61abfef11300c"
+      "Hash": "36ab21660e2d095fef0d83f689e0477c"
     },
     "xml2": {
       "Package": "xml2",
