@@ -26,8 +26,10 @@ plot_city_trend <- function(gam, cities_sf) {
     reframe(st_coordinates(geometry) |>
               as.data.frame()) |> 
     rename(x = X, y = Y) |> 
+    #just use one point per city max
+    group_by(city) |> slice_head(n =1) |> 
     #add year_scaled
-    expand_grid(year_scaled = 0:42)
+    expand_grid(year_scaled = 0:42) 
   
   
   aug <- augment(gam, newdata = newdata)
