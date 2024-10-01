@@ -304,7 +304,7 @@ gams <- tar_plan(
         crew = tar_resources_crew(controller = ifelse(hpc, "hpc_heavy", "local"))
       ),
       pattern = map(slope_newdata)
-    ),
+    ), #TODO maybe combine slopes into a single tibble for more flexibility in plotting (e.g. faceted by GDD)
     tar_target(
       city_plot,
       plot_city_trend(gam, cities_sf)
