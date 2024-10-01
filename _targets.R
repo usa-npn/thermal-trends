@@ -287,7 +287,8 @@ gams <- tar_plan(
       dplyr::group_by(group) |> 
       targets::tar_group(),
     #grouped by about 1000 pixels per group
-    iteration = "group"
+    iteration = "group",
+    format = "qs"
   ),
   tar_target(
     cities_sf,
@@ -303,7 +304,8 @@ gams <- tar_plan(
       resources = tar_resources(
         crew = tar_resources_crew(controller = ifelse(hpc, "hpc_heavy", "local"))
       ),
-      pattern = map(slope_newdata)
+      pattern = map(slope_newdata),
+      format = "qs"
     ), #TODO maybe combine slopes into a single tibble for more flexibility in plotting (e.g. faceted by GDD)
     tar_target(
       city_plot,
