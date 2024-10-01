@@ -202,23 +202,23 @@ gams <- tar_plan(
   #prep data
   tar_target(
     gam_df_50gdd,
-    make_gam_df(gdd_doy_stack_50, res = 50000),
+    make_gam_df(gdd_doy_stack_50, res = 25000),
     format = "qs"
   ),
   tar_target(
     gam_df_1250gdd,
-    make_gam_df(gdd_doy_stack_1250, res = 50000),
+    make_gam_df(gdd_doy_stack_1250, res = 25000),
     format = "qs"
   ),
   tar_target(
     gam_df_2500gdd,
-    make_gam_df(gdd_doy_stack_2500, res = 50000),
+    make_gam_df(gdd_doy_stack_2500, res = 25000),
     format = "qs"
   ),
   #fit gams
   tar_target(
     gam_50gdd,
-    fit_bam(gam_df_50gdd, k_spatial = 600),
+    fit_bam(gam_df_50gdd, k_spatial = 1000),
     format = "qs",
     resources = tar_resources(
       crew = tar_resources_crew(controller = ifelse(hpc, "hpc_heavy", "local"))
@@ -226,7 +226,7 @@ gams <- tar_plan(
   ),
   tar_target(
     gam_1250gdd,
-    fit_bam(gam_df_1250gdd, k_spatial = 600),
+    fit_bam(gam_df_1250gdd, k_spatial = 1000),
     format = "qs",
     resources = tar_resources(
       crew = tar_resources_crew(controller = ifelse(hpc, "hpc_heavy", "local"))
@@ -234,7 +234,7 @@ gams <- tar_plan(
   ),
   tar_target(
     gam_2500gdd,
-    fit_bam(gam_df_2500gdd, k_spatial = 600),
+    fit_bam(gam_df_2500gdd, k_spatial = 1000),
     format = "qs",
     resources = tar_resources(
       crew = tar_resources_crew(controller = ifelse(hpc, "hpc_heavy", "local"))
@@ -283,7 +283,7 @@ gams <- tar_plan(
     slope_newdata,
     #doesn't matter which dataset since all that is used is x,y, and year_scaled
     #using very coarse newdata regardless of resolution of original data.
-    make_slope_newdata(gdd_doy_stack_50, res_m = 50000) |> 
+    make_slope_newdata(gdd_doy_stack_50, res_m = 25000) |> 
       dplyr::group_by(group) |> 
       targets::tar_group(),
     #grouped by about 1000 pixels per group
@@ -300,12 +300,11 @@ gams <- tar_plan(
       slopes,
       calc_avg_slopes(gam, slope_newdata),
       packages = c("marginaleffects", "mgcv"),
-      #TODO probably don't need heavy duty controller here
       resources = tar_resources(
         crew = tar_resources_crew(controller = ifelse(hpc, "hpc_heavy", "local"))
       ),
       pattern = map(slope_newdata)
-    ),
+    ), #TODO maybe combine slopes into a single tibble for more flexibility in plotting (e.g. faceted by GDD)
     tar_target(
       city_plot,
       plot_city_trend(gam, cities_sf)
@@ -313,7 +312,10 @@ gams <- tar_plan(
     tar_file(
       slopes_plot,
       plot_avg_slopes(slopes, roi, cities_sf, city_plot),
-      packages = c("ggpattern", "ggplot2", "terra", "tidyterra", "patchwork")
+      packages = c("ggpattern", "ggplot2", "terra", "tidyterra", "patchwork"),
+      resources = tar_resources(
+        crew = tar_resources_crew(controller = ifelse(hpc, "hpc_heavy", "local"))
+      )
     )
   )
 )
