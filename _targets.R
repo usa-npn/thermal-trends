@@ -48,7 +48,7 @@ controller_hpc_heavy <-
     slurm_log_output = "logs/crew_log_%A.out",
     slurm_log_error = "logs/crew_log_%A.err",
     slurm_memory_gigabytes_per_cpu = 5,
-    slurm_cpus_per_task = 5, 
+    slurm_cpus_per_task = 6, 
     script_lines = c(
       "#SBATCH --account theresam",
       "export LD_PRELOAD=/opt/ohpc/pub/libs/gnu8/openblas/0.3.7/lib/libopenblas.so",
