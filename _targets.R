@@ -310,7 +310,7 @@ gams <- tar_plan(
       format = "qs"
     ),
     tar_target(
-      range,
+      slope_range,
       range(slopes$estimate),
       resources = tar_resources(
         crew = tar_resources_crew(controller = ifelse(hpc, "hpc_heavy", "local"))
@@ -326,7 +326,7 @@ gams <- tar_plan(
   ),
   tar_target(
     slope_range,
-    range(range_gam_50gdd, range_gam_1250gdd, range_gam_2500gdd),
+    range(slope_range_gam_50gdd, slope_range_gam_1250gdd, slope_range_gam_2500gdd),
     description = "total range for all three gams"
   ),
   tar_map(
