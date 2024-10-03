@@ -3,7 +3,7 @@
 # library(tidyterra)
 # library(ggpattern)
 
-plot_avg_slopes <- function(slopes_df, roi, cities_sf, cities_plot) {
+plot_avg_slopes <- function(slopes_df, slope_range, roi, cities_sf, cities_plot) {
   
   #figure out threshold from target name
   slopes_df_name <- deparse(substitute(slopes_df))
@@ -39,7 +39,7 @@ plot_avg_slopes <- function(slopes_df, roi, cities_sf, cities_plot) {
     ) +
     geom_sf(data = cities_sf) +
     scale_pattern_fill_manual(values = c("grey30")) +
-    scale_fill_continuous_diverging(na.value = "transparent", rev = TRUE) +
+    scale_fill_continuous_diverging(na.value = "transparent", limits = slope_range, rev = TRUE) +
     labs(fill = "Avg. slope (DOY/yr)",
          pattern_fill = "p > 0.05",
          title = glue::glue("Trend in the DOY that {threshold} GDD is reached"),

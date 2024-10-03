@@ -82,7 +82,8 @@ tar_option_set(
   ),
   #assume workers have access to the data as well
   storage = "worker",
-  retrieval = "worker"
+  retrieval = "worker",
+  workspace_on_error = TRUE #allows use of `tar_workspace()` to load dependencies of an errored target for interactive debugging.
 )
 
 # Run the R scripts in the R/ folder with your custom functions:
@@ -306,14 +307,25 @@ gams <- tar_plan(
       ),
       pattern = map(slope_newdata),
       format = "qs"
-    ), #TODO maybe combine slopes into a single tibble for more flexibility in plotting (e.g. faceted by GDD)
+    ),
     tar_target(
       city_plot,
-      plot_city_trend(gam, cities_sf)
+      plot_city_trend(gam, cities_sf),
+      description = "timeseries plot for example cities for each gam"
+    )
+  ),
+  tar_target(
+    slope_range,
+    range(range(slopes_gam_50gdd$estimate), range(slopes_gam_1250gdd$estimate), range(slopes_gam_2500gdd$estimate)),
+    description = "total range for all three gams"
+  ),
+  tar_map(
+    values = list(
+      slopes = rlang::syms(c("slopes_gam_50gdd", "slopes_gam_1250gdd", "slopes_gam_2500gdd"))
     ),
     tar_file(
       slopes_plot,
-      plot_avg_slopes(slopes, roi, cities_sf, city_plot),
+      plot_avg_slopes(slopes, slope_range, roi, cities_sf, city_plot),
       packages = c("ggpattern", "ggplot2", "terra", "tidyterra", "patchwork"),
       resources = tar_resources(
         crew = tar_resources_crew(controller = ifelse(hpc, "hpc_heavy", "local"))
