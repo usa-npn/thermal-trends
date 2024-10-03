@@ -80,10 +80,11 @@ tar_option_set(
   resources = tar_resources(
     crew = tar_resources_crew(controller = ifelse(hpc, "hpc_light", "local"))
   ),
-  #assume workers have access to the data as well
+  #assume workers have access to the _targets/ data store
   storage = "worker",
   retrieval = "worker",
-  workspace_on_error = TRUE #allows use of `tar_workspace()` to load dependencies of an errored target for interactive debugging.
+  #allows use of `tar_workspace()` to load dependencies of an errored target for interactive debugging.
+  workspace_on_error = TRUE 
 )
 
 # Run the R scripts in the R/ folder with your custom functions:
@@ -309,6 +310,15 @@ gams <- tar_plan(
       format = "qs"
     ),
     tar_target(
+      range,
+      range(slopes$estimate),
+      resources = tar_resources(
+        crew = tar_resources_crew(controller = ifelse(hpc, "hpc_heavy", "local"))
+      ),
+      pattern = map(slopes),
+      format = "qs"
+    ),
+    tar_target(
       city_plot,
       plot_city_trend(gam, cities_sf),
       description = "timeseries plot for example cities for each gam"
@@ -316,10 +326,7 @@ gams <- tar_plan(
   ),
   tar_target(
     slope_range,
-    range(range(slopes_gam_50gdd$estimate), range(slopes_gam_1250gdd$estimate), range(slopes_gam_2500gdd$estimate)),
-    resources = tar_resources(
-      crew = tar_resources_crew(controller = ifelse(hpc, "hpc_heavy", "local"))
-    ),
+    range(range_gam_50gdd, range_gam_1250gdd, range_gam_2500gdd),
     description = "total range for all three gams"
   ),
   tar_map(
