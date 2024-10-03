@@ -331,7 +331,8 @@ gams <- tar_plan(
   ),
   tar_map(
     values = list(
-      slopes = rlang::syms(c("slopes_gam_50gdd", "slopes_gam_1250gdd", "slopes_gam_2500gdd"))
+      slopes = rlang::syms(c("slopes_gam_50gdd", "slopes_gam_1250gdd", "slopes_gam_2500gdd")),
+      city_plot = rlang::syms(c("city_plot_gam_50gdd", "city_plot_gam_1250gdd", "city_plot_gam_2500gdd"))
     ),
     tar_file(
       slopes_plot,
