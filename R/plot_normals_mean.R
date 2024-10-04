@@ -24,8 +24,7 @@ plot_normals_mean <- function(normals_summary, threshold, out_dir = "output/figs
   if (isTRUE(has_inf)) {
     p <- p + labs(caption= glue::glue(
       "Note: Pixels that never reach {threshold} GDD in *all* years are lumped in with the maximum DOY color."
-      )) +
-      theme(plot.caption = element_textbox_simple())
+      ))
   }
   
   filename <- glue::glue("normals_mean_{threshold}.{ext}")
