@@ -9,5 +9,5 @@ plot_normals_sd <- function(normals_summary, threshold, out_dir = "output/figs",
     theme_minimal()
   
   filename <- glue::glue("normals_sd_{threshold}.{ext}")
-  ggsave(filename = filename, path = out_dir, plot = p, ...)
+  ggsave(filename = filename, path = out_dir, plot = p, bg = "white", ...)
 }
