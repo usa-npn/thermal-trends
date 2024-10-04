@@ -1,5 +1,6 @@
 plot_normals_mean <- function(normals_summary, threshold, out_dir = "output/figs", ext = "png", ...) {
   fs::dir_create(out_dir)
+  has_inf <- any(is.infinite(values(normals_summary)))
   p <-
     ggplot() +
     geom_spatraster(data = normals_summary, aes(fill = mean)) +
@@ -11,7 +12,7 @@ plot_normals_mean <- function(normals_summary, threshold, out_dir = "output/figs
       breaks = breaks_limits(
         n = 7,
         min = FALSE,
-        max = any(is.infinite(values(normals_summary))),
+        max = has_inf,
         tol = 0.15
       ),
       labels = \(x) names(x)
@@ -20,6 +21,13 @@ plot_normals_mean <- function(normals_summary, threshold, out_dir = "output/figs
          subtitle = "Mean of 1991-2020", fill = "DOY") +
     theme_minimal()
   
+  if (isTRUE(has_inf)) {
+    p <- p + labs(caption= glue::glue(
+      "Note: Pixels that never reach {threshold} GDD in *all* years are lumped in with the maximum DOY color."
+      )) +
+      theme(plot.caption = element_textbox_simple())
+  }
+  
   filename <- glue::glue("normals_mean_{threshold}.{ext}")
-  ggsave(filename = filename, path = out_dir, plot = p, ...)
+  ggsave(filename = filename, path = out_dir, plot = p, bg="white", ...)
 }

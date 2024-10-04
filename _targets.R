@@ -75,7 +75,7 @@ if (isTRUE(hpc)) { #when on HPC, do ALL the thresholds
 tar_option_set(
   # Packages that your targets need for their tasks.
   packages = c("fs", "terra", "stringr", "lubridate", "colorspace", "purrr",
-               "ggplot2", "tidyterra", "glue", "car", "httr2", "readr", "sf", "maps", "tidyr", "dplyr", "broom", "forcats", "mgcv"),
+               "ggplot2", "tidyterra", "glue", "car", "httr2", "readr", "sf", "maps", "tidyr", "dplyr", "broom", "forcats", "mgcv", "ggtext"),
   controller = crew::crew_controller_group(controller_hpc_heavy, controller_hpc_light, controller_local),
   resources = tar_resources(
     crew = tar_resources_crew(controller = ifelse(hpc, "hpc_light", "local"))
