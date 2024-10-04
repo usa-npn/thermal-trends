@@ -20,15 +20,21 @@ plot_doy <- function(gdd_stack, threshold, out_dir = "output/figs", ext = "png",
   fs::dir_create(out_dir)
   p <- ggplot() +
     geom_spatraster(data = gdd_stack) +
+    facet_wrap(~lyr, ncol = 10) +
     scale_fill_viridis_c(
       na.value = "transparent", 
       option = "B",
       direction = -1, #earlier DOY = hotter color
       end = 0.9, #don't use the lightest yellow—hard to see on white background
       oob = scales::oob_squish_infinite,
-      breaks = breaks_squish_doy(values(gdd_stack))
+      breaks = breaks_limits(
+        n = 5,
+        min = FALSE,
+        max = any(is.infinite(values(gdd_stack))),
+        tol = 0.15
+      ),
+      labels = \(x) names(x)
     ) +    
-    facet_wrap(~lyr, ncol = 10) +
     labs(
       title = glue::glue("Days to reach > {threshold} GDD"),
       fill = "DOY"
