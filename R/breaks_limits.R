@@ -1,4 +1,4 @@
-breaks_limits <- function (n = 5, tol = 0.1, min = TRUE, max = TRUE, ...) 
+breaks_limits <- function (n = 5, tol = 0.1, min = TRUE, max = TRUE, digits = 1, ...) 
 {
   n_default <- n
   scales:::force_all(n, tol, min, max, ...)
@@ -23,7 +23,7 @@ breaks_limits <- function (n = 5, tol = 0.1, min = TRUE, max = TRUE, ...)
     if (isTRUE(max) & abs(scl_br[length(scl_br)] - scl_br[length(scl_br) - 1]) < tol) {
       breaks <- breaks[-(length(breaks)-1)]
     }
-    labels <- as.character(breaks)
+    labels <- as.character(round(breaks, digits = digits))
     if (isTRUE(min)) {
       labels[1] <- paste0("≤ ", labels[1])
     }
