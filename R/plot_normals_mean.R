@@ -11,7 +11,7 @@ plot_normals_mean <- function(normals_summary, threshold, out_dir = "output/figs
       breaks = breaks_limits(
         n = 7,
         min = FALSE,
-        max = any(is.infinite(values(gdd_stack))),
+        max = any(is.infinite(values(normals_summary))),
         tol = 0.15
       ),
       labels = \(x) names(x)
