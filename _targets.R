@@ -95,7 +95,9 @@ tar_option_set(
     "forcats",
     "mgcv"
   ), 
-  controller = crew::crew_controller_group(controller_hpc_heavy, controller_hpc_light, controller_local),
+  controller = crew::crew_controller_group(
+    controller_hpc_heavy, controller_hpc_light, controller_local
+  ),
   resources = tar_resources(
     crew = tar_resources_crew(controller = ifelse(isTRUE(hpc), "hpc_light", "local"))
   ),
@@ -108,7 +110,6 @@ tar_option_set(
 
 # Run the R scripts in the R/ folder with your custom functions:
 tar_source()
-# tar_source("other_functions.R") # Source other scripts as needed.
 
 main <- tar_plan(
   years = 1981:2023,
@@ -117,16 +118,23 @@ main <- tar_plan(
     command = get_prism_tmean(years),
     pattern = map(years),
     deployment = "main", #prevent downloads from running in parallel
-    format = "file_fast" #just check last modified date when deciding whether to re-run
+    format = "file_fast", #just check last modified date when deciding whether to re-run
+    description = "download PRISM data"
   ),
-  tar_terra_vect(roi, make_roi(), deployment = "main"),
-  tar_map(
+  tar_terra_vect(
+    roi,
+    make_roi(),
+    deployment = "main",
+    description = "vector for North East"
+  ),
+  tar_map( # for each threshold...
     values = list(threshold = threshold),
     tar_terra_rast(
       gdd_doy,
       calc_gdd_doy(rast_dir = prism_tmean, roi = roi, gdd_threshold = threshold),
       pattern = map(prism_tmean),
-      iteration = "list"
+      iteration = "list",
+      description = "calc DOY to reach threshold GDD"
     ),
     
     # This converts the output of the dynamic branching to be SpatRasters with
@@ -346,7 +354,7 @@ gams <- tar_plan(
   tar_target(
     slope_range,
     range(slope_range_gam_50gdd, slope_range_gam_1250gdd, slope_range_gam_2500gdd),
-    description = "total range for all three gams"
+    description = "range across all thresholds for colorbar"
   ),
   tar_map(
     values = list(
