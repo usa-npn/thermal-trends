@@ -144,14 +144,6 @@ main <- tar_plan(
       gdd_doy_stack,
       terra::rast(unname(gdd_doy))
     ),
-    tar_target(
-      doy_plot,
-      plot_doy(gdd_doy_stack, threshold = threshold, width = 15, height = 8),
-      resources = tar_resources(
-        crew = tar_resources_crew(controller = "hpc_heavy")
-      ),
-      format = "file"
-    ),
     tar_terra_rast(
       doy_trend,
       get_lm_slope(gdd_doy_stack),
