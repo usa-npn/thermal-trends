@@ -9,6 +9,7 @@ library(tarchetypes)
 library(geotargets)
 library(crew)
 library(crew.cluster)
+library(qs) #for format = "qs"
 
 # Detect whether you're on HPC & not with an Open On Demand session (which cannot submit SLURM jobs).
 slurm_host <- Sys.getenv("SLURM_SUBMIT_HOST")
@@ -60,9 +61,11 @@ controller_hpc_heavy <-
 controller_local <-
   crew::crew_controller_local(
     name = "local",
-    local_log_directory = "logs/",
     workers = 3, 
-    seconds_idle = 60
+    seconds_idle = 60,
+    options_local = crew::crew_options_local(
+      log_directory = "logs/"
+    )
   )
 
 if (isTRUE(hpc)) { #when on HPC, do ALL the thresholds
@@ -111,6 +114,7 @@ tar_option_set(
 # Run the R scripts in the R/ folder with your custom functions:
 tar_source()
 
+
 main <- tar_plan(
   years = 1981:2023,
   tar_target(
@@ -118,7 +122,7 @@ main <- tar_plan(
     command = get_prism_tmean(years),
     pattern = map(years),
     deployment = "main", #prevent downloads from running in parallel
-    format = "file_fast", #just check last modified date when deciding whether to re-run
+    format = "file", #just check last modified date when deciding whether to re-run
     description = "download PRISM data"
   ),
   tar_terra_vect(
