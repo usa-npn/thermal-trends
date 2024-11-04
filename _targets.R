@@ -145,23 +145,6 @@ main <- tar_plan(
       terra::rast(unname(gdd_doy))
     ),
     tar_terra_rast(
-      doy_trend,
-      get_lm_slope(gdd_doy_stack),
-      resources = tar_resources(
-        crew = tar_resources_crew(controller = "hpc_heavy")
-      )
-    ),
-    tar_target(
-      doy_trend_tif,
-      write_tiff(doy_trend, filename = paste0("doy_trend_", threshold, ".tif")),
-      format = "file"
-    ),
-    tar_target(
-      trend_plot,
-      plot_slopes(doy_trend, threshold = threshold),
-      format = "file"
-    ),
-    tar_terra_rast(
       normals_summary,
       summarize_normals(gdd_doy_stack),
       deployment = "main"
@@ -189,33 +172,6 @@ main <- tar_plan(
       format = "file"
     )
   ),
-)
-
-get_results <- tar_plan(
-  tar_map(#for selected thresholds
-    values = list(
-      trend_raster = rlang::syms(
-        c("doy_trend_50", "doy_trend_1250", "doy_trend_2500")
-        # Or to do all of them
-        # paste("doy_trend", threshold, sep = "_")
-      )
-    ),
-    tar_target(
-      df,
-      trend_rast2df(trend_raster)
-    )
-  )
-)
-
-combine_results <- tar_plan(
-  tar_combine(
-    trend_data,
-    get_results
-  ),
-  tar_file(
-    trend_data_csv,
-    tar_write_csv(trend_data, "output/data/slopes.csv")
-  )
 )
 
 
@@ -371,7 +327,5 @@ gams <- tar_plan(
 
 tar_plan(
   main,
-  get_results,
-  combine_results,
   gams
 )
