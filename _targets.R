@@ -10,16 +10,17 @@ library(geotargets)
 library(crew)
 library(crew.cluster)
 
-# Detect whether you're on HPC & not with an Open On Demand session (which cannot submit SLURM jobs) and set appropriate controller
+# Detect whether you're on HPC & not with an Open On Demand session (which cannot submit SLURM jobs).
 slurm_host <- Sys.getenv("SLURM_SUBMIT_HOST")
 hpc <- grepl("hpc\\.arizona\\.edu", slurm_host) & !grepl("ood", slurm_host)
-# If on HPC, use SLURM jobs for parallel workers
+
 controller_hpc_light <- 
   crew.cluster::crew_controller_slurm(
     name = "hpc_light",
     workers = 5, 
-    seconds_idle = 300, #  time until workers are shut down after idle
-    tasks_max = 40, # make workers semi-persistent—launch new SLURM job after 40 targets
+    # make workers semi-persistent: 
+    tasks_max = 40, # shut down SLURM job after completing 40 targets
+    seconds_idle = 300, # or when idle for some time
     garbage_collection = TRUE, # run garbage collection between tasks
     launch_max = 5L, # number of unproductive launched workers until error
     slurm_partition = "standard",
@@ -30,19 +31,19 @@ controller_hpc_light <-
     slurm_cpus_per_task = 3, #use 3 cpus per worker
     script_lines = c(
       "#SBATCH --account theresam",
+      #use optimized openBLAS for linear algebra
       "export LD_PRELOAD=/opt/ohpc/pub/libs/gnu8/openblas/0.3.7/lib/libopenblas.so",
       "module load gdal/3.8.5 R/4.4 eigen/3.4.0"
-      #add additional lines to the SLURM job script as necessary here
     )
   )
 controller_hpc_heavy <- 
   crew.cluster::crew_controller_slurm(
     name = "hpc_heavy",
     workers = 3, 
-    seconds_idle = 1000, #  time until workers are shut down after idle
-    tasks_max = 20, # make workers semi-persistent—launch new SLURM job after 20 targets
-    garbage_collection = TRUE, # run garbage collection between tasks
-    launch_max = 5L, # number of unproductive launched workers until error
+    seconds_idle = 1000,
+    tasks_max = 20,
+    garbage_collection = TRUE,
+    launch_max = 5L,
     slurm_partition = "standard",
     slurm_time_minutes = 360, #wall time for each worker
     slurm_log_output = "logs/crew_log_%A.out",
@@ -53,7 +54,6 @@ controller_hpc_heavy <-
       "#SBATCH --account theresam",
       "export LD_PRELOAD=/opt/ohpc/pub/libs/gnu8/openblas/0.3.7/lib/libopenblas.so",
       "module load gdal/3.8.5 R/4.4 eigen/3.4.0"
-      #add additional lines to the SLURM job script as necessary here
     )
   )
 
@@ -74,11 +74,30 @@ if (isTRUE(hpc)) { #when on HPC, do ALL the thresholds
 # Set target options:
 tar_option_set(
   # Packages that your targets need for their tasks.
-  packages = c("fs", "terra", "stringr", "lubridate", "colorspace", "purrr",
-               "ggplot2", "tidyterra", "glue", "car", "httr2", "readr", "sf", "maps", "tidyr", "dplyr", "broom", "forcats", "mgcv"),
+  packages = c(
+    "fs",
+    "terra",
+    "stringr",
+    "lubridate",
+    "colorspace",
+    "purrr",
+    "ggplot2",
+    "tidyterra",
+    "glue",
+    "car",
+    "httr2",
+    "readr",
+    "sf",
+    "maps",
+    "tidyr",
+    "dplyr",
+    "broom",
+    "forcats",
+    "mgcv"
+  ), 
   controller = crew::crew_controller_group(controller_hpc_heavy, controller_hpc_light, controller_local),
   resources = tar_resources(
-    crew = tar_resources_crew(controller = ifelse(hpc, "hpc_light", "local"))
+    crew = tar_resources_crew(controller = ifelse(isTRUE(hpc), "hpc_light", "local"))
   ),
   #assume workers have access to the _targets/ data store
   storage = "worker",
@@ -223,7 +242,7 @@ gams <- tar_plan(
     fit_bam(gam_df_50gdd, k_spatial = 1000),
     format = "qs",
     resources = tar_resources(
-      crew = tar_resources_crew(controller = ifelse(hpc, "hpc_heavy", "local"))
+      crew = tar_resources_crew(controller = ifelse(isTRUE(hpc), "hpc_heavy", "local"))
     )
   ),
   tar_target(
@@ -231,7 +250,7 @@ gams <- tar_plan(
     fit_bam(gam_df_1250gdd, k_spatial = 1000),
     format = "qs",
     resources = tar_resources(
-      crew = tar_resources_crew(controller = ifelse(hpc, "hpc_heavy", "local"))
+      crew = tar_resources_crew(controller = ifelse(isTRUE(hpc), "hpc_heavy", "local"))
     )
   ),
   tar_target(
@@ -239,7 +258,7 @@ gams <- tar_plan(
     fit_bam(gam_df_2500gdd, k_spatial = 1000),
     format = "qs",
     resources = tar_resources(
-      crew = tar_resources_crew(controller = ifelse(hpc, "hpc_heavy", "local"))
+      crew = tar_resources_crew(controller = ifelse(isTRUE(hpc), "hpc_heavy", "local"))
     )
   ),
   tar_file(
@@ -304,7 +323,7 @@ gams <- tar_plan(
       calc_avg_slopes(gam, slope_newdata),
       packages = c("marginaleffects", "mgcv"),
       resources = tar_resources(
-        crew = tar_resources_crew(controller = ifelse(hpc, "hpc_heavy", "local"))
+        crew = tar_resources_crew(controller = ifelse(isTRUE(hpc), "hpc_heavy", "local"))
       ),
       pattern = map(slope_newdata),
       format = "qs"
@@ -313,7 +332,7 @@ gams <- tar_plan(
       slope_range,
       range(slopes$estimate),
       resources = tar_resources(
-        crew = tar_resources_crew(controller = ifelse(hpc, "hpc_heavy", "local"))
+        crew = tar_resources_crew(controller = ifelse(isTRUE(hpc), "hpc_heavy", "local"))
       ),
       pattern = map(slopes),
       format = "qs"
@@ -331,15 +350,19 @@ gams <- tar_plan(
   ),
   tar_map(
     values = list(
-      slopes = rlang::syms(c("slopes_gam_50gdd", "slopes_gam_1250gdd", "slopes_gam_2500gdd")),
-      city_plot = rlang::syms(c("city_plot_gam_50gdd", "city_plot_gam_1250gdd", "city_plot_gam_2500gdd"))
+      slopes = rlang::syms(c(
+        "slopes_gam_50gdd", "slopes_gam_1250gdd", "slopes_gam_2500gdd"
+      )),
+      city_plot = rlang::syms(c(
+        "city_plot_gam_50gdd", "city_plot_gam_1250gdd", "city_plot_gam_2500gdd"
+      ))
     ),
     tar_file(
       slopes_plot,
       plot_avg_slopes(slopes, slope_range, roi, cities_sf, city_plot),
       packages = c("ggpattern", "ggplot2", "terra", "tidyterra", "patchwork"),
       resources = tar_resources(
-        crew = tar_resources_crew(controller = ifelse(hpc, "hpc_heavy", "local"))
+        crew = tar_resources_crew(controller = ifelse(isTRUE(hpc), "hpc_heavy", "local"))
       )
     )
   )
