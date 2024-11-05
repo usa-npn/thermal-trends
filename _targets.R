@@ -329,18 +329,8 @@ gams <- tar_plan(
   )
 )
 
-#I suspect quarto only works on OOD and locally and not with SLURM jobs
-if (isFALSE(hpc)) {
-  reports <- tar_plan(
-    tar_quarto(readme, "README.Qmd"),
-    tar_quarto(report, "docs/spatial-trends-report.qmd")
-  )
-} else {
-  reports <- list()
-}
 
 tar_plan(
   main,
-  gams,
-  reports
+  gams
 )
