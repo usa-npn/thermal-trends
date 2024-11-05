@@ -76,6 +76,7 @@ if (isTRUE(hpc)) { #when on HPC, do ALL the thresholds
 
 # Set target options:
 tar_option_set(
+  trust_timestamps = TRUE, #just check last modified date when deciding whether to re-run
   # Packages that your targets need for their tasks.
   packages = c(
     "fs",
@@ -122,7 +123,7 @@ main <- tar_plan(
     command = get_prism_tmean(years),
     pattern = map(years),
     deployment = "main", #prevent downloads from running in parallel
-    format = "file", #just check last modified date when deciding whether to re-run
+    format = "file", 
     description = "download PRISM data"
   ),
   tar_terra_vect(
