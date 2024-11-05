@@ -9,6 +9,7 @@ library(tarchetypes)
 library(geotargets)
 library(crew)
 library(crew.cluster)
+library(qs) #for format = "qs"
 
 # Detect whether you're on HPC & not with an Open On Demand session (which cannot submit SLURM jobs).
 slurm_host <- Sys.getenv("SLURM_SUBMIT_HOST")
@@ -60,9 +61,11 @@ controller_hpc_heavy <-
 controller_local <-
   crew::crew_controller_local(
     name = "local",
-    local_log_directory = "logs/",
     workers = 3, 
-    seconds_idle = 60
+    seconds_idle = 60,
+    options_local = crew::crew_options_local(
+      log_directory = "logs/"
+    )
   )
 
 if (isTRUE(hpc)) { #when on HPC, do ALL the thresholds
@@ -73,6 +76,7 @@ if (isTRUE(hpc)) { #when on HPC, do ALL the thresholds
 
 # Set target options:
 tar_option_set(
+  trust_timestamps = TRUE, #just check last modified date when deciding whether to re-run
   # Packages that your targets need for their tasks.
   packages = c(
     "fs",
@@ -111,6 +115,7 @@ tar_option_set(
 # Run the R scripts in the R/ folder with your custom functions:
 tar_source()
 
+
 main <- tar_plan(
   years = 1981:2023,
   tar_target(
@@ -118,7 +123,7 @@ main <- tar_plan(
     command = get_prism_tmean(years),
     pattern = map(years),
     deployment = "main", #prevent downloads from running in parallel
-    format = "file_fast", #just check last modified date when deciding whether to re-run
+    format = "file", 
     description = "download PRISM data"
   ),
   tar_terra_vect(
@@ -143,31 +148,6 @@ main <- tar_plan(
     tar_terra_rast(
       gdd_doy_stack,
       terra::rast(unname(gdd_doy))
-    ),
-    tar_target(
-      doy_plot,
-      plot_doy(gdd_doy_stack, threshold = threshold, width = 15, height = 8),
-      resources = tar_resources(
-        crew = tar_resources_crew(controller = "hpc_heavy")
-      ),
-      format = "file"
-    ),
-    tar_terra_rast(
-      doy_trend,
-      get_lm_slope(gdd_doy_stack),
-      resources = tar_resources(
-        crew = tar_resources_crew(controller = "hpc_heavy")
-      )
-    ),
-    tar_target(
-      doy_trend_tif,
-      write_tiff(doy_trend, filename = paste0("doy_trend_", threshold, ".tif")),
-      format = "file"
-    ),
-    tar_target(
-      trend_plot,
-      plot_slopes(doy_trend, threshold = threshold),
-      format = "file"
     ),
     tar_terra_rast(
       normals_summary,
@@ -197,33 +177,6 @@ main <- tar_plan(
       format = "file"
     )
   ),
-)
-
-get_results <- tar_plan(
-  tar_map(#for selected thresholds
-    values = list(
-      trend_raster = rlang::syms(
-        c("doy_trend_50", "doy_trend_1250", "doy_trend_2500")
-        # Or to do all of them
-        # paste("doy_trend", threshold, sep = "_")
-      )
-    ),
-    tar_target(
-      df,
-      trend_rast2df(trend_raster)
-    )
-  )
-)
-
-combine_results <- tar_plan(
-  tar_combine(
-    trend_data,
-    get_results
-  ),
-  tar_file(
-    trend_data_csv,
-    tar_write_csv(trend_data, "output/data/slopes.csv")
-  )
 )
 
 
@@ -379,7 +332,5 @@ gams <- tar_plan(
 
 tar_plan(
   main,
-  get_results,
-  combine_results,
   gams
 )

@@ -26,6 +26,7 @@ library(colorspace)
 library(patchwork)
 library(flextable)
 library(marginaleffects)
+showtext::showtext.auto() #makes fonts work consistently
 theme_set(theme_minimal())
 tar_load(gdd_doy_stack_50, store = here("_targets/"))
 tar_load(roi, store = here("_targets/"))
@@ -236,7 +237,6 @@ Furthermore, we can model complex interactions including three-way interactions 
 #| label: tbl-gam-summary
 #| tbl-cap: "Output of `summary()` for a spatial GAM"
 #| echo: true
-#| cache: true
 m_reml <- mgcv::bam(
     DOY ~ 
       ti(x, y, bs = "cr", d = 2, k = 25) +                                # <1>
@@ -274,7 +274,6 @@ This is possibly the most computationally intensive step but can *possibly* be s
 
 ```{r}
 #| label: avg-slopes
-#| cache: true
 m_reml_slopes <-
   avg_slopes(
     m_reml,
@@ -371,7 +370,7 @@ NCV is a relatively new method (@wood is a preprint) and methods for automated c
 
 Ideally, when fitting a GAM you should increase the number of knots for a smooth until the estimated degrees of freedom (edf) (the estimated wiggliness) is much less than the number of knots (k).
 Basically you want to give the spline enough flexibility that the penalized version can represent the "true" relationship.
-With REML and data with spatial autocorrelation there is a risk of overfitting—edf continues to grow as more and more knots are added and the smooth gets far too wiggly.
+With REML and data with spatial autocorrelation there is a risk of overfitting---edf continues to grow as more and more knots are added and the smooth gets far too wiggly.
 
 ```{r}
 k.check(m_reml)
