@@ -113,7 +113,7 @@ tar_option_set(
   workspace_on_error = TRUE 
 )
 
-# Run the R scripts in the R/ folder with your custom functions:
+# `source()` the R scripts in the R/ folder with your custom functions:
 tar_source()
 
 
@@ -123,7 +123,7 @@ main <- tar_plan(
     name = prism_tmean,
     command = get_prism_tmean(years),
     pattern = map(years),
-    deployment = "main", #prevent downloads from running in parallel
+    deployment = "main", #prevent downloads from running in parallel on distributed workers
     format = "file", 
     description = "download PRISM data"
   ),
@@ -282,7 +282,7 @@ gams <- tar_plan(
     values = list(gam = rlang::syms(c("gam_50gdd", "gam_1250gdd", "gam_2500gdd"))),
     tar_target(
       slopes,
-      calc_avg_slopes(gam, slope_newdata, stepsize = 0.05),
+      calc_avg_slopes(gam, slope_newdata),
       packages = c("marginaleffects", "mgcv"),
       resources = tar_resources(
         crew = tar_resources_crew(controller = ifelse(isTRUE(hpc), "hpc_heavy", "local"))
@@ -334,7 +334,7 @@ city_slopes <- tar_plan(
     values = list(gam = rlang::syms(c("gam_50gdd", "gam_1250gdd", "gam_2500gdd"))),
     tar_target(
       city_slopes,
-      calc_city_slopes(cities_sf, gam, stepsize = 0.05),
+      calc_city_slopes(cities_sf, gam),
       description = "for each GDD threshold, calc avg slope for specific cities"
     )
   )

@@ -8,7 +8,7 @@
 # tar_load(c(gam_50gdd,  gam_1250gdd, gam_2500gdd))
 # tar_load(cities_sf)
 
-calc_cities_slopes <- function(cities_sf, gam, stepsize = NULL) {
+calc_cities_slopes <- function(cities_sf, gam) {
 #create  newdata from cities
   newdata <- cities_sf |> 
     group_by(across(-geometry)) |>
