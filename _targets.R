@@ -10,6 +10,7 @@ library(geotargets)
 library(crew)
 library(crew.cluster)
 library(qs) #for format = "qs"
+library(nanoparquet) #for format = tar_format_nanoparquet()
 
 # Detect whether you're on HPC & not with an Open On Demand session (which cannot submit SLURM jobs).
 slurm_host <- Sys.getenv("SLURM_SUBMIT_HOST")
@@ -281,13 +282,13 @@ gams <- tar_plan(
     values = list(gam = rlang::syms(c("gam_50gdd", "gam_1250gdd", "gam_2500gdd"))),
     tar_target(
       slopes,
-      calc_avg_slopes(gam, slope_newdata),
+      calc_avg_slopes(gam, slope_newdata, stepsize = 0.05),
       packages = c("marginaleffects", "mgcv"),
       resources = tar_resources(
         crew = tar_resources_crew(controller = ifelse(isTRUE(hpc), "hpc_heavy", "local"))
       ),
       pattern = map(slope_newdata),
-      format = "qs"
+      format = tar_format_nanoparquet()
     ),
     tar_target(
       slope_range,
@@ -328,9 +329,28 @@ gams <- tar_plan(
     )
   )
 )
+city_slopes <- tar_plan(
+  tar_map(
+    values = list(gam = rlang::syms(c("gam_50gdd", "gam_1250gdd", "gam_2500gdd"))),
+    tar_target(
+      city_slopes,
+      calc_city_slopes(cities_sf, gam, stepsize = 0.05),
+      description = "for each GDD threshold, calc avg slope for specific cities"
+    )
+  )
+)
+city_slopes_plot <- tar_plan(
+  tar_combine(
+    city_slopes_df,
+    city_slopes,
+    description = "combine predictions from all GDD thresholds for plotting"
+  )
+)
 
 
 tar_plan(
   main,
-  gams
+  gams,
+  city_slopes,
+  city_slopes_plot
 )

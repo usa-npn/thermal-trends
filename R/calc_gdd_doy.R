@@ -1,6 +1,7 @@
 #' Calculate DOY to reach a theshold GDD
 #'
-#' @param rast_dir Path to directory containing PRISM mean temp data for a single year. Assumes folder name is just the year.
+#' @param rast_dir Path to directory containing PRISM mean temp data for a
+#'   single year. Assumes folder name is just the year.
 #' @param roi SpatVector object with boundaries of region of interest
 #' @param gdd_threshold Threshold GDD
 #' @param gdd_base Temperature base, in ºC, for calculating GDD
