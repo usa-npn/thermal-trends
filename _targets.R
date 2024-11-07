@@ -10,6 +10,7 @@ library(geotargets)
 library(crew)
 library(crew.cluster)
 library(qs) #for format = "qs"
+library(nanoparquet) #for format = tar_format_nanoparquet()
 
 # Detect whether you're on HPC & not with an Open On Demand session (which cannot submit SLURM jobs).
 slurm_host <- Sys.getenv("SLURM_SUBMIT_HOST")
@@ -50,7 +51,7 @@ controller_hpc_heavy <-
     slurm_log_output = "logs/crew_log_%A.out",
     slurm_log_error = "logs/crew_log_%A.err",
     slurm_memory_gigabytes_per_cpu = 5,
-    slurm_cpus_per_task = 6, 
+    slurm_cpus_per_task = 7, 
     script_lines = c(
       "#SBATCH --account theresam",
       "export LD_PRELOAD=/opt/ohpc/pub/libs/gnu8/openblas/0.3.7/lib/libopenblas.so",
@@ -112,7 +113,7 @@ tar_option_set(
   workspace_on_error = TRUE 
 )
 
-# Run the R scripts in the R/ folder with your custom functions:
+# `source()` the R scripts in the R/ folder with your custom functions:
 tar_source()
 
 
@@ -122,7 +123,7 @@ main <- tar_plan(
     name = prism_tmean,
     command = get_prism_tmean(years),
     pattern = map(years),
-    deployment = "main", #prevent downloads from running in parallel
+    deployment = "main", #prevent downloads from running in parallel on distributed workers
     format = "file", 
     description = "download PRISM data"
   ),
@@ -287,7 +288,7 @@ gams <- tar_plan(
         crew = tar_resources_crew(controller = ifelse(isTRUE(hpc), "hpc_heavy", "local"))
       ),
       pattern = map(slope_newdata),
-      format = "qs"
+      format = tar_format_nanoparquet()
     ),
     tar_target(
       slope_range,
@@ -328,9 +329,33 @@ gams <- tar_plan(
     )
   )
 )
+city_slopes <- tar_plan(
+  tar_map(
+    values = list(gam = rlang::syms(c("gam_50gdd", "gam_1250gdd", "gam_2500gdd"))),
+    tar_target(
+      city_slopes,
+      calc_city_slopes(cities_sf, gam),
+      format = tar_format_nanoparquet(),
+      resources = tar_resources(
+        crew = tar_resources_crew(controller = ifelse(isTRUE(hpc), "hpc_heavy", "local"))
+      ),
+      description = "for each GDD threshold, calc avg slope for specific cities"
+    )
+  )
+)
+city_slopes_plot <- tar_plan(
+  tar_combine(
+    city_slopes_df,
+    city_slopes,
+    format = tar_format_nanoparquet(),
+    description = "combine predictions from all GDD thresholds for plotting"
+  )
+)
 
 
 tar_plan(
   main,
-  gams
+  gams,
+  city_slopes,
+  city_slopes_plot
 )

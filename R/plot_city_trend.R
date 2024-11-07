@@ -6,7 +6,7 @@
 # gam <- tar_read(gam_50gdd)
 # gam_df <- tar_read(gam_df_50gdd)
 
-plot_city_trend <- function(gam, cities_sf) {
+make_city_newdata <- function(gam, cities_sf) {
   gam_df <- model.frame(gam) |> mutate(year = year_scaled + 1981)
   
   gam_sf <- gam_df |> 
@@ -30,7 +30,12 @@ plot_city_trend <- function(gam, cities_sf) {
     group_by(city) |> slice_head(n =1) |> 
     #add year_scaled
     expand_grid(year_scaled = 0:42) 
-  
+  newdata
+}
+
+plot_city_trend <- function(gam, cities_sf) {
+  gam_df <- model.frame(gam) |> mutate(year = year_scaled + 1981)
+  newdata <- make_city_newdata(gam, cities_sf)
   
   aug <- augment(gam, newdata = newdata)
   left_join(aug, gam_df) |> 
