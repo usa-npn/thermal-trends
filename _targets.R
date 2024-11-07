@@ -51,7 +51,7 @@ controller_hpc_heavy <-
     slurm_log_output = "logs/crew_log_%A.out",
     slurm_log_error = "logs/crew_log_%A.err",
     slurm_memory_gigabytes_per_cpu = 5,
-    slurm_cpus_per_task = 6, 
+    slurm_cpus_per_task = 7, 
     script_lines = c(
       "#SBATCH --account theresam",
       "export LD_PRELOAD=/opt/ohpc/pub/libs/gnu8/openblas/0.3.7/lib/libopenblas.so",
@@ -335,6 +335,10 @@ city_slopes <- tar_plan(
     tar_target(
       city_slopes,
       calc_city_slopes(cities_sf, gam),
+      format = tar_format_nanoparquet(),
+      resources = tar_resources(
+        crew = tar_resources_crew(controller = ifelse(isTRUE(hpc), "hpc_heavy", "local"))
+      ),
       description = "for each GDD threshold, calc avg slope for specific cities"
     )
   )
@@ -343,6 +347,7 @@ city_slopes_plot <- tar_plan(
   tar_combine(
     city_slopes_df,
     city_slopes,
+    format = tar_format_nanoparquet(),
     description = "combine predictions from all GDD thresholds for plotting"
   )
 )
