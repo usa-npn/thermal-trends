@@ -150,34 +150,7 @@ main <- tar_plan(
       gdd_doy_stack,
       terra::rast(unname(gdd_doy))
     ),
-    tar_terra_rast(
-      normals_summary,
-      summarize_normals(gdd_doy_stack),
-      deployment = "main"
-    ),
-    tar_target(
-      normals_mean_gtiff,
-      write_tiff(normals_summary[["mean"]],
-                 filename = paste0("normals_mean_", threshold, ".tiff")),
-      format = "file"
-    ),
-    tar_target(
-      normals_sd_gtiff,
-      write_tiff(normals_summary[["sd"]], 
-                 filename = paste0("normals_sd_", threshold, ".tiff")),
-      format = "file"
-    ),
-    tar_target(
-      normals_mean_plot,
-      plot_normals_mean(normals_summary, threshold, height = 7, width = 7),
-      format = "file"
-    ),
-    tar_target(
-      normals_sd_plot,
-      plot_normals_sd(normals_summary, threshold, height = 7, width = 7),
-      format = "file"
-    )
-  ),
+  )
 )
 
 
