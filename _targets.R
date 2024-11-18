@@ -149,7 +149,7 @@ main <- tar_plan(
     tar_terra_rast(
       gdd_doy_stack,
       terra::rast(unname(gdd_doy))
-    ),
+    )
   )
 )
 
