@@ -324,7 +324,6 @@ city_slopes_plot <- tar_plan(
   )
 )
 
-
 tar_plan(
   main,
   gams,
