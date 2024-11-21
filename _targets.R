@@ -69,11 +69,8 @@ controller_local <-
     )
   )
 
-if (isTRUE(hpc)) { #when on HPC, do ALL the thresholds
-  threshold <- seq(50, 2500, by = 50)
-} else { # only do select thresholds
-  threshold <- c(50, 1250, 2500)
-}
+#TODO: eventually replace with biologically relevant thresholds
+threshold <- c(50, 1250, 2500)
 
 # Set target options:
 tar_option_set(
@@ -137,7 +134,7 @@ main <- tar_plan(
     values = list(threshold = threshold),
     tar_terra_rast(
       gdd_doy,
-      calc_gdd_doy(rast_dir = prism_tmean, roi = roi, gdd_threshold = threshold),
+      calc_gdd_doy(rast_dir = prism_tmean, roi = roi, gdd_threshold = threshold, gdd_base = 10),
       pattern = map(prism_tmean),
       iteration = "list",
       description = "calc DOY to reach threshold GDD"
