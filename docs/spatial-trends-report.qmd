@@ -24,9 +24,9 @@ library(gratia)
 library(sf)
 library(colorspace)
 library(patchwork)
-library(flextable)
+# library(flextable)
 library(marginaleffects)
-showtext::showtext.auto() #makes fonts work consistently
+# showtext::showtext.auto() #makes fonts work consistently
 theme_set(theme_minimal())
 tar_load(gdd_doy_stack_50, store = here("_targets/"))
 tar_load(roi, store = here("_targets/"))
@@ -245,7 +245,7 @@ m_reml <- mgcv::bam(
     data = gdd_df,
     method = "REML"
   )
-as_flextable(m_reml)
+knitr::kable(m_reml)
 ```
 
 1.  Two-dimensional tensor-product smoother for space where both dimensions (lat and lon) are fit using a cubic regression spline (`"cr"`) with 25 knots.
