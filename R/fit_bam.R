@@ -1,6 +1,11 @@
-fit_bam <- function(data, k_spatial) {
-  safe_bam <- purrr::possibly(mgcv::bam, NA)
-  safe_bam(
+#' @param safe if TRUE, then instead of erroring this returns `NA`.
+fit_bam <- function(data, k_spatial, safe = FALSE) {
+  if (isTRUE(safe)) {
+    fun <- purrr::possibly(mgcv::bam, NA)
+  } else {
+    fun <- mgcv::bam
+  }
+  fun(
     DOY ~ 
       ti(x, y, bs = "cr", d = 2, k = k_spatial) +
       ti(year_scaled, bs = "cr", k = 20) +
