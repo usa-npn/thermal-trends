@@ -71,7 +71,7 @@ controller_local <-
   )
 
 #TODO: eventually replace with biologically relevant thresholds
-threshold <- c(50, 1250, 2500)
+threshold <- c(50, 400, 800)
 
 # Set target options:
 tar_option_set(
@@ -161,13 +161,13 @@ gams <- tar_plan(
     format = "qs"
   ),
   tar_target(
-    gam_df_1250gdd,
-    make_gam_df(gdd_doy_stack_1250, res = 25000),
+    gam_df_400gdd,
+    make_gam_df(gdd_doy_stack_400, res = 25000),
     format = "qs"
   ),
   tar_target(
-    gam_df_2500gdd,
-    make_gam_df(gdd_doy_stack_2500, res = 25000),
+    gam_df_800gdd,
+    make_gam_df(gdd_doy_stack_800, res = 25000),
     format = "qs"
   ),
   #fit gams
@@ -180,16 +180,16 @@ gams <- tar_plan(
     )
   ),
   tar_target(
-    gam_1250gdd,
-    fit_bam(gam_df_1250gdd, k_spatial = 1000),
+    gam_400gdd,
+    fit_bam(gam_df_400gdd, k_spatial = 1000),
     format = "qs",
     resources = tar_resources(
       crew = tar_resources_crew(controller = ifelse(isTRUE(hpc), "hpc_heavy", "local"))
     )
   ),
   tar_target(
-    gam_2500gdd,
-    fit_bam(gam_df_2500gdd, k_spatial = 1000),
+    gam_800gdd,
+    fit_bam(gam_df_800gdd, k_spatial = 1000),
     format = "qs",
     resources = tar_resources(
       crew = tar_resources_crew(controller = ifelse(isTRUE(hpc), "hpc_heavy", "local"))
@@ -200,12 +200,12 @@ gams <- tar_plan(
     draw_smooth_estimates(gam_50gdd, roi)
   ),
   tar_file(
-    smooths_1250gdd,
-    draw_smooth_estimates(gam_1250gdd, roi)
+    smooths_400gdd,
+    draw_smooth_estimates(gam_400gdd, roi)
   ),
   tar_file(
-    smooths_2500gdd,
-    draw_smooth_estimates(gam_2500gdd, roi)
+    smooths_800gdd,
+    draw_smooth_estimates(gam_800gdd, roi)
   ),
   tar_target(
     k_check_50gdd,
@@ -213,19 +213,19 @@ gams <- tar_plan(
     packages = c("mgcv", "dplyr")
   ),
   tar_target(
-    k_check_1250gdd,
-    check_k(gam_1250gdd),
+    k_check_400gdd,
+    check_k(gam_400gdd),
     packages = c("mgcv", "dplyr")
   ),
   tar_target(
-    k_check_2500gdd,
-    check_k(gam_2500gdd),
+    k_check_800gdd,
+    check_k(gam_800gdd),
     packages = c("mgcv", "dplyr")
   ),
   tar_target(
     k_check_df,
     bind_rows(!!!rlang::syms(c(
-      "k_check_50gdd", "k_check_1250gdd", "k_check_2500gdd"
+      "k_check_50gdd", "k_check_400gdd", "k_check_800gdd"
     ))),
     tidy_eval = TRUE,
     description = "Collect results from k_check targets"
@@ -251,7 +251,7 @@ gams <- tar_plan(
     description = "Example cities for plotting fitted trends"
   ),
   tar_map(
-    values = list(gam = rlang::syms(c("gam_50gdd", "gam_1250gdd", "gam_2500gdd"))),
+    values = list(gam = rlang::syms(c("gam_50gdd", "gam_400gdd", "gam_800gdd"))),
     tar_target(
       slopes,
       calc_avg_slopes(gam, slope_newdata),
@@ -279,16 +279,16 @@ gams <- tar_plan(
   ),
   tar_target(
     slope_range,
-    range(slope_range_gam_50gdd, slope_range_gam_1250gdd, slope_range_gam_2500gdd),
+    range(slope_range_gam_50gdd, slope_range_gam_400gdd, slope_range_gam_800gdd),
     description = "range across all thresholds for colorbar"
   ),
   tar_map(
     values = list(
       slopes = rlang::syms(c(
-        "slopes_gam_50gdd", "slopes_gam_1250gdd", "slopes_gam_2500gdd"
+        "slopes_gam_50gdd", "slopes_gam_400gdd", "slopes_gam_800gdd"
       )),
       city_plot = rlang::syms(c(
-        "city_plot_gam_50gdd", "city_plot_gam_1250gdd", "city_plot_gam_2500gdd"
+        "city_plot_gam_50gdd", "city_plot_gam_400gdd", "city_plot_gam_800gdd"
       ))
     ),
     tar_file(
@@ -303,7 +303,7 @@ gams <- tar_plan(
 )
 city_slopes <- tar_plan(
   tar_map(
-    values = list(gam = rlang::syms(c("gam_50gdd", "gam_1250gdd", "gam_2500gdd"))),
+    values = list(gam = rlang::syms(c("gam_50gdd", "gam_400gdd", "gam_800gdd"))),
     tar_target(
       city_slopes,
       calc_city_slopes(cities_sf, gam),
