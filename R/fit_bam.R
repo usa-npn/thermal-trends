@@ -12,16 +12,16 @@ fit_bam <- function(data, k_spatial) {
   )
 }
 
-fit_bam_te <- function(data, k_spatial) {
-  safe_bam <- purrr::possibly(mgcv::bam, NA)
-  safe_bam(
-    DOY ~ te(x, y, year_scaled, d = c(2,1), bs = "cr", k = c(k_spatial, 20)),
-    data = data,
-    discrete = TRUE,
-    samfrac = 0.1, #speeds up computation
-    method = "fREML"
-  )
-}
+# fit_bam_te <- function(data, k_spatial) {
+#   safe_bam <- purrr::possibly(mgcv::bam, NA)
+#   safe_bam(
+#     DOY ~ te(x, y, year_scaled, d = c(2,1), bs = "cr", k = c(k_spatial, 20)),
+#     data = data,
+#     discrete = TRUE,
+#     samfrac = 0.1, #speeds up computation
+#     method = "fREML"
+#   )
+# }
 
 # fit_ncv <- function(data, nei, k_spatial = 25, k_year = 10, threads = 2) {
 #   mgcv::gam(
