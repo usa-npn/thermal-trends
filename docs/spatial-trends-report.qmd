@@ -16,7 +16,11 @@ library(knitr)
 library(here)
 library(car)
 library(terra)
-library(tidyverse)
+# library(tidyverse)
+library(tidyr)
+library(dplyr)
+library(purrr)
+library(ggplot2)
 library(ggpattern)
 library(tidyterra)
 library(mgcv)
@@ -245,7 +249,7 @@ m_reml <- mgcv::bam(
     data = gdd_df,
     method = "REML"
   )
-knitr::kable(m_reml)
+knitr::kable(m_reml) #change back to flextable
 ```
 
 1.  Two-dimensional tensor-product smoother for space where both dimensions (lat and lon) are fit using a cubic regression spline (`"cr"`) with 25 knots.
