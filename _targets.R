@@ -27,7 +27,7 @@ controller_hpc_light <-
       script_lines = c(
         "#SBATCH --account theresam",
         #use optimized openBLAS for linear algebra
-        "export LD_PRELOAD=/opt/ohpc/pub/libs/gnu8/openblas/0.3.7/lib/libopenblas.so",
+        "export LD_PRELOAD=/opt/ohpc/pub/libs/gnu13/openblas/0.3.21/lib/libopenblas.so",
         "module load gdal/3.8.5 R/4.4 eigen/3.4.0"
       ),
       log_output = "logs/crew_log_%A.out",
@@ -48,7 +48,7 @@ controller_hpc_heavy <-
     options_cluster = crew_options_slurm(
       script_lines = c(
         "#SBATCH --account theresam",
-        "export LD_PRELOAD=/opt/ohpc/pub/libs/gnu8/openblas/0.3.7/lib/libopenblas.so",
+        "export LD_PRELOAD=/opt/ohpc/pub/libs/gnu13/openblas/0.3.21/lib/libopenblas.so",
         "module load gdal/3.8.5 R/4.4 eigen/3.4.0"
       ),
       log_output = "logs/crew_log_%A.out",
