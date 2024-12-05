@@ -51,8 +51,8 @@ controller_hpc_heavy <-
         "export LD_PRELOAD=/opt/ohpc/pub/libs/gnu13/openblas/0.3.21/lib/libopenblas.so",
         "module load gdal/3.8.5 R/4.4 eigen/3.4.0"
       ),
-      log_output = "logs/crew_log_%A.out",
-      log_error = "logs/crew_log_%A.err",
+      log_output = "logs/crew_heavy_log_%A.out",
+      log_error = "logs/crew_heavy_log_%A.err",
       memory_gigabytes_per_cpu = 5,
       cpus_per_task = 7, 
       time_minutes = 360, #wall time for each worker
