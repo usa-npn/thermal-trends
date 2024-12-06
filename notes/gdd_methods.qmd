@@ -117,11 +117,11 @@ Simple averaging
 
 #' Simple averaging method for GDD calculation
 #' 
-#' @param tmin numeric vector; min daily temp in ºC.
-#' @param tmax numeric vector; max daily temp in ºC.
-#' @param tmean numeric vector; mean daily temp in ºC. If left blank, `tmean`
+#' @param tmin Numeric vector; min daily temp in ºC.
+#' @param tmax Numeric vector; max daily temp in ºC.
+#' @param tmean Numeric vector; mean daily temp in ºC. If left blank, `tmean`
 #'   will be calculated as the mean of `tmin` and `tmax`.
-#' @param base base temp in ºC.
+#' @param base Base temp in ºC.
 calc_gdd_simple <- function(tmin = NULL, tmax = NULL, tmean = NULL, base = 0) {
   if (is.null(tmean)) {
     tmean <- (tmax + tmin) / 2
@@ -143,9 +143,9 @@ Baskerville-Emin method
 
 #' Baskerville-Emin method for GDD calculation
 #' 
-#' @param tmin numeric vector; min daily temp in ºC.
-#' @param tmax numeric vector; max daily temp in ºC.
-#' @param base base temp in ºC.
+#' @param tmin Numeric vector; min daily temp in ºC.
+#' @param tmax Numeric vector; max daily temp in ºC.
+#' @param base Base temp in ºC.
 #' @references 
 #' https://www.canr.msu.edu/uploads/files/Research_Center/NW_Mich_Hort/be_method.pdf
 calc_gdd_be <- function(tmin = NULL, tmax = NULL, base = 0) {
@@ -193,11 +193,15 @@ df_gdd <-
 ```{r}
 ggplot(df_gdd, aes(x = DOY, y = gdd)) + 
   facet_grid(rows = vars(city), cols = vars(method)) +
-  geom_line()
+  geom_line() +
+  labs(title = "Daily GDD",
+       subtitle = "1981")
 
 ggplot(df_gdd, aes(x = DOY, y = agdd)) + 
   facet_grid(rows = vars(city), cols = vars(method)) +
-  geom_line()
+  geom_line() +
+  labs(title = "Accumulated GDD",
+       subtitle = "1981")
 ```
 
 ```{r}
@@ -207,7 +211,8 @@ df_gdd |>
     max_agdd = max(agdd),
     doy_100 = min(which(agdd > 100)),
     doy_500 = min(which(agdd > 500)),
-    doy_1000 = min(which(agdd > 1000))
+    doy_1000 = min(which(agdd > 1000)),
+    .groups = "drop"
     ) |> 
   knitr::kable()
 ```
