@@ -1,4 +1,4 @@
-#' Calculate DOY to reach a theshold GDD
+#' Calculate DOY a threshold GDD is reached
 #'
 #' @param rast_dir Path to directory containing PRISM mean temp data for a
 #'   single year. Assumes folder name is just the year.
@@ -8,9 +8,33 @@
 #'
 #' @return SpatRaster
 calc_gdd_doy <- function(rast_dir, roi, gdd_threshold, gdd_base = 0) {
-  files <- dir_ls(rast_dir, glob = "*.zip")
+  prism <- read_prism(rast_dir)
+  
+  #crop to roi
+  roi <- terra::project(roi, prism)
+  prism_roi <- terra::crop(prism, roi, mask = TRUE)
+  
+  # calculate degree days
+  gdd <- terra::app(prism_roi, calc_gdd_simple, base = gdd_base)
+  
+  # convert to accumulated gdd
+  agdd <- cumsum(gdd)
+  
+  # DOY to reach a single threshold
+  gdd_doy <- terra::which.lyr(agdd > gdd_threshold)
+  
+  names(gdd_doy) <- 
+    fs::path_file(rast_dir) #gets just the end folder name which should be the year
+  
+  #return:
+  gdd_doy
+}
 
-  #convert filenames to DOY to name layers later
+
+read_prism <- function(rast_dir) {
+  files <- fs::dir_ls(rast_dir, glob = "*.zip")
+  
+  #convert filenames to DOY to use for layer names
   doys <- files |>
     fs::path_file() |>
     stringr::str_extract("\\d{8}") |>
@@ -22,49 +46,28 @@ calc_gdd_doy <- function(rast_dir, roi, gdd_threshold, gdd_base = 0) {
     files |> 
     fs::path_file() |>
     fs::path_ext_set(".bil")
-  rast_paths <- fs::path("/vsizip", files, bils)
-
-  #read in as raster stacks
-  prism <- terra::rast(rast_paths)
+  rast_paths <- paste0("/vsizip/", fs::path(files, bils))
+  
+  #read in multi-layer rasters
+  prism <- terra::rast(here::here(rast_paths))
   names(prism) <- doys
-  units(prism) <- "ºC"
-  
+  terra::units(prism) <- "ºC"
   #sort layers by DOY
-  prism <- subset(prism, as.character(min(doys):max(doys)))
-  
-  #crop to roi
-  roi <- project(roi, prism)
-  prism_ne <- crop(prism, roi, mask = TRUE)
-  
-  # convert to degree days
-  # function for a single layer:
-  calc_dd <- function(tmean, base = 0) {
-    if (base != 0) {
-      dd <- tmean - base
-    } else {
-      dd <- tmean
-    }
-    dd[dd < 0] <- 0
-    dd
+  prism <- terra::subset(prism, as.character(min(doys):max(doys)))
+  #return
+  prism
+}
+
+#' Simple averaging method for GDD calculation
+#' 
+#' @param tmean Numeric vector; mean daily temp in ºC.
+#' @param base Base temp in ºC.
+calc_gdd_simple <- function(tmean, base = 0) {
+  if (base != 0) {
+    gdd <- tmean - base
+  } else {
+    gdd <- tmean
   }
-  
-  #apply to every layer
-  gdd <- terra::app(prism_ne, calc_dd, base = gdd_base)
-  
-  # convert to accumulated dd
-  agdd <- cumsum(gdd)
-  
-  # DOY to reach a single threshold
-  gdd_doy <- which.lyr(agdd > gdd_threshold)
-  
-  # Change `NA`s that represent never reaching the threshold GDD to `Inf`s.
-  # These will be treated the same for modeling (i.e. dropped), but will allow
-  # different treatment for plotting
-  gdd_doy[is.na(gdd_doy) & !is.na(agdd[[1]])] <- Inf
-  
-  names(gdd_doy) <- 
-    fs::path_file(rast_dir) #gets just the end folder name which should be the year
-  
-  #return:
-  gdd_doy
+  gdd[gdd < 0] <- 0
+  gdd
 }
