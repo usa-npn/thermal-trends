@@ -54,7 +54,7 @@ controller_hpc_heavy <-
       log_output = "logs/crew_heavy_log_%A.out",
       log_error = "logs/crew_heavy_log_%A.err",
       memory_gigabytes_per_cpu = 5,
-      cpus_per_task = 7, 
+      cpus_per_task = 8, 
       time_minutes = 360, #wall time for each worker
       partition = "standard"
     )
