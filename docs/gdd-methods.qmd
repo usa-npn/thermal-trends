@@ -204,15 +204,18 @@ ggplot(df_gdd, aes(x = DOY, y = agdd)) +
 ```
 
 ```{r}
+#| label: tbl-cities
+#| tbl-cap: "Summary statistics for two methods and two example cities. `max_agdd` = total accumulated GDD for 1981. `doy_*` columns show the DOY different GDD thresholds are reached on."
 df_gdd |> 
   group_by(city, method) |> 
   summarize(
     max_agdd = max(agdd),
-    doy_100 = min(which(agdd > 100)),
-    doy_500 = min(which(agdd > 500)),
-    doy_1000 = min(which(agdd > 1000)),
+    doy_50 = min(which(agdd >= 50)),
+    doy_100 = min(which(agdd >= 100)),
+    doy_500 = min(which(agdd >= 500)),
+    doy_1000 = min(which(agdd >= 1000)),
     .groups = "drop"
-    ) |> 
+  ) |> 
   knitr::kable()
 ```
 
