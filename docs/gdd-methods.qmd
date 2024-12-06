@@ -8,12 +8,13 @@ execute:
 code-fold: true
 ---
 
-Last we spoke, we decided it was important to decide on a method for calculating GDD, specifically either the simple averaging method or the Baskerville-Emin method.  This report implements functions for both (please scrutinize!) and shows a few comparisons.
+Last we spoke, we decided it was important to decide on a method for calculating GDD, specifically either the simple averaging method or the Baskerville-Emin method.
+This report implements functions for both (please scrutinize!) and shows a few comparisons.
 
 ::: callout-note
-All the following GDD calculations use ºC with a base temp of 10 ºC. It occurred to me that units (ºF or ºC) might have been part of the confusion at our last call.
+All the following GDD calculations use ºC with a base temp of 10 ºC.
+It occurred to me that units (ºF or ºC) might have been part of the confusion at our last call.
 :::
-
 
 ```{r}
 #| label: setup
@@ -68,8 +69,6 @@ varnames(prism_tmean81) <- "tmean_c"
 varnames(prism_tmin81)  <- "tmin_c"
 varnames(prism_tmax81)  <- "tmax_c"
 ```
-
-
 
 ## Comparing point data
 
