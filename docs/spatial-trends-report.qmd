@@ -50,7 +50,7 @@ For the sake of computational efficiency for this example, I'm going to transfor
 ```{r}
 #downscale and extract as data frame
 gdd_rast <- 
-  project(gdd_doy_stack_50, crs("ESRI:102010"), res = 25000)
+  project(gdd_doy_stack_50, crs("ESRI:102010"), res = 50000)
 
 gdd_df <- 
   gdd_rast |> 
