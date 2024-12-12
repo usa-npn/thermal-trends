@@ -49,7 +49,7 @@ read_prism <- function(rast_dir) {
   rast_paths <- paste0("/vsizip/", fs::path(files, bils))
   
   #read in multi-layer rasters
-  prism <- terra::rast(here::here(rast_paths))
+  prism <- terra::rast(rast_paths)
   names(prism) <- doys
   terra::units(prism) <- "ºC"
   #sort layers by DOY
