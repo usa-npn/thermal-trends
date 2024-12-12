@@ -247,9 +247,10 @@ m_reml <- mgcv::bam(
       ti(year_scaled, bs = "cr", k = 10) +                                # <2>
       ti(x, y, year_scaled, d = c(2,1), bs = "cr", k = c(25, 10)),        # <3>
     data = gdd_df,
-    method = "REML"
+    method = "fREML",
+    discrete = TRUE
   )
-knitr::kable(m_reml) #change back to flextable
+summary(m_reml) #change back to flextable if possible
 ```
 
 1.  Two-dimensional tensor-product smoother for space where both dimensions (lat and lon) are fit using a cubic regression spline (`"cr"`) with 25 knots.
@@ -270,11 +271,7 @@ plots_reml <- draw(m_reml, rug = FALSE, dist = 0.05, n_3d = 6)
 ```
 
 As you can see in @fig-gam B, the trend through time is not linear.
-If we want to extract information from this model to create a map similar to @fig-trend-map-hatched, we can get fitted values for each year of each pixel and calculate *average* slopes and associated p-values testing if those average slopes are different from zero.
-
-::: callout-note
-This is possibly the most computationally intensive step but can *possibly* be sped up using multiple cores or by predicting over a regular sample of points rather than every point.
-:::
+If we want to extract information from this model to create a map similar to @fig-trend-map-hatched, we can calculate the *average* slopes and associated p-values testing if those average slopes are different from zero.
 
 ```{r}
 #| label: avg-slopes
@@ -286,7 +283,8 @@ m_reml_slopes <-
     type = "response",
     by = c("y", "x"),
     p_adjust = "BY",
-    df = insight::get_df(m_reml, type = "model") #TODO: not 100% sure if this is appropriate
+    df = insight::get_df(m_reml, type = "model"), #TODO: not 100% sure if this is appropriate
+    discrete = TRUE #speeds up computation
   )
 ```
 

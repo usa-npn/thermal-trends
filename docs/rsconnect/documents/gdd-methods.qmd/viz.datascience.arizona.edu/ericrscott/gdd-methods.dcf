@@ -1,0 +1,12 @@
+name: gdd-methods
+title: gdd-methods
+username: ericrscott
+account: ericrscott
+server: viz.datascience.arizona.edu
+hostUrl: https://viz.datascience.arizona.edu/__api__
+appId: 1159
+bundleId: 6035
+url: https://viz.datascience.arizona.edu:443/content/cf21f15a-860a-4e95-ae59-2114f882055a/
+version: 1
+asMultiple: FALSE
+asStatic: TRUE
