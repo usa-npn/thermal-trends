@@ -35,7 +35,7 @@ controller_hpc_light <-
       log_error = "logs/crew_log_%A.err",
       memory_gigabytes_per_cpu = 5,
       cpus_per_task = 3, #use 3 cpus per worker
-      time_minutes = 60, #wall time for each worker
+      time_minutes = 360, #wall time for each worker
       partition = "standard"
     )
   )
@@ -46,7 +46,7 @@ controller_hpc_heavy <-
     host = Sys.info()["nodename"],
     workers = 3, 
     tasks_max = 20,
-    seconds_idle = 1000,
+    seconds_idle = 300,
     options_cluster = crew_options_slurm(
       script_lines = c(
         "#SBATCH --account theresam",
@@ -224,6 +224,10 @@ gams <- tar_plan(
   tar_file(
     smooths_50gdd,
     draw_smooth_estimates(gam_50gdd, roi)
+  ),
+  tar_file(
+    smooths_50gdd_gp,
+    draw_smooth_estimates(gam_50gdd_gp, roi)
   ),
   tar_file(
     smooths_400gdd,
