@@ -46,7 +46,7 @@ calc_gdd_doy <- function(tmean_dir, roi, gdd_threshold, gdd_base = 0) {
 #' @param gdd_base Temperature base, in ºC, for calculating GDD
 #'
 #' @return SpatRaster
-calc_gdd_doy <- function(tmin_dir, tmax_dir, roi, gdd_threshold, gdd_base = 0) {
+calc_gdd_be_doy <- function(tmin_dir, tmax_dir, roi, gdd_threshold, gdd_base = 0) {
   prism_tmin <- read_prism(tmin_dir)
   prism_tmax <- read_prism(tmax_dir)
   
