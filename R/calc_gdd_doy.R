@@ -133,7 +133,7 @@ calc_gdd_simple <- function(tmean, base = 32) {
 #' @references 
 #' https://www.canr.msu.edu/uploads/files/Research_Center/NW_Mich_Hort/be_method.pdf
 calc_gdd_be <- function(tmin = NULL, tmax = NULL, base = 32) {
-  purrr::map2_dbl(tmin, tmax, \(tmin, tmax) { #for each day...
+  .mapply(function(tmin, tmax) { #for each day...
     #NAs beget NAs
     if (is.na(tmin) | is.na(tmax)) {
       return(NA)
@@ -155,5 +155,5 @@ calc_gdd_be <- function(tmin = NULL, tmax = NULL, base = 32) {
     A <- asin((base - tmean) / W)
     gdd <- ((W * cos(A)) - ((base - tmean) * ((pi/2) - A))) / pi
     return(gdd)
-  })
+  }, dots = list(tmin = tmin, tmax = tmax), MoreArgs = NULL) |> as.numeric()
 }
