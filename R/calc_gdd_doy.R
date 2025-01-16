@@ -1,14 +1,14 @@
 #' Calculate DOY a threshold GDD is reached (simple averaging method)
-#'
+#' 
 #' @param rast_dir Path to directory containing PRISM mean temp data for a
 #'   single year. Assumes folder name is just the year.
 #' @param roi SpatVector object with boundaries of region of interest
-#' @param gdd_threshold Threshold GDD
-#' @param gdd_base Temperature base, in ºC, for calculating GDD
+#' @param gdd_threshold Threshold GDD in ºF
+#' @param gdd_base Temperature base, in ºF, for calculating GDD
 #'
-#' @return SpatRaster
-calc_gdd_doy <- function(tmean_dir, roi, gdd_threshold, gdd_base = 0) {
-  prism_tmean <- read_prism(tmean_dir)
+#' @return SpatRaster with DOY the threshold GDD is reached.
+calc_gdd_doy <- function(tmean_dir, roi, gdd_threshold, gdd_base = 32) {
+  prism_tmean <- read_prism(tmean_dir) 
   
   #crop to roi
   roi <- terra::project(roi, prism_tmean)
@@ -36,17 +36,16 @@ calc_gdd_doy <- function(tmean_dir, roi, gdd_threshold, gdd_base = 0) {
 #' Calculates accumulated GDD with the Baskerville-Emin method and then
 #' calculates the DOY that a particular threshold is met and returns a raster of
 #' DOY values.
-#'
 #' @param tmin_dir Path to directory containing PRISM daily min temp data for a
 #'   single year. Assumes folder name is just the year.
 #' @param tmax_dir Path to directory containing PRISM daily max temp data for a
 #'   single year.  Assumes folder name is just the year.
 #' @param roi SpatVector object with boundaries of region of interest
-#' @param gdd_threshold Threshold GDD
-#' @param gdd_base Temperature base, in ºC, for calculating GDD
+#' @param gdd_threshold Threshold GDD in ºF
+#' @param gdd_base Temperature base, in ºF, for calculating GDD
 #'
-#' @return SpatRaster
-calc_gdd_be_doy <- function(tmin_dir, tmax_dir, roi, gdd_threshold, gdd_base = 0) {
+#' @return SpatRaster with DOY the threshold GDD is reached.
+calc_gdd_be_doy <- function(tmin_dir, tmax_dir, roi, gdd_threshold, gdd_base = 32) {
   prism_tmin <- read_prism(tmin_dir)
   prism_tmax <- read_prism(tmax_dir)
   
@@ -102,7 +101,10 @@ read_prism <- function(rast_dir) {
   #read in multi-layer rasters
   prism <- terra::rast(rast_paths)
   names(prism) <- doys
-  terra::units(prism) <- "ºC"
+  
+  #convert to ºF
+  prism <- prism * (9/5) + 32
+  terra::units(prism) <- "ºF"
   #sort layers by DOY
   prism <- terra::subset(prism, as.character(min(doys):max(doys)))
   #return
@@ -111,9 +113,9 @@ read_prism <- function(rast_dir) {
 
 #' Simple averaging method for GDD calculation
 #' 
-#' @param tmean Numeric vector; mean daily temp in ºC.
-#' @param base Base temp in ºC.
-calc_gdd_simple <- function(tmean, base = 0) {
+#' @param tmean Numeric vector; mean daily temp in ºF.
+#' @param base Base temp in ºF.
+calc_gdd_simple <- function(tmean, base = 32) {
   if (base != 0) {
     gdd <- tmean - base
   } else {
@@ -125,12 +127,12 @@ calc_gdd_simple <- function(tmean, base = 0) {
 
 #' Baskerville-Emin method for GDD calculation
 #' 
-#' @param tmin Numeric vector; min daily temp in ºC.
-#' @param tmax Numeric vector; max daily temp in ºC.
-#' @param base Base temp in ºC.
+#' @param tmin Numeric vector; min daily temp in ºF.
+#' @param tmax Numeric vector; max daily temp in ºF.
+#' @param base Base temp in ºF.
 #' @references 
 #' https://www.canr.msu.edu/uploads/files/Research_Center/NW_Mich_Hort/be_method.pdf
-calc_gdd_be <- function(tmin = NULL, tmax = NULL, base = 0) {
+calc_gdd_be <- function(tmin = NULL, tmax = NULL, base = 32) {
   purrr::map2_dbl(tmin, tmax, \(tmin, tmax) { #for each day...
     #NAs beget NAs
     if (is.na(tmin) | is.na(tmax)) {

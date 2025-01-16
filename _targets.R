@@ -71,7 +71,7 @@ controller_local <-
   )
 
 #TODO: eventually replace with biologically relevant thresholds
-threshold <- c(50, 400, 800)
+threshold <- c(650) #ºF
 
 # Set target options:
 tar_option_set(
@@ -153,11 +153,11 @@ main <- tar_plan(
     tar_terra_rast(
       gdd_doy,
       calc_gdd_be_doy(
-        tmin_dir = prism_tmin,
-        tmax_dir = prism_tmax,
+        tmin_dir = prism_tmin, #ºC, but gets converted to ºF
+        tmax_dir = prism_tmax, #ºC, but gets converted to ºF
         roi = roi,
-        gdd_threshold = threshold,
-        gdd_base = 10
+        gdd_threshold = threshold, #ºF
+        gdd_base = 50 #ºF
       ),
       pattern = map(prism_tmin, prism_tmax),
       description = "calc DOY to reach threshold GDD"
