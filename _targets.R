@@ -152,11 +152,25 @@ main <- tar_plan(
     values = list(threshold = threshold),
     tar_terra_rast(
       gdd_doy,
-      calc_gdd_doy(rast_dir = prism_tmean, roi = roi, gdd_threshold = threshold, gdd_base = 10),
-      pattern = map(prism_tmean),
-      iteration = "list",
+      calc_gdd_be_doy(
+        tmin_dir = prism_tmin,
+        tmax_dir = prism_tmax,
+        roi = roi,
+        gdd_threshold = threshold,
+        gdd_base = 10
+      ),
+      pattern = map(prism_tmin, prism_tmax),
       description = "calc DOY to reach threshold GDD"
     ),
+    
+    #Simple averaging method
+    # tar_terra_rast(
+    #   gdd_doy,
+    #   calc_gdd_doy(rast_dir = prism_tmean, roi = roi, gdd_threshold = threshold, gdd_base = 10),
+    #   pattern = map(prism_tmean),
+    #   iteration = "list",
+    #   description = "calc DOY to reach threshold GDD"
+    # ),
     
     # This converts the output of the dynamic branching to be SpatRasters with
     # multiple layers instead of lists of SpatRasters. Would love to not have to
