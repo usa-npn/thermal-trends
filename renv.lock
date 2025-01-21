@@ -1,6 +1,6 @@
 {
   "R": {
-    "Version": "4.4.0",
+    "Version": "4.4.2",
     "Repositories": [
       {
         "Name": "CRAN",
@@ -595,13 +595,13 @@
     },
     "curl": {
       "Package": "curl",
-      "Version": "6.0.1",
+      "Version": "6.1.0",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
         "R"
       ],
-      "Hash": "e8ba62486230951fcd2b881c5be23f96"
+      "Hash": "8dd23d308c751efdf675124aad4bf5d7"
     },
     "data.table": {
       "Package": "data.table",
@@ -782,8 +782,8 @@
       "RemoteHost": "api.github.com",
       "RemoteRepo": "geotargets",
       "RemoteUsername": "njtierney",
-      "RemotePkgRef": "njtierney/geotargets@v0.2.0",
-      "RemoteRef": "v0.2.0",
+      "RemotePkgRef": "njtierney/geotargets@00d0f436091d12b42d96e9eda327f7195fb24c0d",
+      "RemoteRef": "00d0f436091d12b42d96e9eda327f7195fb24c0d",
       "RemoteSha": "00d0f436091d12b42d96e9eda327f7195fb24c0d",
       "Requirements": [
         "cli",
@@ -794,7 +794,7 @@
         "withr",
         "zip"
       ],
-      "Hash": "77bea746d62a8eb44499bd6d77d9b093"
+      "Hash": "09b8b9e495ae1968d1c27080ef7c3e0c"
     },
     "getip": {
       "Package": "getip",
@@ -1131,7 +1131,7 @@
       "Package": "jsonlite",
       "Version": "1.8.9",
       "Source": "Repository",
-      "Repository": "https://jeroen.r-universe.dev",
+      "Repository": "CRAN",
       "Requirements": [
         "methods"
       ],
@@ -1482,13 +1482,13 @@
     },
     "openssl": {
       "Package": "openssl",
-      "Version": "2.2.2",
+      "Version": "2.3.1",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
         "askpass"
       ],
-      "Hash": "d413e0fef796c9401a4419485f709ca1"
+      "Hash": "37a7f0abce0349f5950ce49f38c7626b"
     },
     "packrat": {
       "Package": "packrat",
