@@ -170,80 +170,54 @@ main <- tar_plan(
     tar_terra_rast(
       gdd_doy_stack,
       terra::rast(unname(gdd_doy))
+    ),
+    
+    #mean and sd across years
+    tar_terra_rast(
+      gdd_doy_mean,
+      mean(gdd_doy_stack)
+    ),
+    tar_terra_rast(
+      gdd_doy_sd,
+      stdev(gdd_doy_stack)
     )
   )
 )
 
 
-# gams <- tar_plan(
-#   #prep data
-#   tar_target(
-#     gam_df_50gdd,
-#     make_gam_df(gdd_doy_stack_50, res = 25000),
-#     format = "qs"
-#   ),
-#   tar_target(
-#     gam_df_400gdd,
-#     make_gam_df(gdd_doy_stack_400, res = 25000),
-#     format = "qs"
-#   ),
-#   tar_target(
-#     gam_df_800gdd,
-#     make_gam_df(gdd_doy_stack_800, res = 25000),
-#     format = "qs"
-#   ),
-#   #fit gams
-#   tar_target(
-#     gam_50gdd,
-#     fit_bam(gam_df_50gdd, k_spatial = 1000),
-#     format = "qs",
-#     resources = tar_resources(
-#       crew = tar_resources_crew(controller = ifelse(isTRUE(hpc), "hpc_heavy", "local"))
-#     )
-#   ),
-#   tar_target(
-#     gam_400gdd,
-#     fit_bam(gam_df_400gdd, k_spatial = 1000),
-#     format = "qs",
-#     resources = tar_resources(
-#       crew = tar_resources_crew(controller = ifelse(isTRUE(hpc), "hpc_heavy", "local"))
-#     )
-#   ),
-#   tar_target(
-#     gam_800gdd,
-#     fit_bam(gam_df_800gdd, k_spatial = 1000),
-#     format = "qs",
-#     resources = tar_resources(
-#       crew = tar_resources_crew(controller = ifelse(isTRUE(hpc), "hpc_heavy", "local"))
-#     )
-#   ),
-#   tar_file(
-#     smooths_50gdd,
-#     draw_smooth_estimates(gam_50gdd, roi)
-#   ),
-#   tar_file(
-#     smooths_400gdd,
-#     draw_smooth_estimates(gam_400gdd, roi)
-#   ),
-#   tar_file(
-#     smooths_800gdd,
-#     draw_smooth_estimates(gam_800gdd, roi)
-#   ),
-#   tar_target(
-#     k_check_50gdd,
-#     check_k(gam_50gdd),
-#     packages = c("mgcv", "dplyr")
-#   ),
-#   tar_target(
-#     k_check_400gdd,
-#     check_k(gam_400gdd),
-#     packages = c("mgcv", "dplyr")
-#   ),
-#   tar_target(
-#     k_check_800gdd,
-#     check_k(gam_800gdd),
-#     packages = c("mgcv", "dplyr")
-#   ),
+gams <- tar_plan(
+  #prep data
+  tar_target(
+    gam_df_650,
+    make_gam_df(gdd_doy_stack_650, res = 25000),
+    format = "qs"
+  ),
+
+  #fit gams
+  tar_target(
+    gam_650,
+    fit_bam(gam_df_650, k_spatial = 1000),
+    format = "qs",
+    resources = tar_resources(
+      crew = tar_resources_crew(controller = ifelse(isTRUE(hpc), "hpc_heavy", "local"))
+    )
+  ),
+  
+  #model diagnostics
+  tar_file(
+    smooths_650,
+    draw_partial_effects(gam_650, roi)
+  ),
+  tar_file(
+    appraisal_650,
+    appraise_gam(gam_650)
+  ),
+  tar_target(
+    k_check_650,
+    check_k(gam_650),
+    packages = c("mgcv", "dplyr")
+  ),
+
 #   tar_target(
 #     k_check_df,
 #     bind_rows(!!!rlang::syms(c(
@@ -322,7 +296,7 @@ main <- tar_plan(
 #       )
 #     )
 #   )
-# )
+)
 # city_slopes <- tar_plan(
 #   tar_map(
 #     values = list(gam = rlang::syms(c("gam_50gdd", "gam_400gdd", "gam_800gdd"))),
@@ -348,7 +322,7 @@ main <- tar_plan(
 
 tar_plan(
   main,
-  # gams,
+  gams,
   # city_slopes,
   # city_slopes_plot
 )
