@@ -134,14 +134,6 @@ main <- tar_plan(
     format = "file",
     description = "download PRISM tmax"
   ),
-  tar_target(
-    name = prism_tmean,
-    command = get_prism(years, "tmean"),
-    pattern = map(years),
-    deployment = "main", #prevent downloads from running in parallel on distributed workers
-    format = "file", 
-    description = "download PRISM tmean"
-  ),
   tar_terra_vect(
     roi,
     make_roi(),
