@@ -63,7 +63,7 @@ controller_hpc_heavy <-
 controller_local <-
   crew::crew_controller_local(
     name = "local",
-    workers = 3, 
+    workers = 4, 
     seconds_idle = 60,
     options_local = crew::crew_options_local(
       log_directory = "logs/"
@@ -230,72 +230,72 @@ gams <- tar_plan(
 #     k_check_df_csv,
 #     tar_write_csv(k_check_df, "output/gams/k_check.csv")
 #   ),
-#   tar_target(
-#     slope_newdata,
-#     #doesn't matter which dataset since all that is used is x,y, and year_scaled
-#     #using very coarse newdata regardless of resolution of original data.
-#     make_slope_newdata(gdd_doy_stack_50, res_m = 25000) |> 
-#       dplyr::group_by(group) |> 
-#       targets::tar_group(),
-#     #grouped by about 1000 pixels per group
-#     iteration = "group",
-#     format = "qs"
-#   ),
-#   tar_target(
-#     cities_sf,
-#     make_cities_sf(),
-#     description = "Example cities for plotting fitted trends"
-#   ),
-#   tar_map(
-#     values = list(gam = rlang::syms(c("gam_50gdd", "gam_400gdd", "gam_800gdd"))),
-#     tar_target(
-#       slopes,
-#       calc_avg_slopes(gam, slope_newdata),
-#       packages = c("marginaleffects", "mgcv"),
-#       resources = tar_resources(
-#         crew = tar_resources_crew(controller = ifelse(isTRUE(hpc), "hpc_heavy", "local"))
-#       ),
-#       pattern = map(slope_newdata),
-#       format = tar_format_nanoparquet()
-#     ),
-#     tar_target(
-#       slope_range,
-#       range(slopes$estimate),
-#       resources = tar_resources(
-#         crew = tar_resources_crew(controller = ifelse(isTRUE(hpc), "hpc_heavy", "local"))
-#       ),
-#       pattern = map(slopes),
-#       format = "qs"
-#     ),
-#     tar_target(
-#       city_plot,
-#       plot_city_trend(gam, cities_sf),
-#       description = "timeseries plot for example cities for each gam"
-#     )
-#   ),
-#   tar_target(
-#     slope_range,
-#     range(slope_range_gam_50gdd, slope_range_gam_400gdd, slope_range_gam_800gdd),
-#     description = "range across all thresholds for colorbar"
-#   ),
-#   tar_map(
-#     values = list(
-#       slopes = rlang::syms(c(
-#         "slopes_gam_50gdd", "slopes_gam_400gdd", "slopes_gam_800gdd"
-#       )),
-#       city_plot = rlang::syms(c(
-#         "city_plot_gam_50gdd", "city_plot_gam_400gdd", "city_plot_gam_800gdd"
-#       ))
-#     ),
-#     tar_file(
-#       slopes_plot,
-#       plot_avg_slopes(slopes, slope_range, roi, cities_sf, city_plot),
-#       packages = c("ggpattern", "ggplot2", "terra", "tidyterra", "patchwork"),
-#       resources = tar_resources(
-#         crew = tar_resources_crew(controller = ifelse(isTRUE(hpc), "hpc_heavy", "local"))
-#       )
-#     )
-#   )
+  tar_target(
+    slope_newdata,
+    #doesn't matter which dataset since all that is used is x,y, and year_scaled
+    #using very coarse newdata regardless of resolution of original data.
+    make_slope_newdata(gdd_doy_stack_650, res_m = 25000) |>
+      dplyr::group_by(group) |>
+      targets::tar_group(),
+    #grouped by about 1000 pixels per group
+    iteration = "group",
+    format = "qs"
+  ),
+  tar_target(
+    cities_sf,
+    make_cities_sf(),
+    description = "Example cities for plotting fitted trends"
+  ),
+  tar_map(
+    values = list(gam = rlang::syms(c("gam_650"))),
+    tar_target(
+      slopes,
+      calc_avg_slopes(gam, slope_newdata),
+      packages = c("marginaleffects", "mgcv"),
+      resources = tar_resources(
+        crew = tar_resources_crew(controller = ifelse(isTRUE(hpc), "hpc_heavy", "local"))
+      ),
+      pattern = map(slope_newdata),
+      format = tar_format_nanoparquet()
+    ),
+    tar_target(
+      slope_range,
+      range(slopes$estimate),
+      resources = tar_resources(
+        crew = tar_resources_crew(controller = ifelse(isTRUE(hpc), "hpc_heavy", "local"))
+      ),
+      pattern = map(slopes),
+      format = "qs"
+    ),
+    tar_target(
+      city_plot,
+      plot_city_trend(gam, cities_sf),
+      description = "timeseries plot for example cities for each gam"
+    )
+  ),
+  tar_target(
+    slope_range,
+    range(slope_range_gam_650),
+    description = "range across all thresholds for colorbar"
+  ),
+  tar_map(
+    values = list(
+      slopes = rlang::syms(c(
+        "slopes_gam_650"
+      )),
+      city_plot = rlang::syms(c(
+        "city_plot_gam_650"
+      ))
+    ),
+    tar_file(
+      slopes_plot,
+      plot_avg_slopes(slopes, slope_range, roi, cities_sf, city_plot),
+      packages = c("ggpattern", "ggplot2", "terra", "tidyterra", "patchwork"),
+      resources = tar_resources(
+        crew = tar_resources_crew(controller = ifelse(isTRUE(hpc), "hpc_heavy", "local"))
+      )
+    )
+  )
 )
 # city_slopes <- tar_plan(
 #   tar_map(
