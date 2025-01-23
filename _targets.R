@@ -63,7 +63,7 @@ controller_hpc_heavy <-
 controller_local <-
   crew::crew_controller_local(
     name = "local",
-    workers = 3, 
+    workers = 4, 
     seconds_idle = 60,
     options_local = crew::crew_options_local(
       log_directory = "logs/"
@@ -71,7 +71,7 @@ controller_local <-
   )
 
 #TODO: eventually replace with biologically relevant thresholds
-threshold <- c(50, 400, 800)
+threshold <- c(650) #ºF
 
 # Set target options:
 tar_option_set(
@@ -134,14 +134,6 @@ main <- tar_plan(
     format = "file",
     description = "download PRISM tmax"
   ),
-  tar_target(
-    name = prism_tmean,
-    command = get_prism(years, "tmean"),
-    pattern = map(years),
-    deployment = "main", #prevent downloads from running in parallel on distributed workers
-    format = "file", 
-    description = "download PRISM tmean"
-  ),
   tar_terra_vect(
     roi,
     make_roi(),
@@ -152,11 +144,25 @@ main <- tar_plan(
     values = list(threshold = threshold),
     tar_terra_rast(
       gdd_doy,
-      calc_gdd_doy(rast_dir = prism_tmean, roi = roi, gdd_threshold = threshold, gdd_base = 10),
-      pattern = map(prism_tmean),
-      iteration = "list",
+      calc_gdd_be_doy(
+        tmin_dir = prism_tmin, #ºC, but gets converted to ºF
+        tmax_dir = prism_tmax, #ºC, but gets converted to ºF
+        roi = roi,
+        gdd_threshold = threshold, #ºF
+        gdd_base = 50 #ºF
+      ),
+      pattern = map(prism_tmin, prism_tmax),
       description = "calc DOY to reach threshold GDD"
     ),
+    
+    #Simple averaging method
+    # tar_terra_rast(
+    #   gdd_doy,
+    #   calc_gdd_doy(rast_dir = prism_tmean, roi = roi, gdd_threshold = threshold, gdd_base = 10),
+    #   pattern = map(prism_tmean),
+    #   iteration = "list",
+    #   description = "calc DOY to reach threshold GDD"
+    # ),
     
     # This converts the output of the dynamic branching to be SpatRasters with
     # multiple layers instead of lists of SpatRasters. Would love to not have to
@@ -164,6 +170,16 @@ main <- tar_plan(
     tar_terra_rast(
       gdd_doy_stack,
       terra::rast(unname(gdd_doy))
+    ),
+    
+    #mean and sd across years
+    tar_terra_rast(
+      gdd_doy_mean,
+      mean(gdd_doy_stack)
+    ),
+    tar_terra_rast(
+      gdd_doy_sd,
+      stdev(gdd_doy_stack)
     )
   )
 )
@@ -172,76 +188,40 @@ main <- tar_plan(
 gams <- tar_plan(
   #prep data
   tar_target(
-    gam_df_50gdd,
-    make_gam_df(gdd_doy_stack_50, res = 25000),
+    gam_df_650,
+    make_gam_df(gdd_doy_stack_650, res = 25000),
     format = "qs"
   ),
-  tar_target(
-    gam_df_400gdd,
-    make_gam_df(gdd_doy_stack_400, res = 25000),
-    format = "qs"
-  ),
-  tar_target(
-    gam_df_800gdd,
-    make_gam_df(gdd_doy_stack_800, res = 25000),
-    format = "qs"
-  ),
+
   #fit gams
   tar_target(
-    gam_50gdd,
-    fit_bam(gam_df_50gdd, k_spatial = 1000),
+    gam_650,
+    fit_bam(gam_df_650, k_spatial = 1000),
     format = "qs",
     resources = tar_resources(
       crew = tar_resources_crew(controller = ifelse(isTRUE(hpc), "hpc_heavy", "local"))
     )
   ),
-  tar_target(
-    gam_400gdd,
-    fit_bam(gam_df_400gdd, k_spatial = 1000),
-    format = "qs",
-    resources = tar_resources(
-      crew = tar_resources_crew(controller = ifelse(isTRUE(hpc), "hpc_heavy", "local"))
-    )
-  ),
-  tar_target(
-    gam_800gdd,
-    fit_bam(gam_df_800gdd, k_spatial = 1000),
-    format = "qs",
-    resources = tar_resources(
-      crew = tar_resources_crew(controller = ifelse(isTRUE(hpc), "hpc_heavy", "local"))
-    )
+  
+  #model diagnostics
+  tar_file(
+    smooths_650,
+    draw_partial_effects(gam_650, roi)
   ),
   tar_file(
-    smooths_50gdd,
-    draw_smooth_estimates(gam_50gdd, roi)
-  ),
-  tar_file(
-    smooths_400gdd,
-    draw_smooth_estimates(gam_400gdd, roi)
-  ),
-  tar_file(
-    smooths_800gdd,
-    draw_smooth_estimates(gam_800gdd, roi)
+    appraisal_650,
+    appraise_gam(gam_650)
   ),
   tar_target(
-    k_check_50gdd,
-    check_k(gam_50gdd),
+    k_check_650,
+    check_k(gam_650),
     packages = c("mgcv", "dplyr")
   ),
-  tar_target(
-    k_check_400gdd,
-    check_k(gam_400gdd),
-    packages = c("mgcv", "dplyr")
-  ),
-  tar_target(
-    k_check_800gdd,
-    check_k(gam_800gdd),
-    packages = c("mgcv", "dplyr")
-  ),
+
   tar_target(
     k_check_df,
     bind_rows(!!!rlang::syms(c(
-      "k_check_50gdd", "k_check_400gdd", "k_check_800gdd"
+      "k_check_650"
     ))),
     tidy_eval = TRUE,
     description = "Collect results from k_check targets"
@@ -250,12 +230,14 @@ gams <- tar_plan(
     k_check_df_csv,
     tar_write_csv(k_check_df, "output/gams/k_check.csv")
   ),
+  
+#TODO: consider bigger chunks since not RAM limited, but CPU limited.
   tar_target(
     slope_newdata,
     #doesn't matter which dataset since all that is used is x,y, and year_scaled
     #using very coarse newdata regardless of resolution of original data.
-    make_slope_newdata(gdd_doy_stack_50, res_m = 25000) |> 
-      dplyr::group_by(group) |> 
+    make_slope_newdata(gdd_doy_stack_650, res_m = 25000) |>
+      dplyr::group_by(group) |>
       targets::tar_group(),
     #grouped by about 1000 pixels per group
     iteration = "group",
@@ -267,7 +249,7 @@ gams <- tar_plan(
     description = "Example cities for plotting fitted trends"
   ),
   tar_map(
-    values = list(gam = rlang::syms(c("gam_50gdd", "gam_400gdd", "gam_800gdd"))),
+    values = list(gam = rlang::syms(c("gam_650"))),
     tar_target(
       slopes,
       calc_avg_slopes(gam, slope_newdata),
@@ -295,16 +277,16 @@ gams <- tar_plan(
   ),
   tar_target(
     slope_range,
-    range(slope_range_gam_50gdd, slope_range_gam_400gdd, slope_range_gam_800gdd),
+    range(slope_range_gam_650),
     description = "range across all thresholds for colorbar"
   ),
   tar_map(
     values = list(
       slopes = rlang::syms(c(
-        "slopes_gam_50gdd", "slopes_gam_400gdd", "slopes_gam_800gdd"
+        "slopes_gam_650"
       )),
       city_plot = rlang::syms(c(
-        "city_plot_gam_50gdd", "city_plot_gam_400gdd", "city_plot_gam_800gdd"
+        "city_plot_gam_650"
       ))
     ),
     tar_file(
@@ -317,32 +299,32 @@ gams <- tar_plan(
     )
   )
 )
-city_slopes <- tar_plan(
-  tar_map(
-    values = list(gam = rlang::syms(c("gam_50gdd", "gam_400gdd", "gam_800gdd"))),
-    tar_target(
-      city_slopes,
-      calc_city_slopes(cities_sf, gam),
-      format = tar_format_nanoparquet(),
-      resources = tar_resources(
-        crew = tar_resources_crew(controller = ifelse(isTRUE(hpc), "hpc_heavy", "local"))
-      ),
-      description = "for each GDD threshold, calc avg slope for specific cities"
-    )
-  )
-)
-city_slopes_plot <- tar_plan(
-  tar_combine(
-    city_slopes_df,
-    city_slopes,
-    format = tar_format_nanoparquet(),
-    description = "combine predictions from all GDD thresholds for plotting"
-  )
-)
+# city_slopes <- tar_plan(
+#   tar_map(
+#     values = list(gam = rlang::syms(c("gam_50gdd", "gam_400gdd", "gam_800gdd"))),
+#     tar_target(
+#       city_slopes,
+#       calc_city_slopes(cities_sf, gam),
+#       format = tar_format_nanoparquet(),
+#       resources = tar_resources(
+#         crew = tar_resources_crew(controller = ifelse(isTRUE(hpc), "hpc_heavy", "local"))
+#       ),
+#       description = "for each GDD threshold, calc avg slope for specific cities"
+#     )
+#   )
+# )
+# city_slopes_plot <- tar_plan(
+#   tar_combine(
+#     city_slopes_df,
+#     city_slopes,
+#     format = tar_format_nanoparquet(),
+#     description = "combine predictions from all GDD thresholds for plotting"
+#   )
+# )
 
 tar_plan(
   main,
   gams,
-  city_slopes,
-  city_slopes_plot
+  # city_slopes,
+  # city_slopes_plot
 )
