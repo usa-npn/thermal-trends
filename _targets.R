@@ -113,7 +113,7 @@ tar_option_set(
 )
 
 # `source()` the R scripts in the R/ folder with your custom functions:
-tar_source()
+targets::tar_source()
 
 
 main <- tar_plan(
@@ -175,11 +175,19 @@ main <- tar_plan(
     #mean and sd across years
     tar_terra_rast(
       gdd_doy_mean,
-      mean(gdd_doy_stack)
+      mean(gdd_doy_stack, na.rm = TRUE) #should NAs be removed?  NAs are "never reached this threshold", not "missing data"
+    ),
+    tar_file(
+      gdd_doy_mean_plot,
+      plot_mean_doy(gdd_doy_mean)
     ),
     tar_terra_rast(
       gdd_doy_sd,
-      stdev(gdd_doy_stack)
+      stdev(gdd_doy_stack, na.rm = TRUE)
+    ),
+    tar_file(
+      gdd_doy_sd_plot,
+      plot_sd_doy(gdd_doy_sd)
     )
   )
 )

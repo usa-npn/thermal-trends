@@ -10,7 +10,13 @@ plot_mean_doy <- function(raster, range = NULL) {
   threshold <- stringr::str_extract(raster_name, "\\d+")
   p <- ggplot2::ggplot() +
     tidyterra::geom_spatraster(data = raster) +
-    ggplot2::scale_fill_viridis_c(na.value = "transparent", limits = range) +
+    ggplot2::scale_fill_viridis_c(
+      option = "A", #magma
+      direction = -1, #reversed so earlier DOY is "hotter"
+      end = 0.85, #don't use as much of the yellow end because it's hard to see
+      na.value = "transparent",
+      limits = range
+    ) +
     ggplot2::labs(
       title = glue::glue("Mean DOY that {threshold} GDD is reached"),
       fill = "mean DOY",
