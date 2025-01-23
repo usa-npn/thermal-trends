@@ -230,6 +230,7 @@ gams <- tar_plan(
 #     k_check_df_csv,
 #     tar_write_csv(k_check_df, "output/gams/k_check.csv")
 #   ),
+#TODO: consider bigger chunks since not RAM limited, but CPU limited.
   tar_target(
     slope_newdata,
     #doesn't matter which dataset since all that is used is x,y, and year_scaled
