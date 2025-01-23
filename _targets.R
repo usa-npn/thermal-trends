@@ -116,7 +116,7 @@ tar_option_set(
 targets::tar_source()
 
 
-main <- tar_plan(
+main <- tarchetypes::tar_plan(
   years = 1981:2023,
   tar_target(
     name = prism_tmin,
@@ -193,7 +193,7 @@ main <- tar_plan(
 )
 
 
-gams <- tar_plan(
+gams <- tarchetypes::tar_plan(
   #prep data
   tar_target(
     gam_df_650,
@@ -251,11 +251,11 @@ gams <- tar_plan(
     iteration = "group",
     format = "qs"
   ),
-  tar_target(
-    cities_sf,
-    make_cities_sf(),
-    description = "Example cities for plotting fitted trends"
-  ),
+  # tar_target(
+  #   cities_sf,
+  #   make_cities_sf(),
+  #   description = "Example cities for plotting fitted trends"
+  # ),
   tar_map(
     values = list(gam = rlang::syms(c("gam_650"))),
     tar_target(
@@ -276,12 +276,12 @@ gams <- tar_plan(
       ),
       pattern = map(slopes),
       format = "qs"
-    ),
-    tar_target(
-      city_plot,
-      plot_city_trend(gam, cities_sf),
-      description = "timeseries plot for example cities for each gam"
-    )
+    )#,
+    # tar_target(
+    #   city_plot,
+    #   plot_city_trend(gam, cities_sf),
+    #   description = "timeseries plot for example cities for each gam"
+    # )
   ),
   tar_target(
     slope_range,
@@ -292,15 +292,15 @@ gams <- tar_plan(
     values = list(
       slopes = rlang::syms(c(
         "slopes_gam_650"
-      )),
-      city_plot = rlang::syms(c(
-        "city_plot_gam_650"
-      ))
+      ))#,
+      # city_plot = rlang::syms(c(
+      #   "city_plot_gam_650"
+      # ))
     ),
     tar_file(
       slopes_plot,
-      plot_avg_slopes(slopes, slope_range, roi, cities_sf, city_plot),
-      packages = c("ggpattern", "ggplot2", "terra", "tidyterra", "patchwork"),
+      plot_avg_slopes(slopes, slope_range, roi),
+      packages = c("ggpattern", "ggplot2", "terra", "tidyterra"),
       resources = tar_resources(
         crew = tar_resources_crew(controller = ifelse(isTRUE(hpc), "hpc_heavy", "local"))
       )
@@ -330,7 +330,7 @@ gams <- tar_plan(
 #   )
 # )
 
-tar_plan(
+tarchetypes::tar_plan(
   main,
   gams,
   # city_slopes,

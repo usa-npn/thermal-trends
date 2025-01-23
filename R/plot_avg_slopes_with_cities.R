@@ -3,7 +3,7 @@
 # library(tidyterra)
 # library(ggpattern)
 
-plot_avg_slopes <- function(slopes_df, slope_range, roi) {
+plot_avg_slopes_with_cities <- function(slopes_df, slope_range, roi, cities_sf, cities_plot) {
   
   #figure out threshold from target name
   slopes_df_name <- deparse(substitute(slopes_df))
@@ -37,6 +37,7 @@ plot_avg_slopes <- function(slopes_df, slope_range, roi) {
       pattern_spacing = 0.01, #make lines closer together
       pattern_res = 200, #make lines less pixelated
     ) +
+    geom_sf(data = cities_sf) +
     ggpattern::scale_pattern_fill_manual(values = c("grey30")) +
     scale_fill_continuous_diverging(na.value = "transparent", limits = slope_range, rev = TRUE) +
     guides(
@@ -51,13 +52,18 @@ plot_avg_slopes <- function(slopes_df, slope_range, roi) {
     coord_sf(crs = "ESRI:102010") +
     theme_minimal()
   
+  #assemble plots with patchwork
+  out <- patchwork::free(p)/cities_plot +
+    patchwork::plot_layout(heights = c(1, 0.4)) + 
+    patchwork::plot_annotation(tag_levels ="A")
+  
   filename <- paste0(slopes_df_name, ".png")
   ggsave(
     filename = filename,
-    plot = p, 
+    plot = out, 
     path = "output/gams/",
     bg = "white",
     width = 7,
-    height = 4.5
+    height = 7
   )
 }
