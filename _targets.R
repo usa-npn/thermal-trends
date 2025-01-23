@@ -218,18 +218,19 @@ gams <- tar_plan(
     packages = c("mgcv", "dplyr")
   ),
 
-#   tar_target(
-#     k_check_df,
-#     bind_rows(!!!rlang::syms(c(
-#       "k_check_50gdd", "k_check_400gdd", "k_check_800gdd"
-#     ))),
-#     tidy_eval = TRUE,
-#     description = "Collect results from k_check targets"
-#   ),
-#   tar_file(
-#     k_check_df_csv,
-#     tar_write_csv(k_check_df, "output/gams/k_check.csv")
-#   ),
+  tar_target(
+    k_check_df,
+    bind_rows(!!!rlang::syms(c(
+      "k_check_650"
+    ))),
+    tidy_eval = TRUE,
+    description = "Collect results from k_check targets"
+  ),
+  tar_file(
+    k_check_df_csv,
+    tar_write_csv(k_check_df, "output/gams/k_check.csv")
+  ),
+  
 #TODO: consider bigger chunks since not RAM limited, but CPU limited.
   tar_target(
     slope_newdata,
