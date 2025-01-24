@@ -172,21 +172,35 @@ main <- tarchetypes::tar_plan(
       terra::rast(unname(gdd_doy))
     ),
     
-    #mean and sd across years
+    #summary statistics across years
+    tar_target(
+      doy_range,
+      range(gdd_doy_stack) |> values() |> range(na.rm = TRUE)
+    ),
     tar_terra_rast(
       gdd_doy_mean,
-      mean(gdd_doy_stack, na.rm = TRUE) #should NAs be removed?  NAs are "never reached this threshold", not "missing data"
+      #should NAs be removed?  NAs are "never reached this threshold", not "missing data"
+      mean(gdd_doy_stack, na.rm = TRUE) 
+    ),
+    tar_terra_rast(
+      gdd_doy_min,
+      min(gdd_doy_stack, na.rm = TRUE) 
+    ),
+    tar_terra_rast(
+      gdd_doy_max,
+      max(gdd_doy_stack, na.rm = TRUE) 
     ),
     tar_file(
-      gdd_doy_mean_plot,
-      plot_mean_doy(gdd_doy_mean)
+      summary_plot,
+      plot_summary_combined(gdd_doy_min, gdd_doy_mean, gdd_doy_max, doy_range),
+      packages = c("patchwork", "ggplot2", "tidyterra", "stringr", "glue")
     ),
     tar_terra_rast(
       gdd_doy_sd,
       stdev(gdd_doy_stack, na.rm = TRUE)
     ),
     tar_file(
-      gdd_doy_sd_plot,
+      sd_plot,
       plot_sd_doy(gdd_doy_sd)
     )
   )
