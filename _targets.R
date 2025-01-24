@@ -70,8 +70,13 @@ controller_local <-
     )
   )
 
-#TODO: eventually replace with biologically relevant thresholds
-threshold <- c(650) #ºF
+threshold <- c( #ºF
+  50,
+  650,
+  # 1250,
+  # 1950,
+  2500
+) 
 
 # Set target options:
 tar_option_set(
@@ -154,24 +159,11 @@ main <- tarchetypes::tar_plan(
       pattern = map(prism_tmin, prism_tmax),
       description = "calc DOY to reach threshold GDD"
     ),
-    
-    #Simple averaging method
-    # tar_terra_rast(
-    #   gdd_doy,
-    #   calc_gdd_doy(rast_dir = prism_tmean, roi = roi, gdd_threshold = threshold, gdd_base = 10),
-    #   pattern = map(prism_tmean),
-    #   iteration = "list",
-    #   description = "calc DOY to reach threshold GDD"
-    # ),
-    
-    # This converts the output of the dynamic branching to be SpatRasters with
-    # multiple layers instead of lists of SpatRasters. Would love to not have to
-    # have this target, but there is no way to customize how iteration works.
+    # Combine list of SpatRasters into multi-layer SpatRaster
     tar_terra_rast(
       gdd_doy_stack,
       terra::rast(unname(gdd_doy))
     ),
-    
     #summary statistics across years
     tar_target(
       doy_range,
@@ -202,58 +194,41 @@ main <- tarchetypes::tar_plan(
     tar_file(
       sd_plot,
       plot_sd_doy(gdd_doy_sd)
+    ),
+    tar_target(
+      gam_df,
+      make_gam_df(gdd_doy_stack, res = 25000),
+      format = "qs"
+    ),
+    ## GAMs ###
+    # NOTE: if k_spatial needs to be adjusted for each threshold,
+    # create a dataframe to pass to `values` arg of `tar_map()`
+    tar_target(
+      gam,
+      fit_bam(gam_df, k_spatial = 1000), 
+      format = "qs",
+      resources = tar_resources(
+        crew = tar_resources_crew(controller = ifelse(isTRUE(hpc), "hpc_heavy", "local"))
+      )
+    ),
+    # Model diagnostics
+    tar_file(
+      smooths,
+      draw_partial_effects(gam, roi)
+    ),
+    tar_file(
+      appraisal,
+      appraise_gam(gam)
+    ),
+    tar_target(
+      k_check,
+      check_k(gam),
+      packages = c("mgcv", "dplyr")
     )
-  )
+  ) #end tar_map()
 )
 
-
-gams <- tarchetypes::tar_plan(
-  #prep data
-  tar_target(
-    gam_df_650,
-    make_gam_df(gdd_doy_stack_650, res = 25000),
-    format = "qs"
-  ),
-
-  #fit gams
-  tar_target(
-    gam_650,
-    fit_bam(gam_df_650, k_spatial = 1000),
-    format = "qs",
-    resources = tar_resources(
-      crew = tar_resources_crew(controller = ifelse(isTRUE(hpc), "hpc_heavy", "local"))
-    )
-  ),
-  
-  #model diagnostics
-  tar_file(
-    smooths_650,
-    draw_partial_effects(gam_650, roi)
-  ),
-  tar_file(
-    appraisal_650,
-    appraise_gam(gam_650)
-  ),
-  tar_target(
-    k_check_650,
-    check_k(gam_650),
-    packages = c("mgcv", "dplyr")
-  ),
-
-  tar_target(
-    k_check_df,
-    bind_rows(!!!rlang::syms(c(
-      "k_check_650"
-    ))),
-    tidy_eval = TRUE,
-    description = "Collect results from k_check targets"
-  ),
-  tar_file(
-    k_check_df_csv,
-    tar_write_csv(k_check_df, "output/gams/k_check.csv")
-  ),
-  
-#TODO: consider bigger chunks since not RAM limited, but CPU limited.
+slopes <- tar_plan(
   tar_target(
     slope_newdata,
     #doesn't matter which dataset since all that is used is x,y, and year_scaled
@@ -265,13 +240,8 @@ gams <- tarchetypes::tar_plan(
     iteration = "group",
     format = "qs"
   ),
-  # tar_target(
-  #   cities_sf,
-  #   make_cities_sf(),
-  #   description = "Example cities for plotting fitted trends"
-  # ),
   tar_map(
-    values = list(gam = rlang::syms(c("gam_650"))),
+    values = list(gam = rlang::syms(glue::glue("gam_{threshold}"))),
     tar_target(
       slopes,
       calc_avg_slopes(gam, slope_newdata),
@@ -290,27 +260,19 @@ gams <- tarchetypes::tar_plan(
       ),
       pattern = map(slopes),
       format = "qs"
-    )#,
-    # tar_target(
-    #   city_plot,
-    #   plot_city_trend(gam, cities_sf),
-    #   description = "timeseries plot for example cities for each gam"
-    # )
-  ),
+    )
+  )
+)
+
+slopes_plots <- tar_plan(
   tar_target(
     slope_range,
-    range(slope_range_gam_650),
-    description = "range across all thresholds for colorbar"
+    range(!!!rlang::syms(glue::glue("slope_range_gam_{threshold}"))),
+    description = "range across all thresholds for colorbar",
+    tidy_eval = TRUE
   ),
   tar_map(
-    values = list(
-      slopes = rlang::syms(c(
-        "slopes_gam_650"
-      ))#,
-      # city_plot = rlang::syms(c(
-      #   "city_plot_gam_650"
-      # ))
-    ),
+    values = list(slopes = rlang::syms(glue::glue("slopes_gam_{threshold}"))),
     tar_file(
       slopes_plot,
       plot_avg_slopes(slopes, slope_range, roi),
@@ -321,6 +283,124 @@ gams <- tarchetypes::tar_plan(
     )
   )
 )
+
+
+# gams <- tarchetypes::tar_plan(
+  #prep data
+  # tar_map(
+    # values = list(threshold = threshold),
+    # tar_target(
+    #   gam_df,
+    #   make_gam_df(gdd_doy_stack_650, res = 25000),
+    #   format = "qs"
+    # )
+  # )
+  #fit gams
+  # tar_target(
+  #   gam_650,
+  #   fit_bam(gam_df_650, k_spatial = 1000),
+  #   format = "qs",
+  #   resources = tar_resources(
+  #     crew = tar_resources_crew(controller = ifelse(isTRUE(hpc), "hpc_heavy", "local"))
+  #   )
+  # ),
+  
+  #model diagnostics
+  # tar_file(
+  #   smooths_650,
+  #   draw_partial_effects(gam_650, roi)
+  # ),
+  # tar_file(
+  #   appraisal_650,
+  #   appraise_gam(gam_650)
+  # ),
+  # tar_target(
+  #   k_check_650,
+  #   check_k(gam_650),
+  #   packages = c("mgcv", "dplyr")
+  # ),
+
+  # tar_target(
+  #   k_check_df,
+  #   bind_rows(!!!rlang::syms(c(
+  #     "k_check_650"
+  #   ))),
+  #   tidy_eval = TRUE,
+  #   description = "Collect results from k_check targets"
+  # ),
+  # tar_file(
+  #   k_check_df_csv,
+  #   tar_write_csv(k_check_df, "output/gams/k_check.csv")
+  # ),
+  
+#TODO: consider bigger chunks since not RAM limited, but CPU limited.
+  # tar_target(
+  #   slope_newdata,
+  #   #doesn't matter which dataset since all that is used is x,y, and year_scaled
+  #   #using very coarse newdata regardless of resolution of original data.
+  #   make_slope_newdata(gdd_doy_stack_650, res_m = 25000) |>
+  #     dplyr::group_by(group) |>
+  #     targets::tar_group(),
+  #   #grouped by about 1000 pixels per group
+  #   iteration = "group",
+  #   format = "qs"
+  # ),
+  # tar_target(
+  #   cities_sf,
+  #   make_cities_sf(),
+  #   description = "Example cities for plotting fitted trends"
+  # ),
+  # tar_map(
+  #   values = list(gam = rlang::syms(c("gam_650"))),
+  #   tar_target(
+  #     slopes,
+  #     calc_avg_slopes(gam, slope_newdata),
+  #     packages = c("marginaleffects", "mgcv"),
+  #     resources = tar_resources(
+  #       crew = tar_resources_crew(controller = ifelse(isTRUE(hpc), "hpc_heavy", "local"))
+  #     ),
+  #     pattern = map(slope_newdata),
+  #     format = tar_format_nanoparquet()
+  #   ),
+  #   tar_target(
+  #     slope_range,
+  #     range(slopes$estimate),
+  #     resources = tar_resources(
+  #       crew = tar_resources_crew(controller = ifelse(isTRUE(hpc), "hpc_heavy", "local"))
+  #     ),
+  #     pattern = map(slopes),
+  #     format = "qs"
+  #   )#,
+    # tar_target(
+    #   city_plot,
+    #   plot_city_trend(gam, cities_sf),
+    #   description = "timeseries plot for example cities for each gam"
+    # )
+  # ),
+  # tar_target(
+  #   slope_range,
+  #   range(slope_range_gam_650),
+  #   description = "range across all thresholds for colorbar"
+  # ),
+  # tar_map(
+  #   values = list(
+  #     slopes = rlang::syms(c(
+  #       "slopes_gam_650"
+  #     ))#,
+      # city_plot = rlang::syms(c(
+      #   "city_plot_gam_650"
+      # ))
+#     ),
+#     tar_file(
+#       slopes_plot,
+#       plot_avg_slopes(slopes, slope_range, roi),
+#       packages = c("ggpattern", "ggplot2", "terra", "tidyterra"),
+#       resources = tar_resources(
+#         crew = tar_resources_crew(controller = ifelse(isTRUE(hpc), "hpc_heavy", "local"))
+#       )
+#     )
+#   )
+# )
 # city_slopes <- tar_plan(
 #   tar_map(
 #     values = list(gam = rlang::syms(c("gam_50gdd", "gam_400gdd", "gam_800gdd"))),
@@ -346,7 +426,9 @@ gams <- tarchetypes::tar_plan(
 
 tarchetypes::tar_plan(
   main,
-  gams,
+  slopes,
+  slopes_plots
+  # gams,
   # city_slopes,
   # city_slopes_plot
 )
