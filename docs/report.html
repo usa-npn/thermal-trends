@@ -227,8 +227,8 @@ Note
 
     <script>
 
-      function styleCell_9h34f9ruqld9iewca9kc(i, j, css_id) {
-          var table = document.getElementById("tinytable_9h34f9ruqld9iewca9kc");
+      function styleCell_gonk0v6p6155hpgl8tkf(i, j, css_id) {
+          var table = document.getElementById("tinytable_gonk0v6p6155hpgl8tkf");
           var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
           if (cell) {
               console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
@@ -237,8 +237,8 @@ Note
               console.warn(`Cell at (${i}, ${j}) not found.`);
           }
       }
-      function insertSpanRow_86pg9ynhpo7pfgeltete(i, colspan, content) {
-        var table = document.getElementById('tinytable_9h34f9ruqld9iewca9kc');
+      function insertSpanRow_zk218u8psxioazhc0i2y(i, colspan, content) {
+        var table = document.getElementById('tinytable_gonk0v6p6155hpgl8tkf');
         var newRow = table.insertRow(i);
         var newCell = newRow.insertCell(0);
         newCell.setAttribute("colspan", colspan);
@@ -246,8 +246,8 @@ Note
         // this may be unsafe, but innerText does not interpret <br>
         newCell.innerHTML = content;
       }
-      function spanCell_9h34f9ruqld9iewca9kc(i, j, rowspan, colspan) {
-        var table = document.getElementById("tinytable_9h34f9ruqld9iewca9kc");
+      function spanCell_gonk0v6p6155hpgl8tkf(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_gonk0v6p6155hpgl8tkf");
         const targetRow = table.rows[i];
         const targetCell = targetRow.cells[j];
         for (let r = 0; r < rowspan; r++) {
@@ -274,23 +274,23 @@ Note
         targetCell.colSpan = colspan;
       }
       // tinytable span after
-window.addEventListener('load', function () { insertSpanRow_86pg9ynhpo7pfgeltete(7, 5, 'gam_2500') });
-window.addEventListener('load', function () { insertSpanRow_86pg9ynhpo7pfgeltete(4, 5, 'gam_650') });
-window.addEventListener('load', function () { insertSpanRow_86pg9ynhpo7pfgeltete(1, 5, 'gam_50') });
+window.addEventListener('load', function () { insertSpanRow_zk218u8psxioazhc0i2y(7, 5, 'gam_2500') });
+window.addEventListener('load', function () { insertSpanRow_zk218u8psxioazhc0i2y(4, 5, 'gam_650') });
+window.addEventListener('load', function () { insertSpanRow_zk218u8psxioazhc0i2y(1, 5, 'gam_50') });
       window.addEventListener('load', function () {
           var cellsToStyle = [
             // tinytable style arrays after
-          { positions: [ { i: 2, j: 0 }, { i: 3, j: 0 }, { i: 4, j: 0 }, { i: 6, j: 0 }, { i: 7, j: 0 }, { i: 8, j: 0 }, { i: 10, j: 0 }, { i: 11, j: 0 },  ], css_id: 'tinytable_css_x0m8bfbz9cyerpg0jlyp',}, 
-          { positions: [ { i: 12, j: 0 },  ], css_id: 'tinytable_css_wcgh5fcrksoqpbv1suyu',}, 
-          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 }, { i: 0, j: 2 }, { i: 0, j: 3 }, { i: 0, j: 4 },  ], css_id: 'tinytable_css_th9u1kkh12tqk9cwib7g',}, 
-          { positions: [ { i: 12, j: 1 }, { i: 12, j: 2 }, { i: 12, j: 3 }, { i: 12, j: 4 },  ], css_id: 'tinytable_css_bta4pwobwq0u1xxyq8wl',}, 
-          { positions: [ { i: 1, j: 0 }, { i: 1, j: 1 }, { i: 5, j: 1 }, { i: 9, j: 1 }, { i: 5, j: 0 }, { i: 9, j: 3 }, { i: 1, j: 2 }, { i: 5, j: 2 }, { i: 9, j: 0 }, { i: 5, j: 4 }, { i: 9, j: 4 }, { i: 1, j: 3 }, { i: 9, j: 2 }, { i: 5, j: 3 }, { i: 1, j: 4 },  ], css_id: 'tinytable_css_41y4jfd1b0v60pxngcl3',}, 
+          { positions: [ { i: 2, j: 0 }, { i: 3, j: 0 }, { i: 4, j: 0 }, { i: 6, j: 0 }, { i: 7, j: 0 }, { i: 8, j: 0 }, { i: 10, j: 0 }, { i: 11, j: 0 },  ], css_id: 'tinytable_css_wkhmhg3hmgaumrepsli6',}, 
+          { positions: [ { i: 12, j: 1 }, { i: 12, j: 2 }, { i: 12, j: 3 }, { i: 12, j: 4 },  ], css_id: 'tinytable_css_wdmzleztp84o0963wwbe',}, 
+          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 }, { i: 0, j: 2 }, { i: 0, j: 3 }, { i: 0, j: 4 },  ], css_id: 'tinytable_css_qxf6wwvcpxma1x7eadua',}, 
+          { positions: [ { i: 1, j: 0 }, { i: 1, j: 1 }, { i: 5, j: 1 }, { i: 9, j: 1 }, { i: 5, j: 0 }, { i: 9, j: 3 }, { i: 1, j: 2 }, { i: 5, j: 2 }, { i: 9, j: 0 }, { i: 5, j: 4 }, { i: 9, j: 4 }, { i: 1, j: 3 }, { i: 9, j: 2 }, { i: 5, j: 3 }, { i: 1, j: 4 },  ], css_id: 'tinytable_css_pb25i3l4jltxbi7zm0dm',}, 
+          { positions: [ { i: 12, j: 0 },  ], css_id: 'tinytable_css_f1zk2jwgyin8n14y044z',}, 
           ];
 
           // Loop over the arrays to style the cells
           cellsToStyle.forEach(function (group) {
               group.positions.forEach(function (cell) {
-                  styleCell_9h34f9ruqld9iewca9kc(cell.i, cell.j, group.css_id);
+                  styleCell_gonk0v6p6155hpgl8tkf(cell.i, cell.j, group.css_id);
               });
           });
       });
@@ -298,14 +298,14 @@ window.addEventListener('load', function () { insertSpanRow_86pg9ynhpo7pfgeltete
 
     <style>
       /* tinytable css entries after */
-      .table td.tinytable_css_x0m8bfbz9cyerpg0jlyp, .table th.tinytable_css_x0m8bfbz9cyerpg0jlyp { padding-left: 1em; }
-      .table td.tinytable_css_wcgh5fcrksoqpbv1suyu, .table th.tinytable_css_wcgh5fcrksoqpbv1suyu { padding-left: 1em; border-bottom: solid #d3d8dc 0.1em; }
-      .table td.tinytable_css_th9u1kkh12tqk9cwib7g, .table th.tinytable_css_th9u1kkh12tqk9cwib7g { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
-      .table td.tinytable_css_bta4pwobwq0u1xxyq8wl, .table th.tinytable_css_bta4pwobwq0u1xxyq8wl { border-bottom: solid #d3d8dc 0.1em; }
-      .table td.tinytable_css_41y4jfd1b0v60pxngcl3, .table th.tinytable_css_41y4jfd1b0v60pxngcl3 { background-color: #b2b2b2; }
+      .table td.tinytable_css_wkhmhg3hmgaumrepsli6, .table th.tinytable_css_wkhmhg3hmgaumrepsli6 { padding-left: 1em; }
+      .table td.tinytable_css_wdmzleztp84o0963wwbe, .table th.tinytable_css_wdmzleztp84o0963wwbe { border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_qxf6wwvcpxma1x7eadua, .table th.tinytable_css_qxf6wwvcpxma1x7eadua { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+      .table td.tinytable_css_pb25i3l4jltxbi7zm0dm, .table th.tinytable_css_pb25i3l4jltxbi7zm0dm { background-color: #b2b2b2; }
+      .table td.tinytable_css_f1zk2jwgyin8n14y044z, .table th.tinytable_css_f1zk2jwgyin8n14y044z { padding-left: 1em; border-bottom: solid #d3d8dc 0.1em; }
     </style>
     <div class="container">
-      <table class="table table-borderless" id="tinytable_9h34f9ruqld9iewca9kc" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+      <table class="table table-borderless" id="tinytable_gonk0v6p6155hpgl8tkf" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
         <thead>
         
               <tr>
@@ -424,6 +424,19 @@ Important
 <p><img src="img/slopes_gam_2500.png" class="img-fluid figure-img" width="1050"></p>
 </figure>
 </div>
+</div>
+</div>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>For the 2500 GDD threshold, there actually isn’t any data in the most northern parts of the US and the fitted values from the GAM should be ignored there. A refined version of this plot could remove any pixels too far from where there is actual observed data (a common practice for visualizing 2D smooths from GAMs).</p>
 </div>
 </div>
 </section>

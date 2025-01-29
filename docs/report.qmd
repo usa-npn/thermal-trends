@@ -112,6 +112,11 @@ These color bars ***do have*** the same range.
 :::
 
 
+
 ```{r}
 knitr::include_graphics(slope_plots)
 ```
+
+::: callout-warning
+For the 2500 GDD threshold, there actually isn't any data in the most northern parts of the US and the fitted values from the GAM should be ignored there.  A refined version of this plot could remove any pixels too far from where there is actual observed data (a common practice for visualizing 2D smooths from GAMs).
+:::
