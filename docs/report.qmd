@@ -1,0 +1,117 @@
+---
+title: "Updated GAMs with BE method"
+author: Eric Scott
+format: 
+  html:
+    toc: true
+execute: 
+  echo: false
+---
+
+```{r}
+#| label: setup
+#| include: false
+library(targets)
+library(here)
+library(fs)
+library(dplyr)
+library(tinytable)
+tar_load(c(
+  summary_plot_50, summary_plot_650, summary_plot_2500,
+  sd_plot_50, sd_plot_650, sd_plot_2500,
+  appraisal_50, appraisal_650, appraisal_2500,
+  k_check_50, k_check_650, k_check_2500,
+  slopes_plot_slopes_gam_50, slopes_plot_slopes_gam_650, slopes_plot_slopes_gam_2500
+ ),
+ store = here("_targets"))
+```
+
+```{r}
+#| label: copy-files
+#| include: false
+dir_create(here("docs/img"))
+summary_plots_orig <- c(summary_plot_50, summary_plot_650, summary_plot_2500)
+summary_plots <- 
+    file_copy(
+        path = here(summary_plots_orig), new_path = path(here("docs", "img"), path_file(summary_plots_orig)),
+        overwrite = TRUE
+    )
+
+sd_plots_orig <- c(sd_plot_50, sd_plot_650, sd_plot_2500)
+sd_plots <- 
+    file_copy(
+        path = here(sd_plots_orig), new_path = path(here("docs", "img"), path_file(sd_plots_orig)),
+        overwrite = TRUE
+    )
+
+appraisals_orig <- c(appraisal_50, appraisal_650, appraisal_2500)
+appraisals <- 
+    file_copy(
+        path = here(appraisals_orig), new_path = path(here("docs", "img"), path_file(appraisals_orig)),
+        overwrite = TRUE
+    )
+
+slope_plots_orig <- c(slopes_plot_slopes_gam_50, slopes_plot_slopes_gam_650, slopes_plot_slopes_gam_2500)
+slope_plots <- 
+    file_copy(
+        path = here(slope_plots_orig), new_path = path(here("docs", "img"), path_file(slope_plots_orig)),
+        overwrite = TRUE
+    )
+```
+
+For now, I've only run this with three thresholds: 50, 650, and 2500 GDD (ºF), but I've also written the code in a way that it is easy to add additional thresholds.
+Currently runs on Jetstream2 instance with 16 cores and 60GB RAM
+
+## Summary statistics plots
+
+### Min, Mean, Max
+
+::: callout-important
+The color scale for each threshold has a different range.
+:::
+
+::: callout-note
+These are calculated with `na.rm = TRUE` to remove NAs, so not every pixel necessarily has the same number of years used to calculate these summary statistics.
+:::
+
+```{r}
+knitr::include_graphics(summary_plots)
+```
+
+### Standard Deviation
+
+```{r}
+knitr::include_graphics(sd_plots)
+```
+
+## Model Diagnostics
+
+Model diagnostics produced with `gratia::appraise()`.
+This indicates that some GDD thresholds might need "bespoke" treatment.
+E.g. residuals for 2500 are leptokurtic and might be better if a student t error distribution was used instead of gaussian.
+On the other hand, $n$ is so high it probably makes no difference.
+
+```{r}
+knitr::include_graphics(appraisals)
+```
+
+Similarly, the number of basis functions used (`k'`) might need to be adjusted for some models. 
+Ideally `edf` (estimated degrees of freedom) should be much less than `k'`, which is not the case for the spatial smooth (`ti(x,y)`) for 650 GDD.
+
+```{r}
+df <- dplyr::bind_rows(k_check_50, k_check_650, k_check_2500)
+tt(df %>% select(-gam)) %>% 
+    group_tt(i = df$gam) %>%
+    style_tt(i = .@group_index_i, background = "#b2b2b2")
+```
+
+## Average Slopes Plots
+
+::: callout-important
+These color bars ***do have*** the same range.
+:::
+
+
+```{r}
+knitr::include_graphics(slope_plots)
+```
