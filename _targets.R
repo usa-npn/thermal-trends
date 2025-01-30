@@ -184,7 +184,7 @@ main <- tarchetypes::tar_plan(
     ),
     tar_terra_rast(
       doy_count,
-      app(gdd_doy_stack, \(x) sum(!is.na(x))),
+      count_gdd_reached(stack = gdd_doy_stack, roi = roi),
       description = "how many years reached this threshold"
     ),
     tar_terra_rast(
