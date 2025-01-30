@@ -4,7 +4,9 @@ format: gfm
 
 <!-- README.md is generated from README.Qmd. Please edit that file -->
 
-```{r, include = FALSE}
+```{r}
+#| label: setup
+#| include: false
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
@@ -27,6 +29,8 @@ Report of work in progress: <https://usa-npn.github.io/thermal-trends/spatial-tr
 
 ## Reproducibility
 
+This workflow requires a lot of computational power and disk space.  Currently it runs on a Jetstream2 instance with 16 cores and 60GB of ram on a 500GB disk.  Even then, the disk occasionally fills up and the temp directory needs to be manually cleared out as intermediate tiff files accumulate.  I've used a `.Renviron` file to set the `TMPDIR` variable to make sure `tmpdir()` is on a large enough attached volume rather than the root disk, which for Jetstream2 is only 50GB.
+
 ### `renv`
 
 This project uses [`renv`](https://rstudio.github.io/renv/articles/renv.html) for package management.
@@ -39,6 +43,7 @@ Run `targets::tar_make()` from the console or from the HPC run `sbatch run.sh` t
 The graph below shows the workflow:
 
 ```{r}
+#| lable: tar_mermaid
 #| echo: false
 #| message: false
 #| warning: false
