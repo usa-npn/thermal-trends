@@ -107,6 +107,8 @@ tt(df %>% select(-gam)) %>%
 
 ## Average Slopes Plots
 
+These plots average instantaneous slopes at each year.  At each pixel, the hypothesis that the slope = 0 is tested and resulting p-values are corrected for false discovery rate.  Actual p-values are not displayed, they're just used to "block out" areas that are not significantly different from zero.
+
 ::: callout-important
 These color bars ***do have*** the same range.
 :::
