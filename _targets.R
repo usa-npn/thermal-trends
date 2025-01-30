@@ -170,30 +170,30 @@ main <- tarchetypes::tar_plan(
       range(gdd_doy_stack) |> values() |> range(na.rm = TRUE)
     ),
     tar_terra_rast(
-      gdd_doy_mean,
+      doy_mean,
       #should NAs be removed?  NAs are "never reached this threshold", not "missing data"
       mean(gdd_doy_stack, na.rm = TRUE) 
     ),
     tar_terra_rast(
-      gdd_doy_min,
+      doy_min,
       min(gdd_doy_stack, na.rm = TRUE) 
     ),
     tar_terra_rast(
-      gdd_doy_max,
+      doy_max,
       max(gdd_doy_stack, na.rm = TRUE) 
     ),
-    tar_file(
-      summary_plot,
-      plot_summary_combined(gdd_doy_min, gdd_doy_mean, gdd_doy_max, doy_range),
-      packages = c("patchwork", "ggplot2", "tidyterra", "stringr", "glue")
+    tar_terra_rast(
+      doy_count,
+      app(gdd_doy_stack, \(x) sum(!is.na(x))),
+      description = "how many years reached this threshold"
     ),
     tar_terra_rast(
-      gdd_doy_sd,
+      doy_sd,
       stdev(gdd_doy_stack, na.rm = TRUE)
     ),
     tar_file(
       sd_plot,
-      plot_sd_doy(gdd_doy_sd)
+      plot_sd_doy(doy_sd)
     ),
     tar_target(
       gam_df,
@@ -225,7 +225,16 @@ main <- tarchetypes::tar_plan(
       check_k(gam),
       packages = c("mgcv", "dplyr")
     )
-  ) #end tar_map()
+  ), #end tar_map()
+  tar_file(
+    summary_plot,
+    plot_summary_grid(roi = roi, !!!rlang::syms(c(
+      glue::glue("doy_min_{threshold}"),
+      glue::glue("doy_mean_{threshold}"),
+      glue::glue("doy_max_{threshold}")
+    ))),
+    packages = c("ggplot2", "tidyterra", "stringr", "terra", "purrr")
+  )
 )
 
 slopes <- tar_plan(

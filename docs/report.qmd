@@ -17,7 +17,8 @@ library(fs)
 library(dplyr)
 library(tinytable)
 tar_load(c(
-  summary_plot_50, summary_plot_650, summary_plot_2500,
+#   summary_plot_50, summary_plot_650, summary_plot_2500,
+  summary_plot,
   sd_plot_50, sd_plot_650, sd_plot_2500,
   appraisal_50, appraisal_650, appraisal_2500,
   k_check_50, k_check_650, k_check_2500,
@@ -30,10 +31,9 @@ tar_load(c(
 #| label: copy-files
 #| include: false
 dir_create(here("docs/img"))
-summary_plots_orig <- c(summary_plot_50, summary_plot_650, summary_plot_2500)
-summary_plots <- 
+summary_plot <- 
     file_copy(
-        path = here(summary_plots_orig), new_path = path(here("docs", "img"), path_file(summary_plots_orig)),
+        path = here(summary_plot), new_path = path(here("docs", "img"), path_file(summary_plot)),
         overwrite = TRUE
     )
 
@@ -66,16 +66,12 @@ Currently runs on Jetstream2 instance with 16 cores and 60GB RAM
 
 ### Min, Mean, Max
 
-::: callout-important
-The color scale for each threshold has a different range.
-:::
-
 ::: callout-note
 These are calculated with `na.rm = TRUE` to remove NAs, so not every pixel necessarily has the same number of years used to calculate these summary statistics.
 :::
 
 ```{r}
-knitr::include_graphics(summary_plots)
+knitr::include_graphics(summary_plot)
 ```
 
 ### Standard Deviation
