@@ -193,7 +193,7 @@ main <- tarchetypes::tar_plan(
     ),
     tar_file(
       sd_plot,
-      plot_sd_doy(doy_sd)
+      plot_sd_doy(doy_sd, roi)
     ),
     tar_target(
       gam_df,

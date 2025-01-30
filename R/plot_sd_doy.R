@@ -1,7 +1,8 @@
-plot_sd_doy <- function(raster, range = NULL) {
+plot_sd_doy <- function(raster, roi, range = NULL) {
   raster_name <- deparse(substitute(raster))
   threshold <- stringr::str_extract(raster_name, "\\d+")
   p <- ggplot2::ggplot() +
+    tidyterra::geom_spatvector(data = roi) +
     tidyterra::geom_spatraster(data = raster) +
     ggplot2::scale_fill_viridis_c(na.value = "transparent") +
     ggplot2::labs(
