@@ -235,6 +235,11 @@ main <- tarchetypes::tar_plan(
     sd_plot,
     plot_sd_doy(!!!rlang::syms(glue::glue("doy_sd_{threshold}")), roi = roi),
     packages = c("ggplot2", "tidyterra", "stringr", "terra", "purrr")
+  ),
+  tar_file(
+    count_plot,
+    plot_count_years(!!!rlang::syms(glue::glue("doy_count_{threshold}")), roi = roi),
+    packages = c("ggplot2", "tidyterra", "stringr", "terra", "purrr")
   )
 )
 
