@@ -1,7 +1,7 @@
 plot_sd_doy <- function(roi, ...) {
   dots <- rlang::dots_list(..., .named = TRUE)
   df <- purrr::imap(dots, function(raster, name) {
-    tidyterra::as_tibble(raster, xy = TRUE) |> 
+    tidyterra::as_tibble(raster, xy = TRUE, na.rm = TRUE) |> 
     #get threshold from target name
     dplyr::mutate(GDD = as.numeric(stringr::str_extract(name, "\\d+")))
   }) |> 

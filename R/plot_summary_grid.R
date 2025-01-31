@@ -12,7 +12,7 @@ plot_summary_grid <- function(roi, ...) {
   # dots <- rlang::dots_list(doy_min_50, doy_mean_50, doy_max_50, doy_min_650, doy_mean_650, doy_max_650, .named = TRUE)
   dots <- rlang::dots_list(..., .named = TRUE)
   df <- purrr::imap(dots, function(raster, name) {
-    tidyterra::as_tibble(raster, xy = TRUE, wide = FALSE) |> 
+    tidyterra::as_tibble(raster, xy = TRUE, wide = FALSE, na.rm = TRUE) |> 
     #get threshold from target name
     dplyr::mutate(GDD = as.numeric(stringr::str_extract(name, "\\d+")))
   }) |> 
