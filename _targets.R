@@ -191,10 +191,6 @@ main <- tarchetypes::tar_plan(
       doy_sd,
       stdev(gdd_doy_stack, na.rm = TRUE)
     ),
-    tar_file(
-      sd_plot,
-      plot_sd_doy(doy_sd, roi)
-    ),
     tar_target(
       gam_df,
       make_gam_df(gdd_doy_stack, res = 25000),
@@ -233,6 +229,11 @@ main <- tarchetypes::tar_plan(
       glue::glue("doy_mean_{threshold}"),
       glue::glue("doy_max_{threshold}")
     ))),
+    packages = c("ggplot2", "tidyterra", "stringr", "terra", "purrr")
+  ),
+  tar_file(
+    sd_plot,
+    plot_sd_doy(!!!rlang::syms(glue::glue("doy_sd_{threshold}")), roi = roi),
     packages = c("ggplot2", "tidyterra", "stringr", "terra", "purrr")
   )
 )

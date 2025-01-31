@@ -19,7 +19,7 @@ library(tinytable)
 tar_load(c(
 #   summary_plot_50, summary_plot_650, summary_plot_2500,
   summary_plot,
-  sd_plot_50, sd_plot_650, sd_plot_2500,
+  sd_plot,
   appraisal_50, appraisal_650, appraisal_2500,
   k_check_50, k_check_650, k_check_2500,
   slopes_plot_slopes_gam_50, slopes_plot_slopes_gam_650, slopes_plot_slopes_gam_2500
@@ -37,10 +37,9 @@ summary_plot <-
         overwrite = TRUE
     )
 
-sd_plots_orig <- c(sd_plot_50, sd_plot_650, sd_plot_2500)
-sd_plots <- 
+sd_plot <- 
     file_copy(
-        path = here(sd_plots_orig), new_path = path(here("docs", "img"), path_file(sd_plots_orig)),
+        path = here(sd_plot), new_path = path(here("docs", "img"), path_file(sd_plot)),
         overwrite = TRUE
     )
 
@@ -77,7 +76,7 @@ knitr::include_graphics(summary_plot)
 ### Standard Deviation
 
 ```{r}
-knitr::include_graphics(sd_plots)
+knitr::include_graphics(sd_plot)
 ```
 
 ## Model Diagnostics

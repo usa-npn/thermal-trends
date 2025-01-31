@@ -1,26 +1,34 @@
-plot_sd_doy <- function(raster, roi, range = NULL) {
-  raster_name <- deparse(substitute(raster))
-  threshold <- stringr::str_extract(raster_name, "\\d+")
-  p <- ggplot2::ggplot() +
+plot_sd_doy <- function(roi, ...) {
+  dots <- rlang::dots_list(..., .named = TRUE)
+  df <- purrr::imap(dots, function(raster, name) {
+    tidyterra::as_tibble(raster, xy = TRUE) |> 
+    #get threshold from target name
+    dplyr::mutate(GDD = as.numeric(stringr::str_extract(name, "\\d+")))
+  }) |> 
+  purrr::list_rbind()
+  
+  p <- ggplot(df) +
+    facet_wrap(vars(GDD), labeller = label_both) +
     tidyterra::geom_spatvector(data = roi) +
-    tidyterra::geom_spatraster(data = raster) +
+    geom_raster(aes(x = x, y = y, fill = std)) +
     ggplot2::scale_fill_viridis_c(na.value = "transparent") +
     ggplot2::labs(
-      title = glue::glue("Standard deviation in DOY that {threshold} GDD is reached"),
-      fill = "±days",
-      x = "",
-      y = ""
+      # title = glue::glue("Standard deviation in DOY that {threshold} GDD is reached"),
+      fill = "sd (±days)"
     ) +
+    #n.breaks only works in current dev version of ggplot2: https://github.com/tidyverse/ggplot2/pull/5442
+    scale_x_continuous(n.breaks = 5) + 
+    scale_y_continuous(n.breaks = 5) +
     # coord_sf(crs = "ESRI:102010") +
-    ggplot2::theme_minimal()
-
+    ggplot2::theme_minimal() +
+    theme(axis.title = element_blank(), strip.background = element_rect(fill = "white"))
+  
   ggplot2::ggsave(
-    filename = glue::glue("sd_{threshold}.png"),
+    filename = "stdev.png",
     plot = p, 
-    path = "output/gams/",
+    path = "output/summary_stats/",
     bg = "white",
-    width = 7,
+    width = 9.5,
     height = 5
   )
 }
-
