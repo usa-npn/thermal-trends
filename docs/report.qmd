@@ -21,9 +21,9 @@ tar_load(c(
   summary_plot,
   sd_plot,
   count_plot,
-  appraisal_50, appraisal_650, appraisal_2500,
-  k_check_50, k_check_650, k_check_2500,
-  slopes_plot_slopes_gam_50, slopes_plot_slopes_gam_650, slopes_plot_slopes_gam_2500
+  appraisal_50, appraisal_650, appraisal_1250, appraisal_1950, appraisal_2500,
+  k_check_50, k_check_650, k_check_1250, k_check_1950, k_check_2500,
+  slopes_plot_slopes_gam_50, slopes_plot_slopes_gam_650, slopes_plot_slopes_gam_1250, slopes_plot_slopes_gam_1950, slopes_plot_slopes_gam_2500
  ),
  store = here("_targets"))
 ```
@@ -49,14 +49,14 @@ count_plot <-
         overwrite = TRUE
     )
 
-appraisals_orig <- c(appraisal_50, appraisal_650, appraisal_2500)
+appraisals_orig <- c(appraisal_50, appraisal_650, appraisal_1250, appraisal_1950, appraisal_2500)
 appraisals <- 
     file_copy(
         path = here(appraisals_orig), new_path = path(here("docs", "img"), path_file(appraisals_orig)),
         overwrite = TRUE
     )
 
-slope_plots_orig <- c(slopes_plot_slopes_gam_50, slopes_plot_slopes_gam_650, slopes_plot_slopes_gam_2500)
+slope_plots_orig <- c(slopes_plot_slopes_gam_50, slopes_plot_slopes_gam_650, slopes_plot_slopes_gam_1250, slopes_plot_slopes_gam_1950, slopes_plot_slopes_gam_2500)
 slope_plots <- 
     file_copy(
         path = here(slope_plots_orig), new_path = path(here("docs", "img"), path_file(slope_plots_orig)),
