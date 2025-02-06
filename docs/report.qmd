@@ -64,8 +64,7 @@ slope_plots <-
     )
 ```
 
-For now, I've only run this with three thresholds: 50, 650, and 2500 GDD (ºF), but I've also written the code in a way that it is easy to add additional thresholds.
-Currently runs on Jetstream2 instance with 16 cores and 60GB RAM
+This now includes all the planned thresholds: 50, 650, 1250, 1950 and 2500 GDD (ºF).
 
 ## Summary statistics plots
 
@@ -85,10 +84,11 @@ knitr::include_graphics(summary_plot)
 knitr::include_graphics(sd_plot)
 ```
 
-
 ### Number of years threshold is reached
 
-These plots may be helpful along with standard deviation for interpretation since standard deviation may be calculated with a different "sample size" for different pixels.  (not really sample size, since `NA`s aren't really missing—just indicate the threshold was never reached)
+These plots may be helpful along with standard deviation for interpretation since standard deviation may be calculated with a different sample size[^1] for different pixels.
+
+[^1]: It's not really sample size, since `NA`s don't quite represent missing data here—they just indicate the threshold was never reached in that year
 
 ```{r}
 knitr::include_graphics(count_plot)
@@ -105,11 +105,11 @@ On the other hand, $n$ is so high it probably makes no difference.
 knitr::include_graphics(appraisals)
 ```
 
-Similarly, the number of basis functions used (`k'`) might need to be adjusted for some models. 
-Ideally `edf` (estimated degrees of freedom) should be much less than `k'`, which is not the case for the spatial smooth (`ti(x,y)`) for 650 GDD.
+Similarly, the number of basis functions used (`k'`) might need to be adjusted for some models.
+Ideally `edf` (estimated degrees of freedom) should be much less than `k'`, which is not the case for the spatial smooth (`ti(x,y)`) for 1950 GDD.
 
 ```{r}
-df <- dplyr::bind_rows(k_check_50, k_check_650, k_check_2500)
+df <- dplyr::bind_rows(k_check_50, k_check_650, k_check_1250, k_check_1950, k_check_2500)
 tt(df %>% select(-gam)) %>% 
     group_tt(i = df$gam) %>%
     style_tt(i = .@group_index_i, background = "#b2b2b2")
@@ -117,18 +117,27 @@ tt(df %>% select(-gam)) %>%
 
 ## Average Slopes Plots
 
-These plots average instantaneous slopes at each year.  At each pixel, the hypothesis that the slope = 0 is tested and resulting p-values are corrected for false discovery rate.  Actual p-values are not displayed, they're just used to "block out" areas that are not significantly different from zero.
+These plots average instantaneous slopes at each year.
+At each pixel, the hypothesis that the slope = 0 is tested and resulting p-values are corrected for false discovery rate.
+Actual p-values are not displayed, they're just used to "block out" areas that are not significantly different from zero.\
 
-::: callout-important
-These color bars ***do have*** the same range.
+::: {.callout-note collapse="true"}
+## Technical notes about p-values
+
+There are different methods for estimating uncertainty (and therefore p-values?) around estimated slopes.
+Currently I'm using the default in [`marginaleffects::avg_slopes()`](https://marginaleffects.com/chapters/slopes.html#aggregation) which is to use the variance-covariance matrix returned by `vcov(gam)`—in this case this is the Bayesian posterior covariance matrix.
+There are options in [`mgcv::vcov.gam()`](https://www.rdocumentation.org/packages/mgcv/versions/1.9-1/topics/vcov.gam) that could be modified or other methods like bootstrapping can be used via the [`marginaleffects::inferences()`](https://marginaleffects.com/man/r/inferences.html) function.
+I honestly have little idea what is best here and will explore some different options.\
+
+\
+Another entirely different option that may be more appropriate because of its GAM-specificity is [`gratia::response_derivatives()`](https://gavinsimpson.github.io/gratia/reference/response_derivatives.html)`.`
 :::
-
-
 
 ```{r}
 knitr::include_graphics(slope_plots)
 ```
 
 ::: callout-warning
-For the 2500 GDD threshold, there actually isn't any data in the most northern parts of the US and the fitted values from the GAM should be ignored there.  A refined version of this plot could remove any pixels too far from where there is actual observed data (a common practice for visualizing 2D smooths from GAMs).
+For the 2500 GDD threshold, there actually isn't any data in the most northern parts of the US and the fitted values from the GAM should be ignored there.
+A refined version of this plot could remove any pixels too far from where there is actual observed data (a common practice for visualizing 2D smooths from GAMs).
 :::

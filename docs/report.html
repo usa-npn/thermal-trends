@@ -113,7 +113,7 @@ window.Quarto = {
 </header>
 
 
-<p>For now, I’ve only run this with three thresholds: 50, 650, and 2500 GDD (ºF), but I’ve also written the code in a way that it is easy to add additional thresholds. Currently runs on Jetstream2 instance with 16 cores and 60GB RAM</p>
+<p>This now includes all the planned thresholds: 50, 650, 1250, 1950 and 2500 GDD (ºF).</p>
 <section id="summary-statistics-plots" class="level2">
 <h2 class="anchored" data-anchor-id="summary-statistics-plots">Summary statistics plots</h2>
 <section id="min-mean-max" class="level3">
@@ -155,7 +155,7 @@ Note
 </section>
 <section id="number-of-years-threshold-is-reached" class="level3">
 <h3 class="anchored" data-anchor-id="number-of-years-threshold-is-reached">Number of years threshold is reached</h3>
-<p>These plots may be helpful along with standard deviation for interpretation since standard deviation may be calculated with a different “sample size” for different pixels. (not really sample size, since <code>NA</code>s aren’t really missing—just indicate the threshold was never reached)</p>
+<p>These plots may be helpful along with standard deviation for interpretation since standard deviation may be calculated with a different sample size<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> for different pixels.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div>
@@ -188,20 +188,34 @@ Note
 <div class="cell-output-display">
 <div>
 <figure class="figure">
+<p><img src="img/appraisal_gam_1250.png" class="img-fluid figure-img" width="1800"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="img/appraisal_gam_1950.png" class="img-fluid figure-img" width="1800"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
 <p><img src="img/appraisal_gam_2500.png" class="img-fluid figure-img" width="1800"></p>
 </figure>
 </div>
 </div>
 </div>
-<p>Similarly, the number of basis functions used (<code>k'</code>) might need to be adjusted for some models. Ideally <code>edf</code> (estimated degrees of freedom) should be much less than <code>k'</code>, which is not the case for the spatial smooth (<code>ti(x,y)</code>) for 650 GDD.</p>
+<p>Similarly, the number of basis functions used (<code>k'</code>) might need to be adjusted for some models. Ideally <code>edf</code> (estimated degrees of freedom) should be much less than <code>k'</code>, which is not the case for the spatial smooth (<code>ti(x,y)</code>) for 1950 GDD.</p>
 <div class="cell">
 <div class="cell-output-display">
 <!-- preamble start -->
 
     <script>
 
-      function styleCell_kzij3amh6nmzvqz0rumw(i, j, css_id) {
-          var table = document.getElementById("tinytable_kzij3amh6nmzvqz0rumw");
+      function styleCell_9virj83qdvajiyqebo4h(i, j, css_id) {
+          var table = document.getElementById("tinytable_9virj83qdvajiyqebo4h");
           var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
           if (cell) {
               console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
@@ -210,8 +224,8 @@ Note
               console.warn(`Cell at (${i}, ${j}) not found.`);
           }
       }
-      function insertSpanRow_x7c8plfkzskx5vgb9opg(i, colspan, content) {
-        var table = document.getElementById('tinytable_kzij3amh6nmzvqz0rumw');
+      function insertSpanRow_9x4egmg198rrrcs73mym(i, colspan, content) {
+        var table = document.getElementById('tinytable_9virj83qdvajiyqebo4h');
         var newRow = table.insertRow(i);
         var newCell = newRow.insertCell(0);
         newCell.setAttribute("colspan", colspan);
@@ -219,8 +233,8 @@ Note
         // this may be unsafe, but innerText does not interpret <br>
         newCell.innerHTML = content;
       }
-      function spanCell_kzij3amh6nmzvqz0rumw(i, j, rowspan, colspan) {
-        var table = document.getElementById("tinytable_kzij3amh6nmzvqz0rumw");
+      function spanCell_9virj83qdvajiyqebo4h(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_9virj83qdvajiyqebo4h");
         const targetRow = table.rows[i];
         const targetCell = targetRow.cells[j];
         for (let r = 0; r < rowspan; r++) {
@@ -247,23 +261,25 @@ Note
         targetCell.colSpan = colspan;
       }
       // tinytable span after
-window.addEventListener('load', function () { insertSpanRow_x7c8plfkzskx5vgb9opg(7, 5, 'gam_2500') });
-window.addEventListener('load', function () { insertSpanRow_x7c8plfkzskx5vgb9opg(4, 5, 'gam_650') });
-window.addEventListener('load', function () { insertSpanRow_x7c8plfkzskx5vgb9opg(1, 5, 'gam_50') });
+window.addEventListener('load', function () { insertSpanRow_9x4egmg198rrrcs73mym(13, 5, 'gam_2500') });
+window.addEventListener('load', function () { insertSpanRow_9x4egmg198rrrcs73mym(10, 5, 'gam_1950') });
+window.addEventListener('load', function () { insertSpanRow_9x4egmg198rrrcs73mym(7, 5, 'gam_1250') });
+window.addEventListener('load', function () { insertSpanRow_9x4egmg198rrrcs73mym(4, 5, 'gam_650') });
+window.addEventListener('load', function () { insertSpanRow_9x4egmg198rrrcs73mym(1, 5, 'gam_50') });
       window.addEventListener('load', function () {
           var cellsToStyle = [
             // tinytable style arrays after
-          { positions: [ { i: 12, j: 0 },  ], css_id: 'tinytable_css_yohwlc5utx5y5jk57fp6',}, 
-          { positions: [ { i: 2, j: 0 }, { i: 3, j: 0 }, { i: 4, j: 0 }, { i: 6, j: 0 }, { i: 7, j: 0 }, { i: 8, j: 0 }, { i: 10, j: 0 }, { i: 11, j: 0 },  ], css_id: 'tinytable_css_shr7mpprp2ky1r379dv2',}, 
-          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 }, { i: 0, j: 2 }, { i: 0, j: 3 }, { i: 0, j: 4 },  ], css_id: 'tinytable_css_muknfz8rilzof4yxopl7',}, 
-          { positions: [ { i: 1, j: 0 }, { i: 1, j: 1 }, { i: 5, j: 1 }, { i: 9, j: 1 }, { i: 5, j: 0 }, { i: 9, j: 3 }, { i: 1, j: 2 }, { i: 5, j: 2 }, { i: 9, j: 0 }, { i: 5, j: 4 }, { i: 9, j: 4 }, { i: 1, j: 3 }, { i: 9, j: 2 }, { i: 5, j: 3 }, { i: 1, j: 4 },  ], css_id: 'tinytable_css_kkzn50259tp8zei5bveq',}, 
-          { positions: [ { i: 12, j: 1 }, { i: 12, j: 2 }, { i: 12, j: 3 }, { i: 12, j: 4 },  ], css_id: 'tinytable_css_cox4632wrzs7rdxo4x7j',}, 
+          { positions: [ { i: 20, j: 0 },  ], css_id: 'tinytable_css_p1v5yrhopyd58ysspray',}, 
+          { positions: [ { i: 20, j: 1 }, { i: 20, j: 3 }, { i: 20, j: 2 }, { i: 20, j: 4 },  ], css_id: 'tinytable_css_ocqpabak3omsv5ijvizl',}, 
+          { positions: [ { i: 1, j: 0 }, { i: 13, j: 2 }, { i: 17, j: 2 }, { i: 17, j: 0 }, { i: 5, j: 0 }, { i: 5, j: 1 }, { i: 9, j: 1 }, { i: 13, j: 1 }, { i: 13, j: 0 }, { i: 17, j: 3 }, { i: 9, j: 4 }, { i: 1, j: 2 }, { i: 5, j: 2 }, { i: 9, j: 2 }, { i: 1, j: 3 }, { i: 13, j: 4 }, { i: 17, j: 4 }, { i: 9, j: 0 }, { i: 5, j: 4 }, { i: 5, j: 3 }, { i: 9, j: 3 }, { i: 17, j: 1 }, { i: 1, j: 1 }, { i: 1, j: 4 }, { i: 13, j: 3 },  ], css_id: 'tinytable_css_e3ibj77ztqr2vngi5bbd',}, 
+          { positions: [ { i: 0, j: 0 }, { i: 0, j: 3 }, { i: 0, j: 2 }, { i: 0, j: 4 }, { i: 0, j: 1 },  ], css_id: 'tinytable_css_9xw72kiz9k7edoz5yp21',}, 
+          { positions: [ { i: 15, j: 0 }, { i: 3, j: 0 }, { i: 6, j: 0 }, { i: 7, j: 0 }, { i: 8, j: 0 }, { i: 2, j: 0 }, { i: 10, j: 0 }, { i: 11, j: 0 }, { i: 12, j: 0 }, { i: 14, j: 0 }, { i: 18, j: 0 }, { i: 19, j: 0 }, { i: 16, j: 0 }, { i: 4, j: 0 },  ], css_id: 'tinytable_css_84gqom5b0lsnf4oni9uq',}, 
           ];
 
           // Loop over the arrays to style the cells
           cellsToStyle.forEach(function (group) {
               group.positions.forEach(function (cell) {
-                  styleCell_kzij3amh6nmzvqz0rumw(cell.i, cell.j, group.css_id);
+                  styleCell_9virj83qdvajiyqebo4h(cell.i, cell.j, group.css_id);
               });
           });
       });
@@ -271,14 +287,14 @@ window.addEventListener('load', function () { insertSpanRow_x7c8plfkzskx5vgb9opg
 
     <style>
       /* tinytable css entries after */
-      .table td.tinytable_css_yohwlc5utx5y5jk57fp6, .table th.tinytable_css_yohwlc5utx5y5jk57fp6 { padding-left: 1em; border-bottom: solid #d3d8dc 0.1em; }
-      .table td.tinytable_css_shr7mpprp2ky1r379dv2, .table th.tinytable_css_shr7mpprp2ky1r379dv2 { padding-left: 1em; }
-      .table td.tinytable_css_muknfz8rilzof4yxopl7, .table th.tinytable_css_muknfz8rilzof4yxopl7 { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
-      .table td.tinytable_css_kkzn50259tp8zei5bveq, .table th.tinytable_css_kkzn50259tp8zei5bveq { background-color: #b2b2b2; }
-      .table td.tinytable_css_cox4632wrzs7rdxo4x7j, .table th.tinytable_css_cox4632wrzs7rdxo4x7j { border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_p1v5yrhopyd58ysspray, .table th.tinytable_css_p1v5yrhopyd58ysspray { padding-left: 1em; border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_ocqpabak3omsv5ijvizl, .table th.tinytable_css_ocqpabak3omsv5ijvizl { border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_e3ibj77ztqr2vngi5bbd, .table th.tinytable_css_e3ibj77ztqr2vngi5bbd { background-color: #b2b2b2; }
+      .table td.tinytable_css_9xw72kiz9k7edoz5yp21, .table th.tinytable_css_9xw72kiz9k7edoz5yp21 { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+      .table td.tinytable_css_84gqom5b0lsnf4oni9uq, .table th.tinytable_css_84gqom5b0lsnf4oni9uq { padding-left: 1em; }
     </style>
     <div class="container">
-      <table class="table table-borderless" id="tinytable_kzij3amh6nmzvqz0rumw" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+      <table class="table table-borderless" id="tinytable_9virj83qdvajiyqebo4h" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
         <thead>
         
               <tr>
@@ -336,6 +352,48 @@ window.addEventListener('load', function () { insertSpanRow_x7c8plfkzskx5vgb9opg
                 <tr>
                   <td>ti(x,y)</td>
                   <td>999</td>
+                  <td>938.16805</td>
+                  <td>0.98693251</td>
+                  <td>0.1500</td>
+                </tr>
+                <tr>
+                  <td>ti(year_scaled)</td>
+                  <td>19</td>
+                  <td>18.99476</td>
+                  <td>0.49170943</td>
+                  <td>0.0000</td>
+                </tr>
+                <tr>
+                  <td>ti(year_scaled,x,y)</td>
+                  <td>3781</td>
+                  <td>1133.58993</td>
+                  <td>0.10028164</td>
+                  <td>0.0000</td>
+                </tr>
+                <tr>
+                  <td>ti(x,y)</td>
+                  <td>999</td>
+                  <td>947.55683</td>
+                  <td>0.99087838</td>
+                  <td>0.2725</td>
+                </tr>
+                <tr>
+                  <td>ti(year_scaled)</td>
+                  <td>19</td>
+                  <td>18.99385</td>
+                  <td>0.42878736</td>
+                  <td>0.0000</td>
+                </tr>
+                <tr>
+                  <td>ti(year_scaled,x,y)</td>
+                  <td>3781</td>
+                  <td>1032.82237</td>
+                  <td>0.14252409</td>
+                  <td>0.0000</td>
+                </tr>
+                <tr>
+                  <td>ti(x,y)</td>
+                  <td>999</td>
                   <td>899.14313</td>
                   <td>1.00913963</td>
                   <td>0.7675</td>
@@ -363,18 +421,25 @@ window.addEventListener('load', function () { insertSpanRow_x7c8plfkzskx5vgb9opg
 </section>
 <section id="average-slopes-plots" class="level2">
 <h2 class="anchored" data-anchor-id="average-slopes-plots">Average Slopes Plots</h2>
-<p>These plots average instantaneous slopes at each year. At each pixel, the hypothesis that the slope = 0 is tested and resulting p-values are corrected for false discovery rate. Actual p-values are not displayed, they’re just used to “block out” areas that are not significantly different from zero.</p>
-<div class="callout callout-style-default callout-important callout-titled">
-<div class="callout-header d-flex align-content-center">
+<p>These plots average instantaneous slopes at each year. At each pixel, the hypothesis that the slope = 0 is tested and resulting p-values are corrected for false discovery rate. Actual p-values are not displayed, they’re just used to “block out” areas that are not significantly different from zero.<br>
+</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Important
+Technical notes about p-values
 </div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
-<p>These color bars <strong><em>do have</em></strong> the same range.</p>
+<p>There are different methods for estimating uncertainty (and therefore p-values?) around estimated slopes. Currently I’m using the default in <a href="https://marginaleffects.com/chapters/slopes.html#aggregation"><code>marginaleffects::avg_slopes()</code></a> which is to use the variance-covariance matrix returned by <code>vcov(gam)</code>—in this case this is the Bayesian posterior covariance matrix. There are options in <a href="https://www.rdocumentation.org/packages/mgcv/versions/1.9-1/topics/vcov.gam"><code>mgcv::vcov.gam()</code></a> that could be modified or other methods like bootstrapping can be used via the <a href="https://marginaleffects.com/man/r/inferences.html"><code>marginaleffects::inferences()</code></a> function. I honestly have little idea what is best here and will explore some different options.<br>
+</p>
+<p><br>
+Another entirely different option that may be more appropriate because of its GAM-specificity is <a href="https://gavinsimpson.github.io/gratia/reference/response_derivatives.html"><code>gratia::response_derivatives()</code></a><code>.</code></p>
+</div>
 </div>
 </div>
 <div class="cell">
@@ -389,6 +454,20 @@ Important
 <div>
 <figure class="figure">
 <p><img src="img/slopes_gam_650.png" class="img-fluid figure-img" width="1050"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="img/slopes_gam_1250.png" class="img-fluid figure-img" width="1050"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="img/slopes_gam_1950.png" class="img-fluid figure-img" width="1050"></p>
 </figure>
 </div>
 </div>
@@ -415,7 +494,13 @@ Warning
 </div>
 </section>
 
-</main>
+
+<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>It’s not really sample size, since <code>NA</code>s don’t quite represent missing data here—they just indicate the threshold was never reached in that year<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section></div></main>
 <!-- /main column -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
