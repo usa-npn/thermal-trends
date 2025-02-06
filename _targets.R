@@ -442,7 +442,8 @@ slopes_plots <- tar_plan(
 tarchetypes::tar_plan(
   main,
   slopes,
-  slopes_plots
+  slopes_plots,
+  # tarchetypes::tar_quarto(report, "docs/report.qmd", quiet = FALSE)
   # gams,
   # city_slopes,
   # city_slopes_plot

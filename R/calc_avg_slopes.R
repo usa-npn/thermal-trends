@@ -12,6 +12,7 @@ calc_avg_slopes <- function(gam, newdata = NULL) {
     marginaleffects::avg_slopes(
       gam,
       newdata = newdata,
+      vcov = vcov(gam, unconditional = TRUE),
       variables = "year_scaled",
       type = "response",
       by = c("y", "x"),
