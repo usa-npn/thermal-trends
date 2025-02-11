@@ -251,8 +251,6 @@ slopes <- tar_plan(
     ),
     tar_target(
       newdata,
-      #doesn't matter which dataset since all that is used is x,y, and year_scaled
-      #using very coarse newdata regardless of resolution of original data.
       make_slope_newdata(stack, res_m = 25000) |>
         dplyr::group_by(group) |>
         targets::tar_group(),
