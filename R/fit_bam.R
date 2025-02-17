@@ -7,20 +7,21 @@ fit_bam <- function(data, k_spatial, safe = FALSE) {
   }
   fun(
     DOY ~ 
-      ti(x, y, bs = "cr", d = 2, k = k_spatial) +
+      ti(x, y, bs = "tp", d = 2, k = k_spatial) +
       ti(year_scaled, bs = "cr", k = 20) +
-      ti(x, y, year_scaled, d = c(2,1), bs = c("cr", "cr"), k = c(200, 20)),
+      ti(x, y, year_scaled, d = c(2,1), bs = c("tp", "cr"), k = c(200, 20)),
     data = data,
     discrete = TRUE, #speeds up computation
     samfrac = 0.1, #speeds up computation
-    method = "fREML"
+    method = "fREML",
+    nthreads = c(4, 1) # *possibly* speeds up computation
   )
 }
 
 # fit_bam_te <- function(data, k_spatial) {
 #   safe_bam <- purrr::possibly(mgcv::bam, NA)
 #   safe_bam(
-#     DOY ~ te(x, y, year_scaled, d = c(2,1), bs = "cr", k = c(k_spatial, 20)),
+#     DOY ~ te(x, y, year_scaled, d = c(2,1), bs = c("tp", "cr"), k = c(k_spatial, 20)),
 #     data = data,
 #     discrete = TRUE,
 #     samfrac = 0.1, #speeds up computation
