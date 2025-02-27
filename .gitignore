@@ -12,3 +12,4 @@ output/figs/
 output/data/
 .Renviron
 notes/gavin.qmd
+nohup.out
