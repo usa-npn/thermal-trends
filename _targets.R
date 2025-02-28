@@ -12,6 +12,8 @@ library(crew.cluster)
 library(qs2) #for format = "qs"
 library(nanoparquet) #for format = tar_format_nanoparquet()
 
+# TODO: remove SLURM stuff as we are not using UAHPC anymore
+
 # Detect whether you're on HPC & not with an Open On Demand session (which cannot submit SLURM jobs).
 slurm_host <- Sys.getenv("SLURM_SUBMIT_HOST")
 hpc <- grepl("hpc\\.arizona\\.edu", slurm_host) & !grepl("ood", slurm_host)

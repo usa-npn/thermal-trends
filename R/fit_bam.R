@@ -11,6 +11,7 @@ fit_bam <- function(data, k_spatial, safe = FALSE) {
       ti(x, y, bs = "tp", d = 2, k = k_spatial) +
       ti(year_scaled, bs = "cr", k = 40) +
       ti(x, y, year_scaled, d = c(2,1), bs = c("tp", "cr"), k = c(200, 20)),
+    # family = scat(), #TODO should have gotten AIC before and after to compare
     data = data,
     discrete = TRUE, #speeds up computation
     samfrac = 0.1, #speeds up computation
