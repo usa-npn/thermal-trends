@@ -195,7 +195,7 @@ main <- tarchetypes::tar_plan(
     ),
     tar_target(
       gam_df,
-      make_gam_df(stack, res = 25000),
+      make_gam_df(stack, res = 50000),
       format = "qs"
     ),
     ## GAMs ###
@@ -203,7 +203,7 @@ main <- tarchetypes::tar_plan(
     # create a dataframe to pass to `values` arg of `tar_map()`
     tar_target(
       gam,
-      fit_bam(gam_df, k_spatial = 1000), 
+      fit_bam(gam_df, k_spatial = 500), 
       format = "qs",
       resources = tar_resources(
         crew = tar_resources_crew(controller = ifelse(isTRUE(hpc), "hpc_heavy", "local"))
