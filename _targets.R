@@ -253,7 +253,7 @@ slopes <- tar_plan(
     ),
     tar_target(
       newdata,
-      make_slope_newdata(stack, res_m = 25000) |>
+      make_slope_newdata(stack, res_m = 50000) |>
         dplyr::group_by(group) |>
         targets::tar_group(),
       #grouped by about 1000 pixels per group
