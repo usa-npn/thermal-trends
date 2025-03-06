@@ -7,14 +7,17 @@ fit_bam <- function(data, k_spatial, safe = FALSE) {
   }
   fun(
     DOY ~ 
+      # te(x, y, year_scaled, d = c(2, 1), bs = c("tp", "cr"), k = c(k_spatial, 20)),
       ti(x, y, bs = "tp", d = 2, k = k_spatial) +
-      ti(year_scaled, bs = "cr", k = 20) +
+      ti(year_scaled, bs = "cr", k = 40) +
       ti(x, y, year_scaled, d = c(2,1), bs = c("tp", "cr"), k = c(200, 20)),
+    # family = scat(),
     data = data,
     discrete = TRUE, #speeds up computation
     samfrac = 0.1, #speeds up computation
     method = "fREML",
-    nthreads = c(4, 1) # *possibly* speeds up computation
+    nthreads = c(1, 1)
+    # nthreads = c(2, 1) # *possibly* speeds up computation
   )
 }
 
