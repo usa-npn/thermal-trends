@@ -152,7 +152,15 @@ calc_gdd_be <- function(tmin = NULL, tmax = NULL, base = 32) {
     
     #step5
     W <- (tmax - tmin) / 2
-    A <- asin((base - tmean) / W)
+    x <- (base - tmean) / W
+    #special case for floating-point errors when `x` is (almost) equal to 1 or -1
+    if (isTRUE(all.equal(x, 1))) {
+      x <- 1
+    }
+    if (isTRUE(all.equal(x, -1))) {
+      x <- -1
+    }
+    A <- asin(x)
     gdd <- ((W * cos(A)) - ((base - tmean) * ((pi/2) - A))) / pi
     return(gdd)
   }, dots = list(tmin = tmin, tmax = tmax), MoreArgs = NULL) |> as.numeric()
