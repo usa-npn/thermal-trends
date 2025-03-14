@@ -21,6 +21,15 @@ fit_bam <- function(data, k_spatial, safe = FALSE) {
   )
 }
 
+fit_gamlss2 <- function(data) {
+  gamlss2::gamlss2(
+    DOY ~ ti(x, y, d = 2, k = 500) + ti(year_scaled, bs = "cr", k = 40) + ti(x, y, year_scaled, d = c(2,1), bs = c("tp", "cr"), k = c(200, 20)) | s(y),
+    data = data,
+    family = gamlss.dist::GG, #generalized gamma
+    trace = FALSE
+  )
+}
+
 # fit_bam_te <- function(data, k_spatial) {
 #   safe_bam <- purrr::possibly(mgcv::bam, NA)
 #   safe_bam(
