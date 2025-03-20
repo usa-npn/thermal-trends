@@ -193,6 +193,10 @@ main <- tarchetypes::tar_plan(
       doy_sd,
       stdev(stack, na.rm = TRUE)
     ),
+    tar_terra_rast(
+      linear_slopes,
+      calc_linear_slopes(stack)
+    ),
     tar_target(
       gam_df,
       make_gam_df(stack, res = 50000),
@@ -244,6 +248,7 @@ main <- tarchetypes::tar_plan(
     packages = c("ggplot2", "tidyterra", "stringr", "terra", "purrr")
   )
 )
+
 
 slopes <- tar_plan(
   tar_map(
