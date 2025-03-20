@@ -65,7 +65,7 @@ controller_hpc_heavy <-
 controller_local <-
   crew::crew_controller_local(
     name = "local",
-    workers = 4, 
+    workers = 5, 
     seconds_idle = 60,
     options_local = crew::crew_options_local(
       log_directory = "logs/"
@@ -461,7 +461,6 @@ tarchetypes::tar_plan(
       pattern = map(newdata_stack_1950_gam_1950),
       format = tar_format_nanoparquet()
     ),
-  )
   # tarchetypes::tar_quarto(report, "docs/report.qmd", quiet = FALSE)
   # gams,
   # city_slopes,

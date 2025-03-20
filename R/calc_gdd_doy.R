@@ -58,10 +58,10 @@ calc_gdd_be_doy <- function(tmin_dir, tmax_dir, roi, gdd_threshold, gdd_base = 3
   prism_sds <- terra::sds(prism_tmin_roi, prism_tmax_roi)
   
   # calculate degree days
-  gdd <- terra::app(prism_sds, function(i) {
+  gdd <- terra::lapp(prism_sds, function(x, y) {
     calc_gdd_be(
-      tmin = i[1], #first dataset in prism_sds
-      tmax = i[2], #second dataset in prism_sds
+      tmin = x, #first dataset in prism_sds
+      tmax = y, #second dataset in prism_sds
       base = gdd_base
     )
   })
@@ -152,7 +152,15 @@ calc_gdd_be <- function(tmin = NULL, tmax = NULL, base = 32) {
     
     #step5
     W <- (tmax - tmin) / 2
-    A <- asin((base - tmean) / W)
+    x <- (base - tmean) / W
+    #special case for floating-point errors when `x` is (almost) equal to 1 or -1
+    if (isTRUE(all.equal(x, 1))) {
+      x <- 1
+    }
+    if (isTRUE(all.equal(x, -1))) {
+      x <- -1
+    }
+    A <- asin(x)
     gdd <- ((W * cos(A)) - ((base - tmean) * ((pi/2) - A))) / pi
     return(gdd)
   }, dots = list(tmin = tmin, tmax = tmax), MoreArgs = NULL) |> as.numeric()
