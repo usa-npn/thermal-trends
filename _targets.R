@@ -198,10 +198,6 @@ main <- tarchetypes::tar_plan(
       calc_linear_slopes(stack)
     ),
     tar_target(
-      linear_slopes_range,
-      range(values(linear_slopes), na.rm = TRUE)
-    ),
-    tar_target(
       gam_df,
       make_gam_df(stack, res = 50000),
       format = "qs"
@@ -251,9 +247,9 @@ main <- tarchetypes::tar_plan(
     plot_count_years(!!!rlang::syms(glue::glue("doy_count_{threshold}")), roi = roi),
     packages = c("ggplot2", "tidyterra", "stringr", "terra", "purrr")
   ),
-  tar_target(
-    linear_slope_limits,
-    range(!!!rlang::syms(c(glue::glue("linear_slopes_range_{threshold}"))), na.rm = TRUE)
+  tar_file(
+    linear_slopes_plot,
+    plot_linear_slopes(!!!rlang::syms(glue::glue("linear_slopes_{threshold}")), roi = roi)
   )
 )
 
