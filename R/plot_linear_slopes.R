@@ -3,64 +3,79 @@
 # library(targets)
 # library(colorspace)
 # tar_load(starts_with("linear_slopes"))
-# tar_load(linear_slope_limits)
 # tar_load(roi)
 
 # dots <- rlang::dots_list(linear_slopes_50, linear_slopes_650, linear_slopes_1250, linear_slopes_1950, linear_slopes_2500, .named = TRUE)
 
+#' Plot pixel-wise linear slopes
+#' 
+#' Currently plots each threshold on it's own scale with the limits of the scale 
+#' encompasing 99% of the data points with more extreme values being lumped in
+#' with the limits
+#' 
 #' @param ... linear_slopes_{threshold} targets
-#' @param limits the limits used for the fill scale.  Use `NA` for the lower, 
-#'   upper, or both limits to use the range of the data.  Specify as numeric to 
-#'   override.
-#' @param use_percentile_lims ignore any input for `limits` and instead use 
-#'   limits that capture 95% of the DOY values.
-plot_linear_slopes <- function(..., roi, limits = c(NA, NA), use_percentile_lims = TRUE) {
+#' @param use_percentile_lims use limits that capture 99% of the DOY values.
+#' 
+plot_linear_slopes <- function(..., roi, use_percentile_lims = TRUE) {
   dots <- rlang::dots_list(..., .named = TRUE)
   thresholds <- stringr::str_extract(names(dots), "\\d+")
   stack <- terra::rast(dots)
   names(stack) <- thresholds
-  range <- range(terra::values(stack), na.rm = TRUE)
-  limits <- dplyr::coalesce(limits, range)
-
-  if(use_percentile_lims) {
-    #what if we want to use (global) 95%ile for limits?
-    limits <- stack |> terra::values() |> quantile(probs = c(0.025, 0.975), na.rm = TRUE)
-    # TODO:
-    # hmm, this emphasizes the negative slopes more than positive because negative
-    # slopes are more common over all thresholds.  Maybe better to do this on a 
-    # per-threshold basis and then stitch together with patchwork instead
-  }
-
-  p <- ggplot() +
-    facet_wrap(vars(lyr)) +
-    geom_spatvector(data = roi, fill = "white") +
-    geom_spatraster(data = stack) +
-    scale_fill_continuous_diverging(
-      na.value = "transparent", 
-      rev = TRUE, 
-      limits = limits,
-      oob = scales::oob_squish,
-      breaks = breaks_limits(
-        n = 5,
-        min = !is.na(limits[1]),
-        max = !is.na(limits[2]),
-        tol = 0.15
-      )
-    ) +
+  # range <- range(terra::values(stack), na.rm = TRUE)
+  # limits <- dplyr::coalesce(limits, range)
+  
+  p_list <- purrr::map2(dots, thresholds, \(raster, threshold) {
+    if(use_percentile_lims) {
+      limits <- raster |> terra::values() |> quantile(probs = c(0.005, 0.995), na.rm = TRUE)
+    }
+  
+    ggplot() +
+      # facet_wrap(vars(lyr)) +
+      geom_spatvector(data = roi, fill = "white") +
+      geom_spatraster(data = raster) +
+      scale_fill_continuous_diverging(
+        palette = "Blue-Red 3",
+        na.value = "transparent", 
+        rev = TRUE, 
+        limits = limits,
+        oob = scales::oob_squish,
+        breaks = breaks_limits(
+          n = 5,
+          min = !is.na(limits[1]),
+          max = !is.na(limits[2]),
+          tol = 0.15
+        )
+      ) +
+    # scale_fill_binned_diverging(
+    #   palette = "Blue-Red 3",
+    #   na.value = "transparent", 
+    #   rev = TRUE,
+    #   n.breaks = 7
+    # ) +
     labs(
+      title = glue::glue("{threshold} GDD"),
       fill = "Linear slope (DOY/yr)"
     ) +
     # coord_sf(crs = "ESRI:102010") +
-    theme_minimal()
-  # p
+    theme_minimal() +
+    theme(
+      legend.position = "bottom",
+      legend.title.position = "top",
+      legend.key.width = unit(0.5, "inches"),
+      legend.key.height = unit(0.2, "inches")
+    )
+    # p
+  })
+  
+  p <- patchwork::wrap_plots(p_list)
 
   ggplot2::ggsave(
     filename = "linear_slopes.png",
     plot = p,
     path = "output/linear-slopes/",
     bg = "white",
-    width = 9,
-    height = 4.5
+    width = 15,
+    height = 10
   )
 }
 
