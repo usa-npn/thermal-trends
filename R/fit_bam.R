@@ -6,18 +6,39 @@ fit_bam <- function(data, k_spatial, safe = FALSE) {
     fun <- mgcv::bam
   }
   fun(
-    DOY ~ 
+    DOY ~
       # te(x, y, year_scaled, d = c(2, 1), bs = c("tp", "cr"), k = c(k_spatial, 20)),
       ti(x, y, bs = "tp", d = 2, k = k_spatial) +
-      ti(year_scaled, bs = "cr", k = 40) +
-      ti(x, y, year_scaled, d = c(2,1), bs = c("tp", "cr"), k = c(200, 20)),
-    # family = scat(),
+        ti(year_scaled, bs = "cr", k = 40) +
+        ti(x, y, year_scaled, d = c(2, 1), bs = c("tp", "cr"), k = c(200, 20)),
+    family = Gamma(link = "log"),
     data = data,
     discrete = TRUE, #speeds up computation
     samfrac = 0.1, #speeds up computation
     method = "fREML",
     nthreads = c(1, 1)
     # nthreads = c(2, 1) # *possibly* speeds up computation
+  )
+}
+
+fit_gamlss2 <- function(data) {
+  gamlss2::gamlss2(
+    #model mean as function of space & time and sigma as function of lattitude
+    DOY ~
+      ti(x, y, d = 2, k = 500) +
+        ti(year_scaled, bs = "cr", k = 40) +
+        ti(x, y, year_scaled, d = c(2, 1), bs = c("tp", "cr"), k = c(200, 20)) |
+        s(y),
+
+    # generalized gamma but only model mean as function of space & time (i.e. is
+    # it the GG family or the scale-location modeling that helps?)
+    # DOY ~
+    #   ti(x, y, d = 2, k = 500) +
+    #     ti(year_scaled, bs = "cr", k = 40) +
+    #     ti(x, y, year_scaled, d = c(2, 1), bs = c("tp", "cr"), k = c(200, 20)),
+    data = data,
+    family = gamlss.dist::GG, #generalized gamma appears to fit slightly better than regular gamma (GA)
+    trace = FALSE
   )
 }
 
