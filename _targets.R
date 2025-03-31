@@ -26,6 +26,7 @@ controller_js2 <-
 threshold <- c(
   #ºF
   50,
+  350,
   650,
   1250,
   1950,
