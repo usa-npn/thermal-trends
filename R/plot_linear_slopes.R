@@ -20,13 +20,14 @@
 #' encompasing 99% of the data points with more extreme values being lumped in
 #' with the limits
 #'
+#' @param roi the roi target (a `SpatVector` of NE US)
 #' @param ... linear_slopes_{threshold} targets
 #' @param use_percentile_lims use limits that capture 99% of the DOY values.
 #'
-plot_linear_slopes <- function(..., roi, use_percentile_lims = TRUE) {
+plot_linear_slopes <- function(roi, ..., use_percentile_lims = TRUE) {
   dots <- rlang::dots_list(..., .named = TRUE)
   thresholds <- stringr::str_extract(names(dots), "\\d+")
-  stack <- terra::rast(dots)
+  stack <- terra::rast(dots |> purrr::map(\(x) tidyterra::select(x, "slope")))
   names(stack) <- thresholds
 
   limits <- c(NA, NA)
