@@ -26,6 +26,9 @@ plot_count_years <- function(roi, ...) {
     scale_fill_continuous_sequential(
       na.value = "transparent"
     ) +
+    #n.breaks only works in current dev version of ggplot2: https://github.com/tidyverse/ggplot2/pull/5442
+    scale_x_continuous(n.breaks = 5) +
+    scale_y_continuous(n.breaks = 5) +
     labs(fill = "N years") +
     theme_minimal() +
     theme(

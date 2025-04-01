@@ -73,16 +73,21 @@ plot_linear_slopes <- function(roi, ..., use_percentile_lims = TRUE) {
         tol = 0.15
       )
     ) +
+    #n.breaks only works in current dev version of ggplot2: https://github.com/tidyverse/ggplot2/pull/5442
+    scale_x_continuous(n.breaks = 5) +
+    scale_y_continuous(n.breaks = 5) +
     labs(
       fill = "Linear slope (DOY/yr)"
     ) +
     # coord_sf(crs = "ESRI:102010") +
     theme_minimal() +
     theme(
-      legend.position = "bottom",
-      legend.title.position = "top",
-      legend.key.width = unit(0.5, "inches"),
-      legend.key.height = unit(0.2, "inches")
+      strip.background = element_rect(fill = "white"),
+      axis.title = element_blank()
+      # legend.position = "bottom",
+      # legend.title.position = "top",
+      # legend.key.width = unit(0.5, "inches"),
+      # legend.key.height = unit(0.2, "inches")
     )
   # p
 
@@ -91,8 +96,8 @@ plot_linear_slopes <- function(roi, ..., use_percentile_lims = TRUE) {
     plot = p,
     path = "output/linear-slopes/",
     bg = "white",
-    width = 15,
-    height = 10
+    width = 9.5,
+    height = 5
   )
 }
 

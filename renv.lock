@@ -819,28 +819,29 @@
     },
     "ggplot2": {
       "Package": "ggplot2",
-      "Version": "3.5.1",
-      "Source": "Repository",
-      "Repository": "CRAN",
+      "Version": "3.5.1.9000",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteRepo": "ggplot2",
+      "RemoteUsername": "tidyverse",
+      "RemotePkgRef": "tidyverse/ggplot2",
+      "RemoteSha": "183e7adf182faaeb37326c15b03f05c3c9b4115f",
       "Requirements": [
-        "MASS",
         "R",
         "cli",
-        "glue",
         "grDevices",
         "grid",
         "gtable",
         "isoband",
         "lifecycle",
-        "mgcv",
         "rlang",
         "scales",
         "stats",
-        "tibble",
         "vctrs",
         "withr"
       ],
-      "Hash": "44c6a2f8202d5b7e878ea274b1092426"
+      "Hash": "eec9343edf7b688b0cbde8b8b3c489d8"
     },
     "glue": {
       "Package": "glue",
