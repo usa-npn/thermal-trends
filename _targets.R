@@ -112,67 +112,40 @@ tarchetypes::tar_plan(
       terra::rast(unname(gdd_doy))
     ),
     #summary statistics across years
-    tar_target(
-      doy_range,
-      range(stack) |> values() |> range(na.rm = TRUE)
-    ),
     tar_terra_rast(
-      doy_mean,
-      #should NAs be removed?  NAs are "never reached this threshold", not "missing data"
-      mean(stack, na.rm = TRUE)
-    ),
-    tar_terra_rast(
-      doy_min,
-      min(stack, na.rm = TRUE)
-    ),
-    tar_terra_rast(
-      doy_max,
-      max(stack, na.rm = TRUE)
-    ),
-    tar_terra_rast(
-      doy_count,
-      count_gdd_reached(stack = stack, roi = roi),
-      description = "how many years reached this threshold"
-    ),
-    tar_terra_rast(
-      doy_sd,
-      stdev(stack, na.rm = TRUE)
-    ),
-    tar_terra_rast(
-      linear_slopes,
-      calc_linear_slopes(stack)
+      doy_summary,
+      calc_doy_summary(stack)
     )
   ), #end tar_map()
   tar_file(
     summary_plot,
     plot_summary_grid(
       roi = roi,
-      !!!rlang::syms(c(
-        glue::glue("doy_min_{threshold}"),
-        glue::glue("doy_mean_{threshold}"),
-        glue::glue("doy_max_{threshold}")
-      ))
+      !!!rlang::syms(glue::glue("doy_summary_{threshold}"))
     ),
     packages = c("ggplot2", "tidyterra", "stringr", "terra", "purrr")
   ),
   tar_file(
     sd_plot,
-    plot_sd_doy(!!!rlang::syms(glue::glue("doy_sd_{threshold}")), roi = roi),
+    plot_sd_doy(
+      roi = roi,
+      !!!rlang::syms(glue::glue("doy_summary_{threshold}"))
+    ),
     packages = c("ggplot2", "tidyterra", "stringr", "terra", "purrr")
   ),
   tar_file(
     count_plot,
     plot_count_years(
-      !!!rlang::syms(glue::glue("doy_count_{threshold}")),
-      roi = roi
+      roi = roi,
+      !!!rlang::syms(glue::glue("doy_summary_{threshold}"))
     ),
     packages = c("ggplot2", "tidyterra", "stringr", "terra", "purrr")
   ),
   tar_file(
     linear_slopes_plot,
     plot_linear_slopes(
-      !!!rlang::syms(glue::glue("linear_slopes_{threshold}")),
-      roi = roi
+      roi = roi,
+      !!!rlang::syms(glue::glue("doy_summary_{threshold}"))
     )
   ),
   tarchetypes::tar_quarto(readme, "README.Qmd")
