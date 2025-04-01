@@ -27,7 +27,12 @@
 plot_linear_slopes <- function(roi, ..., use_percentile_lims = TRUE) {
   dots <- rlang::dots_list(..., .named = TRUE)
   thresholds <- stringr::str_extract(names(dots), "\\d+")
-  stack <- terra::rast(dots |> purrr::map(\(x) tidyterra::select(x, "slope")))
+  stack <-
+    dots |>
+    purrr::map(\(x) {
+      mask(x[["slope"]], x[["count"]] >= 10, maskvalue = FALSE) #at least 10 non-NA years for reliable slopes
+    }) |>
+    terra::rast()
   names(stack) <- thresholds
 
   limits <- c(NA, NA)

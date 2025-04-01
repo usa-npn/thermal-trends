@@ -10,24 +10,22 @@
 #'
 plot_count_years <- function(roi, ...) {
   dots <- rlang::dots_list(..., .named = TRUE)
-  df <-
-    purrr::imap(dots, function(raster, name) {
-      raster |>
-        tidyterra::select(count) |>
-        tidyterra::as_tibble(raster, xy = TRUE, na.rm = TRUE) |>
-        #get threshold from target name
-        dplyr::mutate(GDD = as.numeric(stringr::str_extract(name, "\\d+")))
+  thresholds <- stringr::str_extract(names(dots), "\\d+")
+  stack <-
+    purrr::map(dots, function(raster) {
+      raster[["count"]]
     }) |>
-    purrr::list_rbind() |>
-    rename(count = lyr.1) |>
-    mutate(prop = count / max(count))
+    terra::rast()
+  names(stack) <- thresholds
 
-  p <- ggplot(df) +
-    facet_wrap(vars(GDD), labeller = label_both) +
+  p <- ggplot() +
+    facet_wrap(vars(lyr)) +
     tidyterra::geom_spatvector(data = roi) +
-    geom_raster(aes(x = x, y = y, fill = count)) +
+    tidyterra::geom_spatraster(data = stack) +
     # scale_fill_binned_sequential() +
-    scale_fill_continuous_sequential() +
+    scale_fill_continuous_sequential(
+      na.value = "transparent"
+    ) +
     labs(fill = "N years") +
     theme_minimal() +
     theme(
