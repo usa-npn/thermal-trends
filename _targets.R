@@ -146,6 +146,27 @@ tarchetypes::tar_plan(
     plot_linear_slopes(
       roi = roi,
       !!!rlang::syms(glue::glue("doy_summary_{threshold}"))
+    ),
+    packages = c(
+      "ggplot2",
+      "colorspace",
+      "tidyterra",
+      "terra",
+      "purrr"
+    )
+  ),
+  tar_file(
+    slope_differences_plot,
+    plot_slope_differences(
+      roi = roi,
+      !!!rlang::syms(glue::glue("doy_summary_{threshold}"))
+    ),
+    packages = c(
+      "ggplot2",
+      "colorspace",
+      "tidyterra",
+      "terra",
+      "purrr"
     )
   ),
   tarchetypes::tar_quarto(readme, "README.Qmd")
