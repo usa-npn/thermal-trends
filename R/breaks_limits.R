@@ -32,7 +32,14 @@ breaks_limits <- function(
     ) {
       breaks <- breaks[-(length(breaks) - 1)]
     }
-    labels <- as.character(round(breaks, digits = digits))
+    #assume options(scipen = 0)
+    if (any(breaks <= 0.0001) | any(breaks >= 100000)) {
+      #format the whole thing with scientific notation
+      labels <- scales::scientific(breaks, digits = digits)
+    } else {
+      labels <- as.character(round(breaks, digits = digits))
+    }
+
     if (isTRUE(min)) {
       labels[1] <- paste0("≤ ", labels[1])
     }
