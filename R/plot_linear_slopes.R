@@ -6,11 +6,11 @@
 # tar_load(roi)
 
 # dots <- rlang::dots_list(
-#   linear_slopes_50,
-#   linear_slopes_650,
-#   linear_slopes_1250,
-#   linear_slopes_1950,
-#   linear_slopes_2500,
+#   doy_summary_50,
+#   doy_summary_650,
+#   doy_summary_1250,
+#   doy_summary_1950,
+#   doy_summary_2500,
 #   .named = TRUE
 # )
 
@@ -21,7 +21,7 @@
 #' with the limits
 #'
 #' @param roi the roi target (a `SpatVector` of NE US)
-#' @param ... linear_slopes_{threshold} targets
+#' @param ... doy_summary_{threshold} targets
 #' @param use_percentile_lims use limits that capture 99% of the DOY values.
 #'
 plot_linear_slopes <- function(roi, ..., use_percentile_lims = TRUE) {
@@ -42,24 +42,12 @@ plot_linear_slopes <- function(roi, ..., use_percentile_lims = TRUE) {
       quantile(probs = c(0.005, 0.995), na.rm = TRUE)
   }
 
+  roi <- terra::project(roi, stack)
   p <-
     ggplot() +
-    facet_wrap(vars(lyr)) +
     geom_spatvector(data = roi, fill = "white") +
     geom_spatraster(data = stack) +
-    # cols4all::scale_fill_continuous_c4a_div(
-    #   palette = "bu_br_div",
-    #   na.value = "transparent",
-    #   reverse = TRUE,
-    #   limits = limits,
-    #   oob = scales::oob_squish,
-    #   breaks = breaks_limits(
-    #     n = 5,
-    #     min = !is.na(limits[1]),
-    #     max = !is.na(limits[2]),
-    #     tol = 0.15
-    #   )
-    # ) +
+    facet_wrap(vars(lyr)) +
     colorspace::scale_fill_continuous_diverging(
       palette = "Purple-Brown",
       rev = TRUE,
@@ -84,10 +72,6 @@ plot_linear_slopes <- function(roi, ..., use_percentile_lims = TRUE) {
     theme(
       strip.background = element_rect(fill = "white"),
       axis.title = element_blank()
-      # legend.position = "bottom",
-      # legend.title.position = "top",
-      # legend.key.width = unit(0.5, "inches"),
-      # legend.key.height = unit(0.2, "inches")
     )
   # p
 

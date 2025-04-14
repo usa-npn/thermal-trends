@@ -4,10 +4,12 @@ breaks_limits <- function(
   min = TRUE,
   max = TRUE,
   digits = 1,
+  scientific = FALSE,
   ...
 ) {
   n_default <- n
-  scales:::force_all(n, tol, min, max, ...)
+  #I don't know what exactly this does, just copying internals of other `scales` functions
+  scales:::force_all(n, tol, min, max, digits, scientific, ...)
   function(x, n = n_default) {
     breaks <- pretty(x, n, ...)
 
@@ -33,7 +35,7 @@ breaks_limits <- function(
       breaks <- breaks[-(length(breaks) - 1)]
     }
     #assume options(scipen = 0)
-    if (any(breaks <= 0.0001) | any(breaks >= 100000)) {
+    if (isTRUE(scientific)) {
       #format the whole thing with scientific notation
       labels <- scales::scientific(breaks, digits = digits)
     } else {
