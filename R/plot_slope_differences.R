@@ -87,10 +87,6 @@ plot_slope_differences <- function(roi, ..., use_percentile_lims = TRUE) {
     #n.breaks only works in current dev version of ggplot2: https://github.com/tidyverse/ggplot2/pull/5442
     scale_x_continuous(n.breaks = 5) +
     scale_y_continuous(n.breaks = 5) +
-    labs(
-      fill = "Linear slope (DOY/yr)"
-    ) +
-    # coord_sf(crs = "ESRI:102010") +
     theme_minimal() +
     theme(
       strip.background = element_rect(fill = "white"),
