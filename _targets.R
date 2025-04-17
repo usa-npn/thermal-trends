@@ -152,7 +152,8 @@ tarchetypes::tar_plan(
       "colorspace",
       "tidyterra",
       "terra",
-      "purrr"
+      "purrr",
+      "ggtext"
     )
   ),
   tar_file(
@@ -166,7 +167,8 @@ tarchetypes::tar_plan(
       "colorspace",
       "tidyterra",
       "terra",
-      "purrr"
+      "purrr",
+      "ggtext"
     )
   ),
   tarchetypes::tar_quarto(readme, "README.Qmd")

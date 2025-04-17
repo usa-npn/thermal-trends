@@ -51,8 +51,20 @@ plot_slope_differences <- function(roi, ..., use_percentile_lims = TRUE) {
       "-",
       names(slopes_list)
     )) |>
-    compact() |>
-    rast()
+    compact()
+
+  #also add the max - min GDD
+  d_full_range <- list(
+    (slopes_list[[length(slopes_list)]] - slopes_list[[1]]) /
+      (max(thresholds) - min(thresholds))
+  )
+  names(d_full_range) <- paste(max(thresholds), "-", min(thresholds))
+
+  #add the last one and convert to raster
+  d_slopes <- append(d_slopes, d_full_range)
+
+  d_slopes <- rast(d_slopes)
+
   limits <- c(NA, NA)
   if (use_percentile_lims) {
     limits <- d_slopes |>
@@ -82,7 +94,7 @@ plot_slope_differences <- function(roi, ..., use_percentile_lims = TRUE) {
       )
     ) +
     labs(
-      fill = "DOY/yr/ºF"
+      fill = "DOY yr<sup>-1</sup> ºF<sup>-1<sup>"
     ) +
     #n.breaks only works in current dev version of ggplot2: https://github.com/tidyverse/ggplot2/pull/5442
     scale_x_continuous(n.breaks = 5) +
@@ -90,7 +102,8 @@ plot_slope_differences <- function(roi, ..., use_percentile_lims = TRUE) {
     theme_minimal() +
     theme(
       strip.background = element_rect(fill = "white"),
-      axis.title = element_blank()
+      axis.title = element_blank(),
+      legend.title = element_markdown()
     )
 
   ggplot2::ggsave(
