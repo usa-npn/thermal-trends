@@ -65,13 +65,14 @@ plot_linear_slopes <- function(roi, ..., use_percentile_lims = TRUE) {
     scale_x_continuous(n.breaks = 5) +
     scale_y_continuous(n.breaks = 5) +
     labs(
-      fill = "Linear slope (DOY/yr)"
+      fill = "Linear slope (DOY yr<sup>-1</sup>)"
     ) +
     # coord_sf(crs = "ESRI:102010") +
     theme_minimal() +
     theme(
       strip.background = element_rect(fill = "white"),
-      axis.title = element_blank()
+      axis.title = element_blank(),
+      legend.title = element_markdown()
     )
   # p
 
