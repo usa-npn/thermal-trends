@@ -13,3 +13,4 @@ output/data/
 .Renviron
 notes/gavin.qmd
 nohup.out
+.vscode/settings.json
