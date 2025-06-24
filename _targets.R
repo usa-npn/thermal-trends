@@ -115,8 +115,17 @@ tarchetypes::tar_plan(
     tar_terra_rast(
       doy_summary,
       calc_doy_summary(stack)
+    ),
+    #summarize across space
+    tar_target(
+      summary_summary,
+      summarize_summary(doy_summary)
     )
   ), #end tar_map()
+  tar_target(summary_summary,
+    dplyr::bind_rows(!!!rlang::syms(glue::glue("summary_summary_{threshold}")))
+  ),
+
   tar_file(
     summary_plot,
     plot_summary_grid(
