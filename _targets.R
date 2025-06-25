@@ -107,6 +107,7 @@ tarchetypes::tar_plan(
       description = "calc DOY to reach threshold GDD"
     ),
     # Combine list of SpatRasters into multi-layer SpatRaster
+    # TODO: use tar_terra_vrt() here to save disk space?
     tar_terra_rast(
       stack,
       terra::rast(unname(gdd_doy))
@@ -122,7 +123,8 @@ tarchetypes::tar_plan(
       summarize_summary(doy_summary)
     )
   ), #end tar_map()
-  tar_target(summary_summary,
+  tar_target(
+    summary_summary,
     dplyr::bind_rows(!!!rlang::syms(glue::glue("summary_summary_{threshold}")))
   ),
 
