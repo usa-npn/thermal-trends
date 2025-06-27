@@ -14,7 +14,7 @@ summarize_summary <- function(doy_summary) {
       doy_sd_mean = mean(sd),
       doy_sd_max = max(sd),
       slope_min = min(slope),
-      slop_mean = mean(slope),
+      slope_mean = mean(slope),
       slope_max = max(slope)
     ) |>
     mutate(threshold = threshold, .before = doy_min)
