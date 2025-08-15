@@ -25,9 +25,6 @@ plot_sd_doy <- function(roi, ...) {
       # title = glue::glue("Standard deviation in DOY that {threshold} GDD is reached"),
       fill = "sd (±DOY)"
     ) +
-    #n.breaks only works in current dev version of ggplot2: https://github.com/tidyverse/ggplot2/pull/5442
-    # scale_x_continuous(n.breaks = 5) +
-    # scale_y_continuous(n.breaks = 5) +
     # coord_sf(crs = "ESRI:102010") +
     ggplot2::theme_minimal() +
     theme(
