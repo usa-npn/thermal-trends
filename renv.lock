@@ -2175,7 +2175,7 @@
     },
     "tidyterra": {
       "Package": "tidyterra",
-      "Version": "0.6.1",
+      "Version": "0.7.2",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -2192,7 +2192,7 @@
         "tibble",
         "tidyr"
       ],
-      "Hash": "5d9672bc78297d33c4ad8b51a8aaa48f"
+      "Hash": "8b0307ad43ece84a7ee4d088e4bcd333"
     },
     "timechange": {
       "Package": "timechange",
