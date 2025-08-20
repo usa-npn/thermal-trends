@@ -98,8 +98,14 @@ plot_slope_differences <- function(
 
   limits <- c(NA, NA)
   if (use_percentile_lims) {
-    limits <- d_slopes |>
-      terra::values() |>
+    vals <- d_slopes |>
+      terra::values()
+
+    #original limits
+    o_lims <- round(range(vals, na.rm = TRUE), 4)
+    cli::cli_alert_info("original limits: {o_lims[1]}, {o_lims[2]}")
+
+    limits <- vals |>
       quantile(probs = c(0.005, 0.995), na.rm = TRUE)
   }
 
