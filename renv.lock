@@ -193,6 +193,17 @@
       ],
       "Hash": "f38a72a419b91faac0ce5d9eee04c120"
     },
+    "S7": {
+      "Package": "S7",
+      "Version": "0.2.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "utils"
+      ],
+      "Hash": "5deb66b3ae702137e1f4162c11861e76"
+    },
     "SparseM": {
       "Package": "SparseM",
       "Version": "1.84-2",
@@ -825,28 +836,30 @@
     },
     "ggplot2": {
       "Package": "ggplot2",
-      "Version": "3.5.2",
-      "Source": "Repository",
-      "Repository": "CRAN",
+      "Version": "3.5.2.9002",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteRepo": "ggplot2",
+      "RemoteUsername": "tidyverse",
+      "RemotePkgRef": "tidyverse/ggplot2",
+      "RemoteSha": "bed8e32d45c7dc98afb783b409edac98854d41a7",
       "Requirements": [
-        "MASS",
         "R",
+        "S7",
         "cli",
-        "glue",
         "grDevices",
         "grid",
         "gtable",
         "isoband",
         "lifecycle",
-        "mgcv",
         "rlang",
         "scales",
         "stats",
-        "tibble",
         "vctrs",
         "withr"
       ],
-      "Hash": "7ad64861e028a777d7d67ff83231b548"
+      "Hash": "04873cf8d327f7f2912bd7b4419b9aaf"
     },
     "glue": {
       "Package": "glue",
@@ -1394,17 +1407,6 @@
       ],
       "Hash": "4f50122dc256b1b6996a4703fecea821"
     },
-    "munsell": {
-      "Package": "munsell",
-      "Version": "0.5.1",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Requirements": [
-        "colorspace",
-        "methods"
-      ],
-      "Hash": "4fd8900853b746af55b81fda99da7695"
-    },
     "mvnfast": {
       "Package": "mvnfast",
       "Version": "0.2.8",
@@ -1501,7 +1503,7 @@
     },
     "patchwork": {
       "Package": "patchwork",
-      "Version": "1.3.0",
+      "Version": "1.3.1",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -1516,7 +1518,7 @@
         "stats",
         "utils"
       ],
-      "Hash": "e23fb9ecb1258207bcb763d78d513439"
+      "Hash": "4f3392eb5828d32cdd82bd875b42e424"
     },
     "pbkrtest": {
       "Package": "pbkrtest",
@@ -1864,7 +1866,7 @@
     },
     "scales": {
       "Package": "scales",
-      "Version": "1.3.0",
+      "Version": "1.4.0",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -1876,11 +1878,10 @@
         "glue",
         "labeling",
         "lifecycle",
-        "munsell",
         "rlang",
         "viridisLite"
       ],
-      "Hash": "c19df082ba346b0ffa6f833e92de34d1"
+      "Hash": "c5bba8f0d1df8c4b9538a40570798d9b"
     },
     "secretbase": {
       "Package": "secretbase",

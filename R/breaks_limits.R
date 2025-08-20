@@ -11,7 +11,10 @@ breaks_limits <- function(
   #I don't know what exactly this does, just copying internals of other `scales` functions
   scales:::force_all(n, tol, min, max, digits, scientific, ...)
   function(x, n = n_default) {
-    breaks <- pretty(x, n, ...)
+    # browser()
+    rng <- range(x)
+    breaks <- labeling::extended(rng[1], rng[2], n, ...)
+    # breaks <- pretty(x, n, ...)
 
     #force limits to be included and remove breaks outside of limits
     if (isTRUE(min)) {

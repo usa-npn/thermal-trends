@@ -182,5 +182,21 @@ tarchetypes::tar_plan(
       "ggtext"
     )
   ),
+  tar_file(
+    slope_differences_plot2,
+    plot_slope_differences2(
+      roi = roi,
+      !!!rlang::syms(glue::glue("doy_summary_{threshold}"))
+    ),
+    packages = c(
+      "ggplot2",
+      "patchwork",
+      "colorspace",
+      "tidyterra",
+      "terra",
+      "purrr",
+      "ggtext"
+    )
+  ),
   tarchetypes::tar_quarto(readme, "README.Qmd")
 )
