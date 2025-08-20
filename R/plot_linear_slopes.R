@@ -56,7 +56,7 @@ plot_linear_slopes <- function(roi, ..., use_percentile_lims = TRUE) {
       limits = limits,
       oob = scales::oob_squish,
       breaks = breaks_limits(
-        n = 5,
+        n = 6,
         min = !is.na(limits[1]),
         max = !is.na(limits[2]),
         tol = 0.15
@@ -66,7 +66,7 @@ plot_linear_slopes <- function(roi, ..., use_percentile_lims = TRUE) {
     scale_x_continuous(n.breaks = 5) +
     scale_y_continuous(n.breaks = 5) +
     labs(
-      fill = "Linear slope (DOY yr<sup>-1</sup>)"
+      fill = "days/year"
     ) +
     # coord_sf(crs = "ESRI:102010") +
     theme_minimal() +
