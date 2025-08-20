@@ -1,23 +1,14 @@
-# library(targets)
-# library(ggtext)
-# # tar_load_globals()
-# tar_load(starts_with("doy_summary_"))
-# tar_load(roi)
-# dots <- rlang::dots_list(
-#   doy_summary_1250,
-#   doy_summary_1950,
-#   doy_summary_2500,
-#   doy_summary_350,
-#   doy_summary_50,
-#   doy_summary_650,
-#   .named = TRUE
-# )
-# use_percentile_lims = TRUE
-
+#' An alternative to `plot_slope_differences()` that puts each panel on it's own
+#' color scale
+#'
+#' @param roi the `roi` target, a shapefile defining the region
+#' @param ... the `doy_summary_*` targets, each rasters containing at least a
+#'   "slope" and "count" layer
+#' @param use_percentile_lims logical; if `TRUE` (default) set the color scale
+#'   limits to the 0.5%ile and 99.5%ile of the data.
 plot_slope_differences2 <- function(
   roi,
   ...,
-  # correct_diff = TRUE,
   use_percentile_lims = TRUE
 ) {
   dots <- rlang::dots_list(..., .named = TRUE)
@@ -41,7 +32,7 @@ plot_slope_differences2 <- function(
       thr_1 <- x_1 |> varnames() |> stringr::str_extract("\\d+") |> as.numeric()
       thr_2 <- x_2 |> varnames() |> stringr::str_extract("\\d+") |> as.numeric()
 
-      x_2 - x_1
+      (x_2 - x_1) * 10 #convert to days per decade
     } else {
       NULL
     }
@@ -55,8 +46,7 @@ plot_slope_differences2 <- function(
 
   # also add the max - min GDD
   d_full_range <- list(
-    (slopes_list[[length(slopes_list)]] - slopes_list[[1]]) /
-      (max(thresholds) - min(thresholds))
+    (slopes_list[[length(slopes_list)]] - slopes_list[[1]]) * 10 #convert to days per decade
   )
   names(d_full_range) <- paste(max(thresholds), "–", min(thresholds))
 
@@ -75,7 +65,7 @@ plot_slope_differences2 <- function(
     }
 
     ggplot() +
-      tidyterra::geom_spatvector(data = roi) +
+      tidyterra::geom_spatvector(data = roi, fill = "white") +
       tidyterra::geom_spatraster(data = d_slope) +
       # facet_wrap(vars(lyr)) +
       colorspace::scale_fill_continuous_diverging(
@@ -85,11 +75,11 @@ plot_slope_differences2 <- function(
         limits = limits,
         oob = scales::oob_squish,
         breaks = breaks_limits(
-          n = 4,
+          n = 6,
           min = !is.na(limits[1]),
           max = !is.na(limits[2]),
-          tol = 0.1,
-          digits = 5,
+          tol = 0.13,
+          digits = 1,
           scientific = any(abs(limits) < 0.1)
         )
       ) +
@@ -104,8 +94,8 @@ plot_slope_differences2 <- function(
         title = element_markdown(),
         axis.title = element_blank(),
         legend.title = element_markdown(),
-        legend.key.width = unit(1, "lines"),
-        legend.key.height = unit(1, "lines")
+        legend.key.width = unit(0.7, "lines"),
+        legend.key.height = unit(1.1, "lines")
         # legend.position = "bottom",
         # legend.key.width = unit(0.1, "npc"),
         # legend.key.height = unit(0.015, "npc")
@@ -115,7 +105,7 @@ plot_slope_differences2 <- function(
   # collecting axes doesn't work with coord_sf() I think.
   # https://github.com/thomasp85/patchwork/issues/366
   # p <- patchwork::wrap_plots(p_list, axes = "collect")
-  # goign to have to do it "manually"
+  # going to have to do it "manually"
 
   #fmt: skip
   p <-
@@ -126,7 +116,7 @@ plot_slope_differences2 <- function(
     (p_list[[5]] + theme(axis.text.y = element_blank())) +
     (p_list[[6]] + theme(axis.text.y = element_blank()))
 
-  # p
+  p
 
   ggplot2::ggsave(
     filename = "slopes-differences2.png",

@@ -27,18 +27,18 @@
 #' on the same scale.
 #'
 #' @param roi the `roi` target (shapefile of NE America)
-#' @param ... summay rasters for different thresholds each with at least a
-#'   "slope" and "count" layer
-#' @param correct_diff divide by difference between thresholds?  If `TRUE` (default), units
-#'   will be days per year per ºF.  If `FALSE`, results will be in units of
-#'   days per year.
+#' @param ... the `doy_summary_*` targets; summay rasters for different
+#'   thresholds each with at least a "slope" and "count" layer
+#' @param correct_diff divide by difference between thresholds?  If `TRUE`, units
+#'   will be days per year per ºF.  If `FALSE` (default), results will be in units of
+#'   days per decade.
 #' @param use_percentile_lims use the 0.005 and 0.995 quantiles of the data for
 #'   the scale limits and squish values outside of those bounds to have the same
 #'   colors as the limits.  Defaults to `TRUE`.
 plot_slope_differences <- function(
   roi,
   ...,
-  correct_diff = TRUE,
+  correct_diff = FALSE,
   use_percentile_lims = TRUE
 ) {
   dots <- rlang::dots_list(..., .named = TRUE)
@@ -63,9 +63,9 @@ plot_slope_differences <- function(
       thr_2 <- x_2 |> varnames() |> stringr::str_extract("\\d+") |> as.numeric()
 
       if (correct_diff) {
-        x_2 - x_1 / thr_2 - thr_1
+        (x_2 - x_1) / (thr_2 - thr_1)
       } else {
-        x_2 - x_1
+        (x_2 - x_1) * 10 #convert to days/decade
       }
     } else {
       NULL
@@ -79,10 +79,16 @@ plot_slope_differences <- function(
     compact()
 
   # also add the max - min GDD
-  d_full_range <- list(
-    (slopes_list[[length(slopes_list)]] - slopes_list[[1]]) /
-      (max(thresholds) - min(thresholds))
-  )
+  if (correct_diff) {
+    d_full_range <- list(
+      (slopes_list[[length(slopes_list)]] - slopes_list[[1]]) /
+        (max(thresholds) - min(thresholds))
+    )
+  } else {
+    d_full_range <- list(
+      (slopes_list[[length(slopes_list)]] - slopes_list[[1]]) * 10 #days/decade
+    )
+  }
   names(d_full_range) <- paste(max(thresholds), "-", min(thresholds))
 
   # add the last one and convert to raster
@@ -99,12 +105,12 @@ plot_slope_differences <- function(
 
   roi <- terra::project(roi, d_slopes)
   color_lab <- if (correct_diff) {
-    "DOY yr<sup>-1</sup> ºF<sup>-1<sup>"
+    "d yr<sup>-1</sup> ºF<sup>-1<sup>"
   } else {
-    "DOY yr<sup>-1</sup>"
+    "days/decade"
   }
   p <- ggplot() +
-    tidyterra::geom_spatvector(data = roi) +
+    tidyterra::geom_spatvector(data = roi, fill = "white") +
     tidyterra::geom_spatraster(data = d_slopes) +
     facet_wrap(vars(lyr)) +
     colorspace::scale_fill_continuous_diverging(
@@ -118,8 +124,8 @@ plot_slope_differences <- function(
         min = !is.na(limits[1]),
         max = !is.na(limits[2]),
         tol = 0.1,
-        digits = 3,
-        scientific = TRUE
+        digits = 1,
+        scientific = any(abs(limits) < 0.1)
       )
     ) +
     labs(fill = color_lab) +
@@ -132,6 +138,8 @@ plot_slope_differences <- function(
       axis.title = element_blank(),
       legend.title = element_markdown()
     )
+
+  # p
 
   ggplot2::ggsave(
     filename = "slopes-differences.png",
