@@ -23,7 +23,7 @@ plot_sd_doy <- function(roi, ...) {
     scale_y_continuous(n.breaks = 5) +
     ggplot2::labs(
       # title = glue::glue("Standard deviation in DOY that {threshold} GDD is reached"),
-      fill = "sd (±DOY)"
+      fill = "sd (±days)"
     ) +
     # coord_sf(crs = "ESRI:102010") +
     ggplot2::theme_minimal() +
