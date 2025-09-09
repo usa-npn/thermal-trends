@@ -1,6 +1,5 @@
 # Created by use_targets().
-# Follow the comments below to fill in this target script.
-# Then follow the manual to check and run the pipeline:
+# Follow the manual to check and run the pipeline:
 #   https://books.ropensci.org/targets/walkthrough.html#inspect-the-pipeline
 
 # Load packages required to define the pipeline:
@@ -8,7 +7,7 @@ library(targets)
 library(tarchetypes)
 library(geotargets)
 library(crew)
-library(qs2) #for format = "qs"
+library(qs2) # for format = "qs"
 
 # currently this is running on a Jetstream 2 instance with 8 cores and 30GB of
 # RAM with 5 parallel workers—you may need to adjust the number of workers to
@@ -24,7 +23,7 @@ controller_js2 <-
   )
 
 threshold <- c(
-  #ºF
+  # in ºF
   50,
   350,
   650,
@@ -35,7 +34,8 @@ threshold <- c(
 
 # Set target options:
 tar_option_set(
-  trust_timestamps = TRUE, #just check last modified date when deciding whether to re-run
+  # Only check last modified date when deciding whether to re-run
+  trust_timestamps = TRUE,
   # Packages that your targets need for their tasks.
   packages = c(
     "fs",
@@ -56,11 +56,12 @@ tar_option_set(
     "forcats"
   ),
   controller = controller_js2,
-  #assume workers have access to the _targets/ data store
+  # assume workers have access to the _targets/ data store
   storage = "worker",
   retrieval = "worker",
   memory = "auto",
-  #allows use of `tar_workspace()` to load dependencies of an errored target for interactive debugging.
+  # allows use of `tar_workspace()` to load dependencies of an errored target
+  # for interactive debugging.
   workspace_on_error = TRUE
 )
 
@@ -112,17 +113,17 @@ tarchetypes::tar_plan(
       stack,
       terra::rast(unname(gdd_doy))
     ),
-    #summary statistics across years
+    # summary statistics across years
     tar_terra_rast(
       doy_summary,
       calc_doy_summary(stack)
     ),
-    #summarize across space
+    # summarize across space
     tar_target(
       summary_summary,
       summarize_summary(doy_summary)
     )
-  ), #end tar_map()
+  ), # end tar_map()
   tar_target(
     summary_summary,
     dplyr::bind_rows(!!!rlang::syms(glue::glue("summary_summary_{threshold}")))

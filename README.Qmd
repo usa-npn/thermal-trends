@@ -17,15 +17,13 @@ knitr::opts_chunk$set(
 
 <!-- badges: start -->
 
-[![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip) 
+[![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 
 <!-- badges: end -->
 
 The goal of this project is to estimate spatial and temporal trends in phenology in the Northeastern US using [PRISM](https://prism.oregonstate.edu/) temperature data.
 This analytical pipeline downloads daily data, calculates growing degree days (GDD) for each day, and then finds the day of year (DOY) that certain threshold GDD are reached for this region. 
-It then uses DOY as a response variable in a series of generalized additive models to estimate spatio-temporal trends.
-
-Report of work in progress: <https://usa-npn.github.io/thermal-trends/spatial-trends-report.html>
+It then uses DOY as a response variable in pixel-wise linear regressions to explore spatio-temporal trends.
 
 ## Reproducibility
 
@@ -39,11 +37,11 @@ When opening this repo as an RStudio Project for the first time, `renv` should a
 ### `targets`
 
 This project uses the [`targets` package](https://docs.ropensci.org/targets/) for workflow management.
-Run `targets::tar_make()` from the console or from the HPC run `sbatch run.sh` to run the workflow and reproduce all results.
+Run `targets::tar_make()` from the console to run the workflow and reproduce all results.
 The graph below shows the workflow:
 
 ```{r}
-#| lable: tar_mermaid
+#| label: tar_mermaid
 #| echo: false
 #| message: false
 #| warning: false

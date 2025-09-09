@@ -1,0 +1,62 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: >-
+  Code for: "Patterns and trends in Growing Degree Day
+  threshold variability across the growing season in the
+  Northeastern United States"
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Eric R.
+    family-names: Scott
+    email: scottericr@gmail.com
+    affiliation: >-
+      Communications & Cyber Technologies, The University of
+      Arizona
+    orcid: 'https://orcid.org/0000-0002-7430-7879'
+  - given-names: Renata
+    family-names: Diaz
+    affiliation: >-
+      Communications & Cyber Technologies, The University of
+      Arizona
+    orcid: 'https://orcid.org/0000-0003-0803-4734'
+  - given-names: Erin
+    family-names: Zylstra
+    orcid: 'https://orcid.org/0000-0002-2536-0403'
+    affiliation: >-
+      School of Natural Resources and the Environment, The
+      University of Arizona
+  - given-names: Theresa M.
+    family-names: Crimmins
+    orcid: 'https://orcid.org/0000-0001-9592-625X'
+    affiliation: >-
+      School of Natural Resources and the Environment, The
+      University of Arizona
+  - given-names: Kerissa
+    family-names: Fuccillo Battle
+    orcid: 'https://orcid.org/0000-0002-9152-1965'
+    affiliation: Southern New Hampshire University
+  - given-names: Kristina
+    family-names: Riemer
+    affiliation: >-
+      Communications & Cyber Technologies, The University of
+      Arizona
+    orcid: 'https://orcid.org/0000-0003-3802-3331'
+  - given-names: Nathan W.
+    family-names: Siegert
+    affiliation: >-
+      State, Private & Tribal Forestry, Eastern Region
+      Forest Health Protection, USDA Forest Service
+  - given-names: Robert T.
+    family-names: Trotter
+    affiliation: 'Northern Research Station, USDA Forest Service'
+repository-code: 'https://github.com/usa-npn/thermal-trends'
+keywords:
+  - phenology
+  - growing degree days
+license: MIT
+version: 0.2.0
