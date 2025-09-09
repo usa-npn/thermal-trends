@@ -23,9 +23,7 @@ knitr::opts_chunk$set(
 
 The goal of this project is to estimate spatial and temporal trends in phenology in the Northeastern US using [PRISM](https://prism.oregonstate.edu/) temperature data.
 This analytical pipeline downloads daily data, calculates growing degree days (GDD) for each day, and then finds the day of year (DOY) that certain threshold GDD are reached for this region. 
-It then uses DOY as a response variable in a series of generalized additive models to estimate spatio-temporal trends.
-
-Report of work in progress: <https://usa-npn.github.io/thermal-trends/spatial-trends-report.html>
+It then uses DOY as a response variable in pixel-wise linear regressions to explore spatio-temporal trends.
 
 ## Reproducibility
 

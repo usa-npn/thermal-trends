@@ -18,11 +18,8 @@ phenology in the Northeastern US using
 analytical pipeline downloads daily data, calculates growing degree days
 (GDD) for each day, and then finds the day of year (DOY) that certain
 threshold GDD are reached for this region. It then uses DOY as a
-response variable in a series of generalized additive models to estimate
+response variable in pixel-wise linear regressions to explore
 spatio-temporal trends.
-
-Report of work in progress:
-<https://usa-npn.github.io/thermal-trends/spatial-trends-report.html>
 
 ## Reproducibility
 
@@ -49,8 +46,7 @@ package](https://docs.ropensci.org/targets/) for workflow management.
 Run `targets::tar_make()` from the console to run the workflow and
 reproduce all results. The graph below shows the workflow:
 
-- The project is out-of-sync – use `renv::status()` for details. qs2
-  0.1.3
+qs2 0.1.3
 
 ``` mermaid
 graph LR
@@ -58,6 +54,7 @@ graph LR
   style Graph fill:#FFFFFF00,stroke:#000000;
   subgraph Legend
     xf1522833a4d242c5(["Up to date"]):::uptodate
+    xb6630624a7b3aa0f(["Dispatched"]):::dispatched
     x2db1ec7a48f65a9b(["Outdated"]):::outdated
     xd03d7c7dd2ddda2b(["Regular target"]):::none
     x6f7e04ea3427f824["Dynamic branches"]:::none
@@ -95,13 +92,13 @@ graph LR
     x73ccc223e5bb7e64(["roi"]):::uptodate --> x6672cfab7f0558ba["gdd_doy_650"]:::uptodate
     xcaf68fce9acaa5b6["prism_tmin"]:::uptodate --> x6672cfab7f0558ba["gdd_doy_650"]:::uptodate
     xb76c0bbea0c751b0["prism_tmax"]:::uptodate --> x6672cfab7f0558ba["gdd_doy_650"]:::uptodate
-    xe7a2595a28ea2e04(["doy_summary_1250"]):::uptodate --> x9a95e37bbec60034(["linear_slopes_plot"]):::outdated
-    xc884cdd4fb17c69f(["doy_summary_1950"]):::uptodate --> x9a95e37bbec60034(["linear_slopes_plot"]):::outdated
-    x73ccc223e5bb7e64(["roi"]):::uptodate --> x9a95e37bbec60034(["linear_slopes_plot"]):::outdated
-    xd187396e35b9df6a(["doy_summary_2500"]):::uptodate --> x9a95e37bbec60034(["linear_slopes_plot"]):::outdated
-    xe3bc9075e32f80ca(["doy_summary_350"]):::uptodate --> x9a95e37bbec60034(["linear_slopes_plot"]):::outdated
-    xdc621d8734e6de6d(["doy_summary_50"]):::uptodate --> x9a95e37bbec60034(["linear_slopes_plot"]):::outdated
-    xd36e999b706381d6(["doy_summary_650"]):::uptodate --> x9a95e37bbec60034(["linear_slopes_plot"]):::outdated
+    xe7a2595a28ea2e04(["doy_summary_1250"]):::uptodate --> x9a95e37bbec60034(["linear_slopes_plot"]):::dispatched
+    xc884cdd4fb17c69f(["doy_summary_1950"]):::uptodate --> x9a95e37bbec60034(["linear_slopes_plot"]):::dispatched
+    x73ccc223e5bb7e64(["roi"]):::uptodate --> x9a95e37bbec60034(["linear_slopes_plot"]):::dispatched
+    xd187396e35b9df6a(["doy_summary_2500"]):::uptodate --> x9a95e37bbec60034(["linear_slopes_plot"]):::dispatched
+    xe3bc9075e32f80ca(["doy_summary_350"]):::uptodate --> x9a95e37bbec60034(["linear_slopes_plot"]):::dispatched
+    xdc621d8734e6de6d(["doy_summary_50"]):::uptodate --> x9a95e37bbec60034(["linear_slopes_plot"]):::dispatched
+    xd36e999b706381d6(["doy_summary_650"]):::uptodate --> x9a95e37bbec60034(["linear_slopes_plot"]):::dispatched
     xf9ac23fbc741da6f(["years"]):::uptodate --> xb76c0bbea0c751b0["prism_tmax"]:::uptodate
     xf9ac23fbc741da6f(["years"]):::uptodate --> xcaf68fce9acaa5b6["prism_tmin"]:::uptodate
     xe3bc9075e32f80ca(["doy_summary_350"]):::uptodate --> x1a7be1bbbb0646ca(["sd_plot"]):::outdated
@@ -111,13 +108,13 @@ graph LR
     x73ccc223e5bb7e64(["roi"]):::uptodate --> x1a7be1bbbb0646ca(["sd_plot"]):::outdated
     xdc621d8734e6de6d(["doy_summary_50"]):::uptodate --> x1a7be1bbbb0646ca(["sd_plot"]):::outdated
     xd187396e35b9df6a(["doy_summary_2500"]):::uptodate --> x1a7be1bbbb0646ca(["sd_plot"]):::outdated
-    xe7a2595a28ea2e04(["doy_summary_1250"]):::uptodate --> x37fe5b550c0a1008(["slope_differences_plot"]):::outdated
-    xe3bc9075e32f80ca(["doy_summary_350"]):::uptodate --> x37fe5b550c0a1008(["slope_differences_plot"]):::outdated
-    x73ccc223e5bb7e64(["roi"]):::uptodate --> x37fe5b550c0a1008(["slope_differences_plot"]):::outdated
-    xdc621d8734e6de6d(["doy_summary_50"]):::uptodate --> x37fe5b550c0a1008(["slope_differences_plot"]):::outdated
-    xd36e999b706381d6(["doy_summary_650"]):::uptodate --> x37fe5b550c0a1008(["slope_differences_plot"]):::outdated
-    xc884cdd4fb17c69f(["doy_summary_1950"]):::uptodate --> x37fe5b550c0a1008(["slope_differences_plot"]):::outdated
-    xd187396e35b9df6a(["doy_summary_2500"]):::uptodate --> x37fe5b550c0a1008(["slope_differences_plot"]):::outdated
+    xe7a2595a28ea2e04(["doy_summary_1250"]):::uptodate --> x37fe5b550c0a1008(["slope_differences_plot"]):::dispatched
+    xe3bc9075e32f80ca(["doy_summary_350"]):::uptodate --> x37fe5b550c0a1008(["slope_differences_plot"]):::dispatched
+    x73ccc223e5bb7e64(["roi"]):::uptodate --> x37fe5b550c0a1008(["slope_differences_plot"]):::dispatched
+    xdc621d8734e6de6d(["doy_summary_50"]):::uptodate --> x37fe5b550c0a1008(["slope_differences_plot"]):::dispatched
+    xd36e999b706381d6(["doy_summary_650"]):::uptodate --> x37fe5b550c0a1008(["slope_differences_plot"]):::dispatched
+    xc884cdd4fb17c69f(["doy_summary_1950"]):::uptodate --> x37fe5b550c0a1008(["slope_differences_plot"]):::dispatched
+    xd187396e35b9df6a(["doy_summary_2500"]):::uptodate --> x37fe5b550c0a1008(["slope_differences_plot"]):::dispatched
     xc8e128aab3cd4a9e["gdd_doy_1250"]:::uptodate --> x3290bd5727894db5(["stack_1250"]):::uptodate
     x2fee061101c79ea2["gdd_doy_1950"]:::uptodate --> x8aa20a6b22429bc6(["stack_1950"]):::uptodate
     x28c62ae9542e7849["gdd_doy_2500"]:::uptodate --> x9bfde4bdb66389ab(["stack_2500"]):::uptodate
@@ -143,9 +140,10 @@ graph LR
     xe3bc9075e32f80ca(["doy_summary_350"]):::uptodate --> x482d008952893a57(["summary_summary_350"]):::uptodate
     xdc621d8734e6de6d(["doy_summary_50"]):::uptodate --> xd673ca3454c59fd6(["summary_summary_50"]):::uptodate
     xd36e999b706381d6(["doy_summary_650"]):::uptodate --> x8817687a9adb871f(["summary_summary_650"]):::uptodate
-    xc11069275cfeb620(["readme"]):::outdated
+    xc11069275cfeb620(["readme"]):::dispatched
   end
   classDef uptodate stroke:#000000,color:#ffffff,fill:#354823;
+  classDef dispatched stroke:#000000,color:#000000,fill:#DC863B;
   classDef outdated stroke:#000000,color:#000000,fill:#78B7C5;
   classDef none stroke:#000000,color:#000000,fill:#94a4ac;
 ```
