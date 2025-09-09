@@ -55,6 +55,9 @@ authors:
     family-names: Trotter
     affiliation: 'Northern Research Station, USDA Forest Service'
 repository-code: 'https://github.com/usa-npn/thermal-trends'
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.17087407
 keywords:
   - phenology
   - growing degree days
