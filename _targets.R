@@ -133,9 +133,9 @@ tarchetypes::tar_plan(
       summarize_summary(doy_summary)
     ),
     # point statistics
-    tar_terra_vect(
+    tar_target(
       poi_stats,
-      terra::extract(doy_summary, poi, bind = TRUE)
+      terra::extract(doy_summary, poi, bind = TRUE) |> as_tibble()
     )
   ), # end tar_map()
   tar_target(
