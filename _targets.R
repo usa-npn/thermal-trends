@@ -64,7 +64,10 @@ tar_option_set(
   # for interactive debugging.
   workspace_on_error = TRUE
 )
-
+geotargets::geotargets_option_set(
+  gdal_vector_driver = "GeoJSON",
+  gdal_raster_driver = "GTiff"
+)
 # `source()` the R scripts in the R/ folder with your custom functions:
 targets::tar_source()
 
@@ -91,6 +94,12 @@ tarchetypes::tar_plan(
     make_roi(),
     deployment = "main",
     description = "vector for North East"
+  ),
+  tar_terra_vect(
+    poi,
+    make_poi(),
+    deployment = "main",
+    description = "points of interest"
   ),
   tar_map(
     # for each threshold...
@@ -122,13 +131,17 @@ tarchetypes::tar_plan(
     tar_target(
       summary_summary,
       summarize_summary(doy_summary)
+    ),
+    # point statistics
+    tar_terra_vect(
+      poi_stats,
+      terra::extract(doy_summary, poi, bind = TRUE)
     )
   ), # end tar_map()
   tar_target(
     summary_summary,
     dplyr::bind_rows(!!!rlang::syms(glue::glue("summary_summary_{threshold}")))
   ),
-
   tar_file(
     summary_plot,
     plot_summary_grid(
