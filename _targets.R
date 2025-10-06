@@ -9,7 +9,7 @@ library(geotargets)
 library(crew)
 library(qs2) # for format = "qs"
 
-# currently this is running on a Jetstream 2 instance with 8 cores and 30GB of
+# currently this is running on a Jetstream 2 instance with 16 cores and 60GB of
 # RAM with 5 parallel workers—you may need to adjust the number of workers to
 # run on your system.
 controller_js2 <-
@@ -135,9 +135,17 @@ tarchetypes::tar_plan(
     # point statistics
     tar_target(
       poi_stats,
-      terra::extract(doy_summary, poi, bind = TRUE) |> as_tibble()
+      extract_summary_poi(doy_summary, poi)
     )
   ), # end tar_map()
+  tar_file(
+    poi_stats,
+    {
+      dplyr::bind_rows(!!!rlang::syms(glue::glue("poi_stats_{threshold}"))) |>
+        readr::write_csv("output/summary_stats/point_stats.csv")
+      "output/summary_stats/point_stats.csv"
+    }
+  ),
   tar_target(
     summary_summary,
     dplyr::bind_rows(!!!rlang::syms(glue::glue("summary_summary_{threshold}")))
@@ -181,6 +189,14 @@ tarchetypes::tar_plan(
       "ggtext"
     )
   ),
+  # TODO finish up this function to just get the data and pull plot code out to a separate function
+  # tar_target(
+  #   slope_differences,
+  #   make_slope_differences(
+  #     roi,
+  #     !!!rlang::syms(glue::glue("doy_summary_{threshold}"))
+  #   )
+  # ),
   tar_file(
     slope_differences_plot,
     plot_slope_differences(
