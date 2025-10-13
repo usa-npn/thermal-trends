@@ -190,18 +190,18 @@ tarchetypes::tar_plan(
     )
   ),
   # TODO finish up this function to just get the data and pull plot code out to a separate function
-  # tar_target(
-  #   slope_differences,
-  #   make_slope_differences(
-  #     roi,
-  #     !!!rlang::syms(glue::glue("doy_summary_{threshold}"))
-  #   )
-  # ),
+  tar_terra_rast(
+    slope_differences,
+    make_slope_differences(
+      !!!rlang::syms(glue::glue("doy_summary_{threshold}"))
+    )
+  ),
+  # Faceted by thresold comparison, single scale
   tar_file(
     slope_differences_plot,
     plot_slope_differences(
       roi = roi,
-      !!!rlang::syms(glue::glue("doy_summary_{threshold}"))
+      slope_differences
     ),
     packages = c(
       "ggplot2",
@@ -212,11 +212,12 @@ tarchetypes::tar_plan(
       "ggtext"
     )
   ),
+  # Separate scale for each theshold comparison
   tar_file(
     slope_differences_plot2,
     plot_slope_differences2(
       roi = roi,
-      !!!rlang::syms(glue::glue("doy_summary_{threshold}"))
+      slope_differences
     ),
     packages = c(
       "ggplot2",

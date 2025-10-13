@@ -2,59 +2,15 @@
 #' color scale
 #'
 #' @param roi the `roi` target, a shapefile defining the region
-#' @param ... the `doy_summary_*` targets, each rasters containing at least a
-#'   "slope" and "count" layer
+#' @param slope_differences the `slope_differences` target
 #' @param use_percentile_lims logical; if `TRUE` (default) set the color scale
 #'   limits to the 0.5%ile and 99.5%ile of the data.
 plot_slope_differences2 <- function(
   roi,
-  ...,
+  slope_differences,
   use_percentile_lims = TRUE
 ) {
-  dots <- rlang::dots_list(..., .named = TRUE)
-  slopes_list <- dots |>
-    purrr::map(\(x) {
-      #at least 10 non-NA years for reliable slopes
-      mask(x[["slope"]], x[["count"]] >= 10, maskvalue = FALSE)
-    })
-
-  thresholds <- names(slopes_list) |>
-    stringr::str_extract("\\d+") |>
-    as.numeric()
-  #rename using thresholds
-  names(slopes_list) <- thresholds
-
-  #Order by list by threshold.
-  slopes_list <- slopes_list[order(thresholds)]
-
-  d_slopes <- map2(slopes_list, dplyr::lead(slopes_list), \(x_1, x_2) {
-    if (!is.null(x_2)) {
-      thr_1 <- x_1 |> varnames() |> stringr::str_extract("\\d+") |> as.numeric()
-      thr_2 <- x_2 |> varnames() |> stringr::str_extract("\\d+") |> as.numeric()
-
-      (x_2 - x_1) * 10 #convert to days per decade
-    } else {
-      NULL
-    }
-  }) |>
-    set_names(paste(
-      dplyr::lead(names(slopes_list)),
-      "–",
-      names(slopes_list)
-    )) |>
-    purrr::compact()
-
-  # also add the max - min GDD
-  d_full_range <- list(
-    (slopes_list[[length(slopes_list)]] - slopes_list[[1]]) * 10 #convert to days per decade
-  )
-  names(d_full_range) <- paste(max(thresholds), "–", min(thresholds))
-
-  # add the last one
-  d_slopes <- append(d_slopes, d_full_range)
-  # d_slopes <- rast(d_slopes)
-
-  p_list <- imap(d_slopes, \(d_slope, title) {
+  p_list <- imap(slope_differences, \(d_slope, title) {
     # for each plot separately, figure out quantiles for limits
 
     limits <- c(NA, NA)
