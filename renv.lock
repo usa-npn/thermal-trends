@@ -844,14 +844,9 @@
     },
     "ggplot2": {
       "Package": "ggplot2",
-      "Version": "3.5.2.9002",
-      "Source": "GitHub",
-      "RemoteType": "github",
-      "RemoteHost": "api.github.com",
-      "RemoteRepo": "ggplot2",
-      "RemoteUsername": "tidyverse",
-      "RemotePkgRef": "tidyverse/ggplot2",
-      "RemoteSha": "bed8e32d45c7dc98afb783b409edac98854d41a7",
+      "Version": "4.0.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
       "Requirements": [
         "R",
         "S7",
@@ -867,7 +862,7 @@
         "vctrs",
         "withr"
       ],
-      "Hash": "04873cf8d327f7f2912bd7b4419b9aaf"
+      "Hash": "3b4625a157bcbd82b937fcb3acdd2d85"
     },
     "glue": {
       "Package": "glue",
