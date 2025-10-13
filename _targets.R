@@ -212,22 +212,5 @@ tarchetypes::tar_plan(
       "ggtext"
     )
   ),
-  # Separate scale for each theshold comparison
-  tar_file(
-    slope_differences_plot2,
-    plot_slope_differences2(
-      roi = roi,
-      slope_differences
-    ),
-    packages = c(
-      "ggplot2",
-      "patchwork",
-      "colorspace",
-      "tidyterra",
-      "terra",
-      "purrr",
-      "ggtext"
-    )
-  ),
   tarchetypes::tar_quarto(readme, "README.Qmd")
 )
