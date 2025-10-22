@@ -30,10 +30,13 @@ It then uses DOY as a response variable in pixel-wise linear regressions to expl
 
 This workflow requires a lot of computational power and disk space.  Currently it runs on a Jetstream2 instance with 16 cores and 60GB of ram on a 500GB disk.  Even then, the disk occasionally fills up and the temp directory needs to be manually cleared out as intermediate tiff files accumulate.  I've used a `.Renviron` file to set the `TMPDIR` variable to make sure `tmpdir()` is on a large enough attached volume rather than the root disk, which for Jetstream2 is only 50GB.
 
+This project was created with R version 4.4.2.
+
 ### `renv`
 
 This project uses [`renv`](https://rstudio.github.io/renv/articles/renv.html) for package management.
 When opening this repo as an RStudio Project for the first time, `renv` should automatically install itself and prompt you to run `renv::restore()` to install all package dependencies.
+If you have any issues with `renv::restore()`, you may want to ensure you are using the same version of R (4.4.2)—[rig](https://github.com/r-lib/rig) is an excellent tool for managing different R versions.
 
 ### `targets`
 
