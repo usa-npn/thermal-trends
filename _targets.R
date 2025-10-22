@@ -9,7 +9,7 @@ library(geotargets)
 library(crew)
 library(qs2) # for format = "qs"
 
-# currently this is running on a Jetstream 2 instance with 8 cores and 30GB of
+# currently this is running on a Jetstream 2 instance with 16 cores and 60GB of
 # RAM with 5 parallel workers—you may need to adjust the number of workers to
 # run on your system.
 controller_js2 <-
@@ -64,7 +64,10 @@ tar_option_set(
   # for interactive debugging.
   workspace_on_error = TRUE
 )
-
+geotargets::geotargets_option_set(
+  gdal_vector_driver = "GeoJSON",
+  gdal_raster_driver = "GTiff"
+)
 # `source()` the R scripts in the R/ folder with your custom functions:
 targets::tar_source()
 
@@ -91,6 +94,12 @@ tarchetypes::tar_plan(
     make_roi(),
     deployment = "main",
     description = "vector for North East"
+  ),
+  tar_terra_vect(
+    poi,
+    make_poi(),
+    deployment = "main",
+    description = "points of interest"
   ),
   tar_map(
     # for each threshold...
@@ -122,13 +131,34 @@ tarchetypes::tar_plan(
     tar_target(
       summary_summary,
       summarize_summary(doy_summary)
+    ),
+    # point statistics
+    tar_target(
+      poi_stats,
+      extract_summary_poi(doy_summary, poi)
     )
   ), # end tar_map()
+  tar_file(
+    poi_stats,
+    {
+      dplyr::bind_rows(!!!rlang::syms(glue::glue("poi_stats_{threshold}"))) |>
+        readr::write_csv("output/summary_stats/point_stats.csv")
+      "output/summary_stats/point_stats.csv"
+    }
+  ),
+  tar_target(
+    poi_pred_doy,
+    pred_poi_stats(poi, !!!rlang::syms(glue::glue("stack_{threshold}")))
+  ),
+  tar_file(
+    poi_shifts_plot,
+    plot_poi_shifts(poi_pred_doy, roi),
+    packages = c("dplyr", "ggplot2", "cowplot", "terra", "tidyterra", "ggpubr")
+  ),
   tar_target(
     summary_summary,
     dplyr::bind_rows(!!!rlang::syms(glue::glue("summary_summary_{threshold}")))
   ),
-
   tar_file(
     summary_plot,
     plot_summary_grid(
@@ -168,30 +198,22 @@ tarchetypes::tar_plan(
       "ggtext"
     )
   ),
+  # TODO finish up this function to just get the data and pull plot code out to a separate function
+  tar_terra_rast(
+    slope_differences,
+    make_slope_differences(
+      !!!rlang::syms(glue::glue("doy_summary_{threshold}"))
+    )
+  ),
+  # Faceted by thresold comparison, single scale
   tar_file(
     slope_differences_plot,
     plot_slope_differences(
       roi = roi,
-      !!!rlang::syms(glue::glue("doy_summary_{threshold}"))
+      slope_differences
     ),
     packages = c(
       "ggplot2",
-      "colorspace",
-      "tidyterra",
-      "terra",
-      "purrr",
-      "ggtext"
-    )
-  ),
-  tar_file(
-    slope_differences_plot2,
-    plot_slope_differences2(
-      roi = roi,
-      !!!rlang::syms(glue::glue("doy_summary_{threshold}"))
-    ),
-    packages = c(
-      "ggplot2",
-      "patchwork",
       "colorspace",
       "tidyterra",
       "terra",
