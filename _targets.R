@@ -147,6 +147,15 @@ tarchetypes::tar_plan(
     }
   ),
   tar_target(
+    poi_pred_doy,
+    pred_poi_stats(poi, !!!rlang::syms(glue::glue("stack_{threshold}")))
+  ),
+  tar_file(
+    poi_shifts_plot,
+    plot_poi_shifts(poi_pred_doy, roi),
+    packages = c("dplyr", "ggplot2", "cowplot", "terra", "tidyterra", "ggpubr")
+  ),
+  tar_target(
     summary_summary,
     dplyr::bind_rows(!!!rlang::syms(glue::glue("summary_summary_{threshold}")))
   ),
