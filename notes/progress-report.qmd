@@ -1,0 +1,18 @@
+---
+title: "Progress Report"
+subtitle: BIO250036
+author: Eric R. Scott
+format: typst
+---
+
+## Trends in phenology manuscript
+
+Growing degree days can be used as a reliable indicator of the timing of seasonal events.
+We have sucessfully created a computational pipeline that downloads PRISM data and use it to calculate the day of year that five growing degree days thresholds were met in each year from 1981—2023 in the northeastern United States.  Using these day of year calculations, we fit pixel-wise linear regressions in order to examine spatial trends in the timing of seasonal events over time.
+
+At this point, we have collected the data we need and produced preliminary figures and tables for a manuscript.  However, the manuscript has not yet been finalized or submitted so changes to figures and tables (and possibly analysis techniques) are expected in the upcoming year.  If we should need to make changes, we would need to re-run parts of our pipeline on this instance (`npn-trends-manuscript`).
+
+
+## GDD threshold maps
+
+In a related project, we have used Jetstream2 resources to create maps of the mean and standard deviation in the day of year 50 growing degree day thresholds have been met.  The resulting geotiffs are being used to develop a visualization tool for the USA National Phenology Network.  The visualization tool has not been finalized, so additional changes to the geotiffs being generated with the `npn-thermal-calendars` instance may be needed.
