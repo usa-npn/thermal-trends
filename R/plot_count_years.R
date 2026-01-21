@@ -20,8 +20,9 @@ plot_count_years <- function(roi, ...) {
 
   p <- ggplot() +
     facet_wrap(vars(lyr)) +
-    tidyterra::geom_spatvector(data = roi) +
+    geom_spatvector(data = roi, fill = "grey95", color = NA) +
     tidyterra::geom_spatraster(data = stack) +
+    geom_spatvector(data = roi, fill = NA, color = "grey50") +
     # scale_fill_binned_sequential() +
     scale_fill_continuous_sequential(
       na.value = "transparent"
