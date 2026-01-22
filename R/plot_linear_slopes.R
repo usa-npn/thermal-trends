@@ -46,8 +46,10 @@ plot_linear_slopes <- function(roi, ..., use_percentile_lims = TRUE) {
   roi <- terra::project(roi, stack)
   p <-
     ggplot() +
-    geom_spatvector(data = roi, fill = "white") +
+    # use white for NA becasue this palette includes grey in the middle
+    geom_spatvector(data = roi, fill = "white", color = NA) +
     geom_spatraster(data = stack) +
+    geom_spatvector(data = roi, fill = NA, color = "grey50") +
     facet_wrap(vars(lyr)) +
     colorspace::scale_fill_continuous_diverging(
       palette = "Purple-Brown",

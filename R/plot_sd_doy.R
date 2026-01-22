@@ -15,8 +15,9 @@ plot_sd_doy <- function(roi, ...) {
 
   p <- ggplot() +
     facet_wrap(vars(lyr)) +
-    tidyterra::geom_spatvector(data = roi) +
+    geom_spatvector(data = roi, fill = "grey95", color = NA) +
     tidyterra::geom_spatraster(data = stack) +
+    geom_spatvector(data = roi, fill = NA, color = "grey50") +
     ggplot2::scale_fill_viridis_c(na.value = "transparent") +
     #n.breaks only works in current dev version of ggplot2: https://github.com/tidyverse/ggplot2/pull/5442
     scale_x_continuous(n.breaks = 5) +

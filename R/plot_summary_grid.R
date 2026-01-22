@@ -24,8 +24,9 @@ plot_summary_grid <- function(roi, ...) {
 
   p <- ggplot2::ggplot(df) +
     # coord_sf(crs = terra::crs(dots[[1]])) + #assume same crs for all maps
-    tidyterra::geom_spatvector(data = roi) +
+    geom_spatvector(data = roi, fill = "grey95", color = NA) +
     geom_raster(aes(x = x, y = y, fill = values)) +
+    geom_spatvector(data = roi, fill = NA, color = "grey50") +
     facet_grid(rows = vars(GDD), cols = vars(layer)) +
     ggplot2::scale_fill_viridis_c(
       option = "A", #magma

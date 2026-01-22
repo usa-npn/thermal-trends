@@ -42,8 +42,10 @@ plot_slope_differences <- function(
   roi <- terra::project(roi, slope_differences)
 
   p <- ggplot() +
-    tidyterra::geom_spatvector(data = roi, fill = "white") +
-    tidyterra::geom_spatraster(data = slope_differences) +
+    # use white for NA because this color palette has grey in the middle
+    geom_spatvector(data = roi, fill = "white", color = NA) +
+    geom_spatraster(data = slope_differences) +
+    geom_spatvector(data = roi, fill = NA, color = "grey50") +
     facet_wrap(vars(lyr)) +
     colorspace::scale_fill_continuous_diverging(
       palette = "Purple-Green",
