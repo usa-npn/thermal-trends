@@ -89,11 +89,17 @@ tarchetypes::tar_plan(
     format = "file",
     description = "download PRISM tmax"
   ),
+  tar_target(
+    roi_sf,
+    make_roi_sf(),
+    deployment = "main",
+    description = "sf of NE states"
+  ),
   tar_terra_vect(
     roi,
     make_roi(),
     deployment = "main",
-    description = "vector for North East"
+    description = "SpatVector of NE states"
   ),
   tar_terra_vect(
     poi,
@@ -198,12 +204,23 @@ tarchetypes::tar_plan(
       "ggtext"
     )
   ),
+  tar_file(
+    by_state_summary,
+    summarize_doy_state(
+      !!!rlang::syms(glue::glue("doy_summary_{threshold}")),
+      roi_sf = roi_sf
+    )
+  ),
   # TODO finish up this function to just get the data and pull plot code out to a separate function
   tar_terra_rast(
     slope_differences,
     make_slope_differences(
       !!!rlang::syms(glue::glue("doy_summary_{threshold}"))
     )
+  ),
+  tar_file(
+    by_state_slope_diff_summary,
+    summarize_slope_diffs_state(slope_differences, roi_sf)
   ),
   # Faceted by thresold comparison, single scale
   tar_file(
