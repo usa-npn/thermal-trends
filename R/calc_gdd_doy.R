@@ -80,30 +80,32 @@ calc_gdd_be_doy <- function(tmin_dir, tmax_dir, roi, gdd_threshold, gdd_base = 3
 }
 
 
-
-read_prism <- function(rast_dir) {
+# NOTE: If using get_prism2(), change default ext to ".tif" or set it to ".tif"
+# everywhere read_prism is used.
+read_prism <- function(rast_dir, ext = c(".bil", ".tif")) {
+  ext <- match.arg(ext)
   files <- fs::dir_ls(rast_dir, glob = "*.zip")
-  
+
   #convert filenames to DOY to use for layer names
   doys <- files |>
     fs::path_file() |>
     stringr::str_extract("\\d{8}") |>
-    lubridate::ymd() |> 
+    lubridate::ymd() |>
     lubridate::yday()
-  
+
   #construct paths with /vsizip/ to read inside .zip files
-  bils <- 
-    files |> 
+  rasts <-
+    files |>
     fs::path_file() |>
-    fs::path_ext_set(".bil")
-  rast_paths <- paste0("/vsizip/", fs::path(files, bils))
-  
+    fs::path_ext_set(ext)
+  rast_paths <- paste0("/vsizip/", fs::path(files, rasts))
+
   #read in multi-layer rasters
   prism <- terra::rast(rast_paths)
   names(prism) <- doys
-  
+
   #convert to ºF
-  prism <- prism * (9/5) + 32
+  prism <- prism * (9 / 5) + 32
   terra::units(prism) <- "ºF"
   #sort layers by DOY
   prism <- terra::subset(prism, as.character(min(doys):max(doys)))

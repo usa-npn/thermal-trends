@@ -1,11 +1,16 @@
-#' Download data from PRISM
+#' Download data from PRISM (defunct API)
 #'
-#' Downloads an entire year of data from PRISM using `get_prism_dailys()`
-#' and returns the download path so it works with `format = 'file'` in `targets`
+#' Downloads an entire year of daily data from PRISM and returns the download
+#' path so it works with `format = 'file'` in `targets`.
+#' 
+#' NOTE: this works with v1 of the PRISM API which has been disabled as of Sep
+#' 30, 2025.  Use [get_prism2()] for the newer API.
+#' https://prism.oregonstate.edu/documents/PRISM_downloads_web_service.pdf
 #'
 #' @param year year of data to be downloaded
 #' @param variable variable to get
-#' @param prism_dir base directory for PRISM data.  Subfolders will be created for the variable and year
+#' @param prism_dir base directory for PRISM data.  Subfolders will be created
+#'   for the variable and year
 #'
 #' @return path to folder for that year of data
 get_prism <- function(year, variable = c("tmin", "tmax", "tmean"), prism_dir = "data/prism") {
