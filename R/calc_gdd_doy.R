@@ -82,7 +82,7 @@ calc_gdd_be_doy <- function(tmin_dir, tmax_dir, roi, gdd_threshold, gdd_base = 3
 
 # NOTE: If using get_prism2(), change default ext to ".tif" or set it to ".tif"
 # everywhere read_prism is used.
-read_prism <- function(rast_dir, ext = c(".bil", ".tif")) {
+read_prism <- function(rast_dir) {
   ext <- match.arg(ext)
   files <- fs::dir_ls(rast_dir, glob = "*.zip")
 
@@ -94,11 +94,11 @@ read_prism <- function(rast_dir, ext = c(".bil", ".tif")) {
     lubridate::yday()
 
   #construct paths with /vsizip/ to read inside .zip files
-  rasts <-
+  bils <-
     files |>
     fs::path_file() |>
-    fs::path_ext_set(ext)
-  rast_paths <- paste0("/vsizip/", fs::path(files, rasts))
+    fs::path_ext_set(".bil")
+  rast_paths <- paste0("/vsizip/", fs::path(files, bils))
 
   #read in multi-layer rasters
   prism <- terra::rast(rast_paths)
