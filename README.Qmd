@@ -59,6 +59,11 @@ cat(
 #this should display correctly on GitHub, or code can be pasted into https://mermaid.live
 ```
 
+### PRISM API
+
+In the process of writing this manuscript, the PRISM API changed ([new API documentation](https://prism.oregonstate.edu/documents/PRISM_downloads_web_service.pdf)).
+The current `targets` pipeline won't work with the new API, but we've provided a function, `get_prism2()` that should be a drop-in replacement wherever `get_prism()` is used.
+
 ------------------------------------------------------------------------
 
 Developed in collaboration with the University of Arizona [CCT Data Science](https://datascience.cct.arizona.edu/) group.
