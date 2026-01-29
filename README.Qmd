@@ -63,8 +63,6 @@ cat(
 
 In the process of writing this manuscript, the PRISM API changed ([new API documentation](https://prism.oregonstate.edu/documents/PRISM_downloads_web_service.pdf)).
 The current `targets` pipeline won't work with the new API, but we've provided a function, `get_prism2()` that should be a drop-in replacement wherever `get_prism()` is used.
-Anywhere `read_prism()` is used, the `ext` argument will  need to be set to `".tif"` as well.
-E.g. in `calc_gdd_doy.R`, `prism_tmin <- read_prism(tmin_dir)` would need to be changed to `prism_tmin <- read_prism(tmin_dir, ext = ".tif")`.
 
 ------------------------------------------------------------------------
 

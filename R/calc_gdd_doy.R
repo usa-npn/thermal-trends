@@ -80,10 +80,7 @@ calc_gdd_be_doy <- function(tmin_dir, tmax_dir, roi, gdd_threshold, gdd_base = 3
 }
 
 
-# NOTE: If using get_prism2(), change default ext to ".tif" or set it to ".tif"
-# everywhere read_prism is used.
 read_prism <- function(rast_dir) {
-  ext <- match.arg(ext)
   files <- fs::dir_ls(rast_dir, glob = "*.zip")
 
   #convert filenames to DOY to use for layer names

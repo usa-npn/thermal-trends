@@ -10,14 +10,26 @@
 #' @param variable variable to get
 #' @param prism_dir base directory for PRISM data.  Subfolders will be created
 #'   for the variable and year
+#' @param format File format to download from PRISM. Options include `"nc"` for
+#'   netCDF, `"asc"` for ASCII Grid format, `"bil"` for BIL format, and `"tif"`
+#'   for cloud optimized geotiff. The default of `"bil"` is for compatibility
+#'   with the targets pipeline.  Previous version of the PRISM API did not have
+#'   cloud optimized geotiffs available.
 #'
 #' @return path to folder for that year of data
 get_prism2 <- function(
   year,
   variable = c("tmin", "tmax", "tmean"),
-  prism_dir = "data/prism"
+  prism_dir = "data/prism",
+  format = c("bil", "tif", "nc", "asc")
 ) {
   variable <- match.arg(variable)
+  format <- match.arg(format)
+
+  # no format query = tif
+  if (format == "tif") {
+    format <- NULL
+  }
 
   base_req <-
     httr2::request("https://services.nacse.org/prism/data/get") |>
@@ -25,8 +37,7 @@ get_prism2 <- function(
       "University of Arizona CCT Data Science (https://datascience.cct.arizona.edu/)"
     ) |>
     httr2::req_retry(max_tries = 10) |>
-    httr2::req_url_path_append("us", "4km") |>
-    httr2::req_throttle(capacity = 1, fill_time_s = 3)
+    httr2::req_url_path_append("us", "4km")
 
   cli::cli_alert("Downloading PRISM {variable} data for {year}")
 
@@ -38,7 +49,9 @@ get_prism2 <- function(
   date_end <- lubridate::make_date(year = year, month = 12, day = 31)
   dates <- seq(date_start, date_end, "day")
 
-  req <- base_req |> httr2::req_url_path_append(variable)
+  req <- base_req |>
+    httr2::req_url_path_append(variable) |>
+    httr2::req_url_query(format = format)
 
   reqs <- purrr::map(dates, \(x) {
     req |> httr2::req_url_path_append(format(x, "%Y%m%d"))
@@ -76,7 +89,11 @@ get_prism2 <- function(
   if (length(reqs_to_perform) > 0) {
     resp <-
       httr2::req_perform_sequential(
-        reqs_to_perform,
+        reqs_to_perform |>
+          purrr::map(\(req) {
+            req |>
+              httr2::req_throttle(capacity = 1, fill_time_s = 2)
+          }),
         paths = files_to_dl,
         progress = "Downloading"
       )
