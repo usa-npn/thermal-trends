@@ -41,4 +41,17 @@ plot_sd_doy <- function(roi, ...) {
     width = 9.5,
     height = 5
   )
+
+  out <- ggplot2::ggsave(
+    filename = "stdev.pdf",
+    plot = p,
+    device = cairo_pdf,
+    path = "output/summary_stats/",
+    bg = "white",
+    width = 9.5,
+    height = 5
+  )
+
+  embedFonts(out)
+  out
 }

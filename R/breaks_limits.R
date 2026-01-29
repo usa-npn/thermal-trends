@@ -46,10 +46,10 @@ breaks_limits <- function(
     }
 
     if (isTRUE(min)) {
-      labels[1] <- paste0("≤ ", labels[1])
+      labels[1] <- paste0("\u2264 ", labels[1])
     }
     if (isTRUE(max)) {
-      labels[length(labels)] <- paste0("≥ ", labels[length(labels)])
+      labels[length(labels)] <- paste0("\u2265 ", labels[length(labels)])
     }
     names(breaks) <- labels
     breaks
