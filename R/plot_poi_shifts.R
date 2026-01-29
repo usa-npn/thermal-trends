@@ -97,26 +97,32 @@ plot_poi_shifts <- function(poi_pred_doy, roi, outpath = "output/figs") {
         arrow = arrow(length = unit(0.15, "cm")),
         linewidth = 0.3
       ) +
-      annotate(
-        geom = "text",
-        x = dat1$xmin[1],
-        y = 2500,
-        hjust = 0,
-        vjust = 0,
-        label = paste0(i, ": ", dat1$label[1]),
-        size = (textsize) / .pt
-      ) +
+      # annotate(
+      #   geom = "text",
+      #   x = dat1$xmin[1],
+      #   y = 2500,
+      #   hjust = 0,
+      #   vjust = 0,
+      #   label = paste0(i, ": ", dat1$label[1]),
+      #   size = (textsize) / .pt
+      # ) +
       scale_y_continuous(breaks = dat1$threshold) +
       scale_x_continuous(limits = c(dat1$xmin[1], dat1$xmax[2])) +
-      labs(x = "Day of year", y = "GDD threshold") +
+      labs(
+        x = "Day of year",
+        y = "GDD threshold",
+        tag = paste0(letters[i], ") ", dat1$label[1])
+      ) +
       theme(
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
         panel.background = element_blank(),
         axis.line = element_line(color = "black"),
-        text = element_text(size = textsize)
+        text = element_text(size = textsize),
+        plot.tag = element_text(size = textsize, hjust = 0.49, vjust = 0),
+        plot.tag.location = "panel"
       )
-
+    # top
     # Bottom panel
     polys <- data.frame(
       x = c(
@@ -292,7 +298,11 @@ plot_poi_shifts <- function(poi_pred_doy, roi, outpath = "output/figs") {
     geom_spatvector(data = nestates) +
     geom_spatvector(fill = "gray95") +
     geom_spatvector(data = locsv, color = "blue", size = 5) +
-    geom_spatvector_text(data = locsv, aes(label = num), color = "white") +
+    geom_spatvector_text(
+      data = locsv,
+      aes(label = letters[num]),
+      color = "white"
+    ) +
     scale_y_continuous(breaks = c(40, 45)) +
     scale_x_continuous(breaks = c(-70, -80, -90)) +
     theme_bw() +
@@ -340,4 +350,18 @@ plot_poi_shifts <- function(poi_pred_doy, roi, outpath = "output/figs") {
     bg = "white",
     create.dir = TRUE
   )
+
+  out <- ggsave(
+    filename = "shifts_6panel.pdf",
+    path = outpath,
+    device = cairo_pdf,
+    plot = everything,
+    width = 6.5,
+    height = 9,
+    units = "in",
+    bg = "white",
+    create.dir = TRUE
+  )
+  embedFonts(out)
+  out
 }

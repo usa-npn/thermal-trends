@@ -87,6 +87,17 @@ plot_linear_slopes <- function(roi, ..., use_percentile_lims = TRUE) {
     width = 9.5,
     height = 5
   )
+  out <- ggplot2::ggsave(
+    filename = "linear_slopes.pdf",
+    plot = p,
+    device = cairo_pdf,
+    path = "output/linear-slopes/",
+    bg = "white",
+    width = 9.5,
+    height = 5
+  )
+  embedFonts(out)
+  out
 }
 
 # plot_linear_slopes(linear_slopes_50, c(NA, NA))

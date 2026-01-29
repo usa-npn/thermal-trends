@@ -83,4 +83,17 @@ plot_slope_differences <- function(
     width = 9.5,
     height = 5
   )
+
+  out <- ggplot2::ggsave(
+    filename = "slopes-differences.pdf",
+    plot = p,
+    device = cairo_pdf,
+    path = "output/linear-slopes/",
+    bg = "white",
+    width = 9.5,
+    height = 5
+  )
+
+  embedFonts(out)
+  out
 }

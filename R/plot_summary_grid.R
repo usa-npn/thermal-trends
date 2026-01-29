@@ -52,4 +52,14 @@ plot_summary_grid <- function(roi, ...) {
     path = "output/summary_stats",
     bg = "white"
   )
+
+  out <- ggsave(
+    "summary_stats_plot.pdf",
+    plot = p,
+    device = cairo_pdf,
+    path = "output/summary_stats",
+    bg = "white"
+  )
+  embedFonts(out)
+  out
 }
