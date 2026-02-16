@@ -1,0 +1,77 @@
+---
+title: "Effect of 'censoring' DOY on season expansion/contraction"
+format: html
+---
+
+Simulate two trends with parallel slopes but different intercepts that represent the days to reach two different GDD thresholds over time.  Because they have the same slope, there is no true "lengthening" or "contracting" of season over time.  However, one of the lines starts with DOY values > 365, meaning the threshold GDD is never reached in early years but eventually is reached within a calendar year because of warming.
+
+```{r}
+#| label: setup
+#| output: false
+
+library(dplyr)
+library(ggplot2)
+```
+
+```{r}
+set.seed(1234567)
+
+slope <- -1
+intercept1 <- 387
+intercept2 <- 350
+
+df <- tibble(yr = 1:30) |>
+  mutate(
+    doy1 = intercept1 + slope * yr + rnorm(30, sd = 5),
+    doy2 = intercept2 + slope * yr + rnorm(30, sd = 5)
+  ) |>
+  mutate(
+    doy1_censored = ifelse(doy1 > 365, NA, doy1)
+  )
+print(df, n = 30)
+```
+
+Fit linear models for each threshold to get slope over time.  For threshold 1, fit a model with and without "censoring" (i.e. setting DOY > 365 to `NA`).
+
+```{r}
+m1 <- lm(doy1 ~ yr, data = df)
+m1_censored <- lm(doy1_censored ~ yr, data = df)
+m2 <- lm(doy2 ~ yr, data = df)
+```
+
+What's the difference in slopes with and without censoring?
+```{r}
+# diff in slopes without censoring
+
+coef(m1)[2] - coef(m2)[2]
+
+# diff in slopes *with* censoring
+
+coef(m1_censored)[2] - coef(m2)[2]
+```
+
+Without censoring, the lines are parallel (red & blue lines).  With censoring, the season is "expanding" (green & blue lines)
+
+```{r}
+df |>
+  mutate(
+    fit1 = predict(m1, newdata = list(yr = yr)),
+    fit1_censored = predict(m1_censored, newdata = list(yr = yr)),
+    fit2 = predict(m2, newdata = list(yr = yr))
+  ) |>
+  ggplot(aes(x = yr)) +
+  geom_line(aes(y = fit1, color = "fit1")) +
+  geom_line(aes(y = fit1_censored, color = "fit1_censored")) +
+  geom_point(aes(y = doy1, color = "fit1")) +
+  geom_point(aes(y = doy1_censored, color = "fit1_censored")) +
+  geom_line(aes(y = fit2, color = "fit2")) +
+  geom_point(aes(y = doy2, color = "fit2")) +
+  labs(y = "DOY", x = "year", color = "'threshold'")
+
+```
+
+::: callout-note
+
+I believe the green line will not necessarily have a shallower slope than the red line, but most often it will.
+
+:::

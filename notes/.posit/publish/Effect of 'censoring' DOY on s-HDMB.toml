@@ -1,0 +1,13 @@
+product_type = 'connect'
+'$schema' = 'https://cdn.posit.co/publisher/schemas/posit-publishing-schema-v3.json'
+type = 'html'
+entrypoint = 'censoring-slopes.html'
+source = 'censoring-slopes.qmd'
+validate = true
+files = [
+  '/censoring-slopes.html',
+  '/censoring-slopes_files',
+  "/.posit/publish/Effect of 'censoring' DOY on s-HDMB.toml",
+  '/.posit/publish/deployments/deployment-DLOS.toml'
+]
+title = "Effect of 'censoring' DOY on season expansion/contraction"
