@@ -2,8 +2,9 @@
 #'
 #' @param roi the roi target (a `SpatVector` of the NE US)
 #' @param ... `SpatRaster`s created by [calc_doy_summary()]
+#' @param use_percentile_lims use limits that capture 99% of the DOY values.
 #'
-plot_sd_doy <- function(roi, ...) {
+plot_sd_doy <- function(roi, ..., use_percentile_lims = TRUE) {
   dots <- rlang::dots_list(..., .named = TRUE)
   thresholds <- stringr::str_extract(names(dots), "\\d+")
 
@@ -13,12 +14,28 @@ plot_sd_doy <- function(roi, ...) {
     terra::rast()
   names(stack) <- thresholds
 
+  limits <- c(NA, NA)
+  if (use_percentile_lims) {
+    limits <- stack |>
+      terra::values() |>
+      quantile(probs = c(0.005, 0.995), na.rm = TRUE)
+  }
+
   p <- ggplot() +
     facet_wrap(vars(lyr)) +
     geom_spatvector(data = roi, fill = "grey95", color = NA) +
     tidyterra::geom_spatraster(data = stack) +
     geom_spatvector(data = roi, fill = NA, color = "grey50") +
-    ggplot2::scale_fill_viridis_c(na.value = "transparent") +
+    ggplot2::scale_fill_viridis_c(
+      na.value = "transparent",
+      limits = limits,
+      breaks = breaks_limits(
+        n = 4,
+        min = !is.na(limits[1]),
+        max = !is.na(limits[2]),
+        tol = 0.15
+      )
+    ) +
     #n.breaks only works in current dev version of ggplot2: https://github.com/tidyverse/ggplot2/pull/5442
     scale_x_continuous(n.breaks = 5) +
     scale_y_continuous(n.breaks = 5) +
