@@ -211,7 +211,6 @@ tarchetypes::tar_plan(
       roi_sf = roi_sf
     )
   ),
-  # TODO finish up this function to just get the data and pull plot code out to a separate function
   tar_terra_rast(
     slope_differences,
     make_slope_differences(
