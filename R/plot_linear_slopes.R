@@ -31,10 +31,14 @@ plot_linear_slopes <- function(roi, ..., use_percentile_lims = TRUE) {
   stack <-
     dots |>
     purrr::map(\(x) {
-      mask(x[["slope"]], x[["count"]] >= 10, maskvalue = FALSE) #at least 10 non-NA years for reliable slopes
+      # Require at least 10 non-NA years for reliable slopes
+      terra::mask(x[["slope"]], x[["count"]] >= 10, maskvalue = FALSE)
     }) |>
     terra::rast()
   names(stack) <- thresholds
+
+  # convert to days/decade for plot
+  stack <- stack * 10
 
   limits <- c(NA, NA)
   if (use_percentile_lims) {
@@ -68,7 +72,7 @@ plot_linear_slopes <- function(roi, ..., use_percentile_lims = TRUE) {
     scale_x_continuous(n.breaks = 5) +
     scale_y_continuous(n.breaks = 5) +
     labs(
-      fill = "days/year"
+      fill = "days/decade"
     ) +
     # coord_sf(crs = "ESRI:102010") +
     theme_minimal() +
