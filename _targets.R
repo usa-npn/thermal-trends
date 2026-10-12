@@ -122,16 +122,17 @@ tarchetypes::tar_plan(
       pattern = map(prism_tmin, prism_tmax),
       description = "calc DOY to reach threshold GDD"
     ),
-    # Combine list of SpatRasters into multi-layer SpatRaster
-    # TODO: use tar_terra_vrt() here to save disk space?
-    tar_terra_rast(
-      stack,
-      terra::rast(unname(gdd_doy))
+    # Combine list of SpatRasters into multi-layer VRT
+    tar_terra_vrt(
+      stack_vrt,
+      terra::sprc(unname(gdd_doy)),
+      options = c("-separate"),
+      set_names = TRUE
     ),
     # summary statistics across years
     tar_terra_rast(
       doy_summary,
-      calc_doy_summary(stack)
+      calc_doy_summary(stack_vrt)
     ),
     # summarize across space
     tar_target(
@@ -154,7 +155,7 @@ tarchetypes::tar_plan(
   ),
   tar_target(
     poi_pred_doy,
-    pred_poi_stats(poi, !!!rlang::syms(glue::glue("stack_{threshold}")))
+    pred_poi_stats(poi, !!!rlang::syms(glue::glue("stack_vrt_{threshold}")))
   ),
   tar_file(
     poi_shifts_plot,
