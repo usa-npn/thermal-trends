@@ -38,28 +38,35 @@ calc_surv_summary <- function(stack, roi, min_events) {
         ),
         error = function(e) NULL
       )
-      mean <- unname(coef(interercept_only)[1]) %||% NA_real_
+      est_mean <- unname(coef(interercept_only)[1]) %||% NA_real_
+      est_sd <- intercept_only$scale
       slope <- unname(coef(slope_fit)[2]) %||% NA_real_
     } else {
+      est_mean <- NA_real_
+      est_sd <- NA_real_
       slope <- NA_real_
-      mean <- NA_real_
     }
     # and only do the rest of the stats if there is at least 1 non-NA value
     if (sum(status, na.rm = TRUE) == 0) {
       out <- c(
         min = NA,
         max = NA,
-        mean = mean,
+        mean = NA,
         sd = NA,
+        est_mean = est_mean,
+        est_st = est_sd,
         count = NA,
-        slope = slope
+        slope = slope,
       )
     } else {
       out <- c(
         min = min(time[status == 1], na.rm = TRUE),
         max = max(time[status == 1], na.rm = TRUE),
-        mean = mean, # Estimated from intercept-only model
+        mean = mean(time[status == 1], na.rm = TRUE),
         sd = sd(time[status == 1], na.rm = TRUE),
+        # Estimated from intercept-only model
+        est_mean = est_mean,
+        est_sd = est_sd,
         count = sum(status),
         slope = slope
       )
