@@ -6,7 +6,7 @@
 #' @param roi a SpatVector defining the ROI `stack` is already cropped to.
 #' @param min_events a minimum number of years the threshold is reached in order
 #'   to calculate a slope and mean.
-calc_surv_summary <- function(stack, roi, min_events) {
+calc_surv_summary <- function(stack, roi, min_events = 10) {
   # being extra safe here and not assuming every year is represented
   year <- as.integer(names(stack))
   # scale
@@ -24,7 +24,7 @@ calc_surv_summary <- function(stack, roi, min_events) {
     status <- v[(n + 1):(2 * n)]
     if (sum(status == 1, na.rm = TRUE) >= min_events) {
       ok <- is.finite(time) & is.finite(status)
-      interercept_only <- tryCatch(
+      intercept_only <- tryCatch(
         survival::survreg(
           survival::Surv(time[ok], status[ok]) ~ 1,
           dist = "gaussian"
@@ -38,7 +38,7 @@ calc_surv_summary <- function(stack, roi, min_events) {
         ),
         error = function(e) NULL
       )
-      est_mean <- unname(coef(interercept_only)[1]) %||% NA_real_
+      est_mean <- unname(coef(intercept_only)[1]) %||% NA_real_
       est_sd <- intercept_only$scale
       slope <- unname(coef(slope_fit)[2]) %||% NA_real_
     } else {
@@ -56,7 +56,7 @@ calc_surv_summary <- function(stack, roi, min_events) {
         est_mean = est_mean,
         est_st = est_sd,
         count = NA,
-        slope = slope,
+        slope = slope
       )
     } else {
       out <- c(
