@@ -122,6 +122,9 @@ tarchetypes::tar_plan(
       pattern = map(prism_tmin, prism_tmax),
       description = "calc DOY to reach threshold GDD"
     ),
+    # Doing this as a separate step to avoid re-calculating DOY (the slow step)
+    # by invalidating the `gdd_doy` target.  Trade-off is there are now two
+    # copies of every gdd_doy raster being saved in _targets/.
     tar_terra_rast(
       gdd_doy_noleap,
       terra::subst(gdd_doy, 366, NA),
