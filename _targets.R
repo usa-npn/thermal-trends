@@ -122,10 +122,19 @@ tarchetypes::tar_plan(
       pattern = map(prism_tmin, prism_tmax),
       description = "calc DOY to reach threshold GDD"
     ),
+    # Doing this as a separate step to avoid re-calculating DOY (the slow step)
+    # by invalidating the `gdd_doy` target.  Trade-off is there are now two
+    # copies of every gdd_doy raster being saved in _targets/.
+    tar_terra_rast(
+      gdd_doy_noleap,
+      terra::subst(gdd_doy, 366, NA),
+      pattern = map(gdd_doy),
+      description = "Set DOY 366 to NA in case of leap years"
+    ),
     # Combine list of SpatRasters into multi-layer VRT
     tar_terra_vrt(
       stack_vrt,
-      terra::sprc(unname(gdd_doy)),
+      terra::sprc(unname(gdd_doy_noleap)),
       options = c("-separate"),
       set_names = TRUE
     ),
@@ -133,6 +142,13 @@ tarchetypes::tar_plan(
     tar_terra_rast(
       doy_summary,
       calc_doy_summary(stack_vrt)
+    ),
+    # FIXME: when this replaces the above target, just re-name it.
+    # doy_surv_summary is a weird name.  Probably just replace
+    # calc_doy_summary() also.
+    tar_terra_rast(
+      doy_surv_summary,
+      calc_surv_summary(stack_vrt, roi = roi)
     ),
     # summarize across space
     tar_target(
