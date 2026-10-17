@@ -55,16 +55,12 @@ calc_gdd_be_doy <- function(
   prism_tmin <- read_prism(tmin_dir)
   prism_tmax <- read_prism(tmax_dir)
 
-  # Remove day 366 in case it is a leap year
-  prism_tmin <- prism_tmin[[1:365]]
-  prism_tmax <- prism_tmax[[1:365]]
-
-  #crop to roi
+  # crop to roi
   roi <- terra::project(roi, prism_tmin)
   prism_tmin_roi <- terra::crop(prism_tmin, roi, mask = TRUE)
   prism_tmax_roi <- terra::crop(prism_tmax, roi, mask = TRUE)
 
-  #create sds
+  # create sds
   prism_sds <- terra::sds(prism_tmin_roi, prism_tmax_roi)
 
   # calculate degree days
@@ -85,7 +81,7 @@ calc_gdd_be_doy <- function(
   names(gdd_doy) <-
     fs::path_file(tmin_dir) # gets just the end folder name which should be the year
 
-  #return:
+  # return:
   gdd_doy
 }
 
