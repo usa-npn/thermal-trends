@@ -13,6 +13,7 @@ pred_poi_stats <- function(poi, ...) {
       # mutate(year_scaled = year - min(year, na.rm = TRUE)) |>
       nest() |>
       mutate(
+        # FIXME: use `survreg()` model
         lm = purrr::map(data, \(x) {
           if (sum(is.finite(x$doy)) > 10) {
             lm(doy ~ year, data = x)
@@ -44,7 +45,8 @@ pred_poi_stats <- function(poi, ...) {
   out <- poi_pred_doy |>
     list_rbind(names_to = "stack") |>
     mutate(
-      threshold = stringr::str_split_i(stack, pattern = "_", i = -1),
+      threshold = stringr::str_split_i(stack, pattern = "_", i = -1) |>
+        as.integer(),
       .keep = "unused"
     )
 
