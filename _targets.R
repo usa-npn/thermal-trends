@@ -205,8 +205,7 @@ tarchetypes::tar_plan(
     linear_slopes_plot,
     plot_linear_slopes(
       roi = roi,
-      !!!rlang::syms(glue::glue("doy_summary_{threshold}")),
-      use_percentile_lims = FALSE
+      !!!rlang::syms(glue::glue("doy_summary_{threshold}"))
     ),
     packages = c(
       "ggplot2",
