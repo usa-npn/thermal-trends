@@ -8,9 +8,10 @@ data/prism/
 _targets/
 logs/
 output/rasters/
-output/figs/
+# output/figs/
 output/data/
 .Renviron
 notes/gavin.qmd
 nohup.out
 .vscode/settings.json
+*.pdf
