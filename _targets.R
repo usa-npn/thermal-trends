@@ -141,7 +141,7 @@ tarchetypes::tar_plan(
     # summary statistics across years
     tar_terra_rast(
       doy_summary,
-      calc_doy_summary(stack_vrt)
+      calc_doy_summary(stack_vrt, roi = roi)
     ),
     # summarize across space
     tar_target(
