@@ -43,9 +43,10 @@ pred_poi_stats <- function(poi, ...) {
 
   out <- poi_pred_doy |>
     list_rbind(names_to = "stack") |>
-    separate(stack, into = c("trash", "threshold")) |>
-    select(-trash) |>
-    mutate(threshold = as.integer(threshold))
+    mutate(
+      threshold = stringr::str_split_i(stack, pattern = "_", i = -1),
+      .keep = "unused"
+    )
 
   out
 }
