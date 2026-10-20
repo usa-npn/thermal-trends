@@ -143,13 +143,6 @@ tarchetypes::tar_plan(
       doy_summary,
       calc_doy_summary(stack_vrt)
     ),
-    # FIXME: when this replaces the above target, just re-name it.
-    # doy_surv_summary is a weird name.  Probably just replace
-    # calc_doy_summary() also.
-    tar_terra_rast(
-      doy_surv_summary,
-      calc_surv_summary(stack_vrt, roi = roi)
-    ),
     # summarize across space
     tar_target(
       summary_summary,
