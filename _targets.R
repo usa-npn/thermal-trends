@@ -95,12 +95,14 @@ tarchetypes::tar_plan(
     deployment = "main",
     description = "sf of NE states"
   ),
+  # TODO: set CRS to same as rasters
   tar_terra_vect(
     roi,
     make_roi(),
     deployment = "main",
     description = "SpatVector of NE states"
   ),
+  # TODO: set CRS to same as rasters
   tar_terra_vect(
     poi,
     make_poi(),
@@ -203,7 +205,8 @@ tarchetypes::tar_plan(
     linear_slopes_plot,
     plot_linear_slopes(
       roi = roi,
-      !!!rlang::syms(glue::glue("doy_summary_{threshold}"))
+      !!!rlang::syms(glue::glue("doy_summary_{threshold}")),
+      use_percentile_lims = FALSE
     ),
     packages = c(
       "ggplot2",
