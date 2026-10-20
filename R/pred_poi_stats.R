@@ -1,4 +1,4 @@
-pred_poi_stats <- function(poi, ...) {
+pred_poi_stats <- function(poi, ..., min_events = 10) {
   dots <- rlang::dots_list(..., .named = TRUE)
 
   poi_pred_doy <- purrr::map(dots, \(stack) {
@@ -9,36 +9,44 @@ pred_poi_stats <- function(poi, ...) {
         values_to = "doy",
         names_transform = list(year = as.integer)
       ) |>
+      # Set up for survival regression
+      mutate(
+        event = if_else(doy <= 365, true = TRUE, false = FALSE, missing = FALSE)
+      ) |>
+      mutate(doy = if_else(doy > 365 | is.na(doy), 365, doy)) |>
+      mutate(year_scaled = year - 1981) |>
       group_by(label) |>
-      # mutate(year_scaled = year - min(year, na.rm = TRUE)) |>
       nest() |>
       mutate(
-        # FIXME: use `survreg()` model
-        lm = purrr::map(data, \(x) {
-          if (sum(is.finite(x$doy)) > 10) {
-            lm(doy ~ year, data = x)
+        fit = purrr::map(data, \(x) {
+          if (sum(x$event) > min_events) {
+            survival::survreg(
+              survival::Surv(doy, event) ~ year_scaled,
+              dist = "gaussian",
+              data = x
+            )
           } else {
             NA
           }
         })
       ) |>
       mutate(
-        pred_1981 = map_dbl(lm, \(x) {
-          if (inherits(x, "lm")) {
-            predict(x, newdata = list(year = 1981))
+        pred_1981 = map_dbl(fit, \(x) {
+          if (inherits(x, "survreg")) {
+            predict(x, newdata = list(year_scaled = 1981 - 1981))
           } else {
             NA_real_
           }
         }),
-        pred_2023 = map_dbl(lm, \(x) {
-          if (inherits(x, "lm")) {
-            predict(x, newdata = list(year = 2023))
+        pred_2023 = map_dbl(fit, \(x) {
+          if (inherits(x, "survreg")) {
+            predict(x, newdata = list(year_scaled = 2023 - 1981))
           } else {
             NA_real_
           }
         })
       ) |>
-      dplyr::select(-data, -lm) |>
+      dplyr::select(-data, -fit) |>
       ungroup()
   })
 
