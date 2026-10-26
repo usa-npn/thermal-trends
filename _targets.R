@@ -95,12 +95,14 @@ tarchetypes::tar_plan(
     deployment = "main",
     description = "sf of NE states"
   ),
+  # TODO: set CRS to same as rasters
   tar_terra_vect(
     roi,
     make_roi(),
     deployment = "main",
     description = "SpatVector of NE states"
   ),
+  # TODO: set CRS to same as rasters
   tar_terra_vect(
     poi,
     make_poi(),
@@ -122,17 +124,26 @@ tarchetypes::tar_plan(
       pattern = map(prism_tmin, prism_tmax),
       description = "calc DOY to reach threshold GDD"
     ),
+    # Doing this as a separate step to avoid re-calculating DOY (the slow step)
+    # by invalidating the `gdd_doy` target.  Trade-off is there are now two
+    # copies of every gdd_doy raster being saved in _targets/.
+    tar_terra_rast(
+      gdd_doy_noleap,
+      terra::subst(gdd_doy, 366, NA),
+      pattern = map(gdd_doy),
+      description = "Set DOY 366 to NA in case of leap years"
+    ),
     # Combine list of SpatRasters into multi-layer VRT
     tar_terra_vrt(
       stack_vrt,
-      terra::sprc(unname(gdd_doy)),
+      terra::sprc(unname(gdd_doy_noleap)),
       options = c("-separate"),
       set_names = TRUE
     ),
     # summary statistics across years
     tar_terra_rast(
       doy_summary,
-      calc_doy_summary(stack_vrt)
+      calc_doy_summary(stack_vrt, roi = roi)
     ),
     # summarize across space
     tar_target(
@@ -159,7 +170,7 @@ tarchetypes::tar_plan(
   ),
   tar_file(
     poi_shifts_plot,
-    plot_poi_shifts(poi_pred_doy, roi),
+    plot_poi_shifts(poi_pred_doy, roi, poi),
     packages = c("dplyr", "ggplot2", "cowplot", "terra", "tidyterra", "ggpubr")
   ),
   tar_target(

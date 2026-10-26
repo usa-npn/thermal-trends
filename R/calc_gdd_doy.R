@@ -32,7 +32,7 @@ calc_gdd_doy <- function(tmean_dir, roi, gdd_threshold, gdd_base = 32) {
 
 
 #' Calculate DOY a threshold GDD is reached (Baskerville-Emin method)
-#' 
+#'
 #' Calculates accumulated GDD with the Baskerville-Emin method and then
 #' calculates the DOY that a particular threshold is met and returns a raster of
 #' DOY values.
@@ -45,37 +45,43 @@ calc_gdd_doy <- function(tmean_dir, roi, gdd_threshold, gdd_base = 32) {
 #' @param gdd_base Temperature base, in ºF, for calculating GDD
 #'
 #' @return SpatRaster with DOY the threshold GDD is reached.
-calc_gdd_be_doy <- function(tmin_dir, tmax_dir, roi, gdd_threshold, gdd_base = 32) {
+calc_gdd_be_doy <- function(
+  tmin_dir,
+  tmax_dir,
+  roi,
+  gdd_threshold,
+  gdd_base = 32
+) {
   prism_tmin <- read_prism(tmin_dir)
   prism_tmax <- read_prism(tmax_dir)
-  
-  #crop to roi
+
+  # crop to roi
   roi <- terra::project(roi, prism_tmin)
   prism_tmin_roi <- terra::crop(prism_tmin, roi, mask = TRUE)
   prism_tmax_roi <- terra::crop(prism_tmax, roi, mask = TRUE)
-  
-  #create sds
+
+  # create sds
   prism_sds <- terra::sds(prism_tmin_roi, prism_tmax_roi)
-  
+
   # calculate degree days
   gdd <- terra::lapp(prism_sds, function(x, y) {
     calc_gdd_be(
-      tmin = x, #first dataset in prism_sds
-      tmax = y, #second dataset in prism_sds
+      tmin = x, # first dataset in prism_sds
+      tmax = y, # second dataset in prism_sds
       base = gdd_base
     )
   })
-  
+
   # convert to accumulated gdd
   agdd <- cumsum(gdd)
-  
+
   # DOY to reach a single threshold
   gdd_doy <- terra::which.lyr(agdd > gdd_threshold)
-  
-  names(gdd_doy) <- 
-    fs::path_file(tmin_dir) #gets just the end folder name which should be the year
-  
-  #return:
+
+  names(gdd_doy) <-
+    fs::path_file(tmin_dir) # gets just the end folder name which should be the year
+
+  # return:
   gdd_doy
 }
 

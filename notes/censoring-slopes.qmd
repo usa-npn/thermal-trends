@@ -53,7 +53,7 @@ coef(m1_censored)[2] - coef(m2)[2]
 Without censoring, the lines are parallel (red & blue lines).  With censoring, the season is "expanding" (green & blue lines)
 
 ```{r}
-df |>
+p <- df |>
   mutate(
     fit1 = predict(m1, newdata = list(yr = yr)),
     fit1_censored = predict(m1_censored, newdata = list(yr = yr)),
@@ -67,7 +67,7 @@ df |>
   geom_line(aes(y = fit2, color = "fit2")) +
   geom_point(aes(y = doy2, color = "fit2")) +
   labs(y = "DOY", x = "year", color = "'threshold'")
-
+p
 ```
 
 ::: callout-note
@@ -75,3 +75,39 @@ df |>
 I believe the green line will not necessarily have a shallower slope than the red line, but most often it will.
 
 :::
+
+## Survival regression
+
+Let's fit both lines with `survreg`
+
+
+```{r}
+df_surv <- df |>
+  mutate(
+    doy1_event = if_else(doy1 <= 365, TRUE, FALSE),
+    doy2_event = if_else(doy2 <= 365, TRUE, FALSE)
+  ) |>
+  mutate(
+    doy1_censored = if_else(doy1 > 365, 365, doy1),
+    doy2_censored = if_else(doy2 > 365, 365, doy2)
+  )
+
+```
+
+
+```{r}
+library(survival)
+surv1 <- survreg(Surv(doy1_censored, doy1_event) ~ yr, dist = "gaussian", data = df_surv)
+surv2 <- survreg(Surv(doy2_censored, doy2_event) ~ yr, dist = "gaussian", data = df_surv)
+```
+
+
+```{r}
+df_surv <- df_surv |>   mutate(
+    fit1 = predict(surv1, newdata = list(yr = yr)),
+    fit2 = predict(surv2, newdata = list(yr = yr))
+  ) 
+p +
+  geom_line(data = df_surv, aes(y = fit1), color = "red", linetype = "dashed") +
+  geom_line(data = df_surv, aes(y = fit2), color = "blue", linetype = "dashed")
+```
