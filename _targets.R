@@ -170,7 +170,7 @@ tarchetypes::tar_plan(
   ),
   tar_file(
     poi_shifts_plot,
-    plot_poi_shifts(poi_pred_doy, roi),
+    plot_poi_shifts(poi_pred_doy, roi, poi),
     packages = c("dplyr", "ggplot2", "cowplot", "terra", "tidyterra", "ggpubr")
   ),
   tar_target(
