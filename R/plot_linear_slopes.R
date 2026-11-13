@@ -45,7 +45,7 @@ plot_linear_slopes <- function(roi, ..., use_percentile_lims = TRUE) {
     limits <- stack |>
       terra::values() |>
       # quantile(probs = c(0.005, 0.995), na.rm = TRUE)
-      quantile(probs = c(0.25, 0.975), na.rm = TRUE) # 95%ile
+      quantile(probs = c(0.025, 0.975), na.rm = TRUE) # 95%ile
   }
 
   roi <- terra::project(roi, stack)
