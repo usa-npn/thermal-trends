@@ -229,6 +229,16 @@ tarchetypes::tar_plan(
       !!!rlang::syms(glue::glue("doy_summary_{threshold}"))
     )
   ),
+  tar_target(
+    plot_ranges,
+    get_plot_full_ranges(
+      summary_rasters = list(
+        !!!rlang::syms(glue::glue("doy_summary_{threshold}"))
+      ),
+      slope_differences
+    ),
+    description = "since plots only show 95%ile of data, need full range for captions"
+  ),
   tar_file(
     by_state_slope_diff_summary,
     summarize_slope_diffs_state(slope_differences, roi_sf)
