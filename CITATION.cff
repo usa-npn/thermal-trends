@@ -3,9 +3,8 @@
 
 cff-version: 1.2.0
 title: >-
-  Code for: "Patterns and trends in Growing Degree Day
-  threshold variability across the growing season in the
-  Northeastern United States"
+  Code for: "Uneven warming, uneven schanges: Within-season trends in thermal 
+  accumulation in the northeastern and midwestern U.S"
 message: >-
   If you use this software, please cite it using the
   metadata from this file.
@@ -62,4 +61,4 @@ keywords:
   - phenology
   - growing degree days
 license: MIT
-version: 0.2.0
+version: 0.6.1
