@@ -36,7 +36,9 @@ plot_slope_differences <- function(
     cli::cli_alert_info("original limits: {o_lims[1]}, {o_lims[2]}")
 
     limits <- vals |>
-      quantile(probs = c(0.005, 0.995), na.rm = TRUE)
+      # quantile(probs = c(0.005, 0.995), na.rm = TRUE)
+      # quantile(probs = c(0.025, 0.975), na.rm = TRUE) # 95%ile
+      quantile(probs = c(0.1, 0.9), na.rm = TRUE)
   }
 
   roi <- terra::project(roi, slope_differences)

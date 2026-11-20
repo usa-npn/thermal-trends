@@ -19,24 +19,24 @@ make_slope_differences <- function(...) {
   dots <- rlang::dots_list(..., .named = TRUE)
   slopes_list <- dots |>
     purrr::map(\(x) {
-      #at least 10 non-NA years for reliable slopes
+      # at least 10 non-NA years for reliable slopes
       terra::mask(x[["slope"]], x[["count"]] >= 10, maskvalue = FALSE)
     })
 
   thresholds <- names(slopes_list) |>
     stringr::str_extract("\\d+") |>
     as.numeric()
-  #rename using thresholds
+  # rename using thresholds
   names(slopes_list) <- thresholds
 
-  #Order by list by threshold.
+  # Order by list by threshold.
   slopes_list <- slopes_list[order(thresholds)]
 
   d_slopes <- purrr::map2(slopes_list, dplyr::lead(slopes_list), \(x_1, x_2) {
     if (!is.null(x_2)) {
       thr_1 <- x_1 |> varnames() |> stringr::str_extract("\\d+") |> as.numeric()
       thr_2 <- x_2 |> varnames() |> stringr::str_extract("\\d+") |> as.numeric()
-      (x_2 - x_1) * 10 #convert to days/decade
+      (x_2 - x_1) * 10 # convert to days/decade
     } else {
       NULL
     }
@@ -50,7 +50,7 @@ make_slope_differences <- function(...) {
 
   # also add the max - min GDD
   d_full_range <- list(
-    (slopes_list[[length(slopes_list)]] - slopes_list[[1]]) * 10 #days/decade
+    (slopes_list[[length(slopes_list)]] - slopes_list[[1]]) * 10 # days/decade
   )
 
   names(d_full_range) <- paste(max(thresholds), "-", min(thresholds))

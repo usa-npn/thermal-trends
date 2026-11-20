@@ -15,19 +15,14 @@
 #' @param poi_pred_doy the `poi_pred_doy` target, a tibble
 #' @param roi the `roi` target, a SpatVector object
 #' @param outpath path to directory to save figure
-plot_poi_shifts <- function(poi_pred_doy, roi, outpath = "output/figs") {
+plot_poi_shifts <- function(poi_pred_doy, roi, poi, outpath = "output/figs") {
   dat <-
     poi_pred_doy %>%
-    rename(early = pred_1981, late = pred_2023)
-
-  # Remove sites that didn't reach 2500 threshold and add state to label
-  dat <- filter(
-    dat,
-    !label %in% c("Mountain Lake Biological Station", "Rhinelander, WI")
-  ) %>%
-    arrange(label, threshold) %>%
-    mutate(
-      label = ifelse(label == "Harvard Forest", "Harvard Forest, MA", label)
+    rename(early = pred_1981, late = pred_2023) |>
+    # Remove sites that didn't reach 2500 threshold
+    filter_out(
+      .by = label,
+      any(threshold == 2500 & (early > 365 | is.na(early)))
     )
 
   # Identify DOY range for each site and create short site name
@@ -37,11 +32,12 @@ plot_poi_shifts <- function(poi_pred_doy, roi, outpath = "output/figs") {
     ungroup() %>%
     data.frame() %>%
     mutate(
-      label_short = case_when(
-        label == "Georgetown, DE" ~ "Georgetown",
-        label == "Grand Rapids, MI" ~ "GrandRapids",
-        label == "Harvard Forest, MA" ~ "Harvard",
-        .default = "KansasCity"
+      label_short = replace_values(
+        label,
+        "Georgetown, DE" ~ "Georgetown",
+        "Grand Rapids, MI" ~ "GrandRapids",
+        "Boston, MA" ~ "Boston",
+        "Kansas City, MO" ~ "KansasCity"
       )
     )
 
@@ -285,24 +281,14 @@ plot_poi_shifts <- function(poi_pred_doy, roi, outpath = "output/figs") {
   legend <- ggpubr::get_legend(legendplot)
   legend <- ggpubr::as_ggplot(legend)
 
-  nestates <- roi
-  locs <- data.frame(
-    name = sites,
-    num = 1:4,
-    lon = c(-75.3855, -85.6700, -72.1755, -94.5783),
-    lat = c(38.6901, 42.9638, 42.5388, 39.0997)
-  )
-  locsv <- vect(locs, geom = c("lon", "lat"), crs = "epsg:4326")
+  poi_sf <- sf::st_as_sf(poi) |>
+    filter(label %in% unique(dat$label)) |>
+    mutate(num = 1:n())
 
-  sitemap <- ggplot(locsv) +
-    geom_spatvector(data = nestates) +
-    geom_spatvector(fill = "gray95") +
-    geom_spatvector(data = locsv, color = "blue", size = 5) +
-    geom_spatvector_text(
-      data = locsv,
-      aes(label = letters[num]),
-      color = "white"
-    ) +
+  sitemap <- ggplot() +
+    tidyterra::geom_spatvector(data = roi, fill = "gray95") +
+    geom_sf(data = poi_sf, color = "blue", size = 5) +
+    geom_sf_text(data = poi_sf, aes(label = letters[num]), color = "white") +
     scale_y_continuous(breaks = c(40, 45)) +
     scale_x_continuous(breaks = c(-70, -80, -90)) +
     theme_bw() +
@@ -322,9 +308,9 @@ plot_poi_shifts <- function(poi_pred_doy, roi, outpath = "output/figs") {
 
   # Merge top 4 panels (one for each site)
   panels <- cowplot::plot_grid(
-    p_Georgetown,
+    p_Boston,
     p_GrandRapids,
-    p_Harvard,
+    p_Georgetown,
     p_KansasCity,
     nrow = 2,
     align = "hv"
